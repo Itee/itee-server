@@ -69,7 +69,7 @@ module.exports = function ( config ) {
     (config[ env ].trust_proxy) ? app.enable( 'trust proxy' ) : app.disabled( 'trust proxy' );
     (config[ env ].case_sensitive_routing) ? app.enable( 'case sensitive routing' ) : app.disabled( 'case sensitive routing' );
     (config[ env ].strict_routing) ? app.enable( 'strict routing' ) : app.disabled( 'strict routing' );
-    (config[ env ].view_cache) ? app.enable( 'view cache' ) : app.disabled( 'view cache' )
+    (config[ env ].view_cache) ? app.enable( 'view cache' ) : app.disabled( 'view cache' );
 
     // ////////// CONNECT MIDDLEWARE //////////////
     const logFilePath = config[ env ].path_to_log
@@ -77,7 +77,7 @@ module.exports = function ( config ) {
     // Create log folder if not exist
     const logFolder = path.dirname( logFilePath )
     if ( !fs.existsSync( logFolder ) ) {
-        fs.mkdirSync( logFolder );
+        fs.mkdirSync( logFolder )
     }
 
     app.use( morgan( 'combined', {
