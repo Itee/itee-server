@@ -1,0 +1,371 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <title>databases/database_controllers/TDatabaseController.js - Documentation</title>
+
+    <script src="scripts/prettify/prettify.js"></script>
+    <script src="scripts/prettify/lang-css.js"></script>
+    <!--[if lt IE 9]>
+      <script src="//html5shiv.googlecode.com/svn/trunk/html5.js"></script>
+    <![endif]-->
+    <link type="text/css" rel="stylesheet" href="styles/prettify.css">
+    <link type="text/css" rel="stylesheet" href="styles/jsdoc.css">
+</head>
+<body>
+
+<input type="checkbox" id="nav-trigger" class="nav-trigger" />
+<label for="nav-trigger" class="navicon-button x">
+  <div class="navicon"></div>
+</label>
+
+<label for="nav-trigger" class="overlay"></label>
+
+<nav>
+    <h2><a href="index.html">Home</a></h2><h3>Classes</h3><ul><li><a href="DatabaseController.html">DatabaseController</a></li><li><a href="module-Routes_TRouteBuilder-BuildRoutesFor.html">BuildRoutesFor</a></li><li><a href="TDatabaseController.html">TDatabaseController</a></li></ul><h3>Modules</h3><ul><li><a href="module-config_babelConfiguration.html">config/babelConfiguration</a><ul class='methods'><li data-type='method'><a href="module-config_babelConfiguration.html#~CreateBabelConfiguration">CreateBabelConfiguration</a></li></ul></li><li><a href="module-config_eslintConfiguration.html">config/eslintConfiguration</a><ul class='methods'><li data-type='method'><a href="module-config_eslintConfiguration.html#~CreateEslintConfiguration">CreateEslintConfiguration</a></li></ul></li><li><a href="module-config_iteeConfiguration.html">config/iteeConfiguration</a></li><li><a href="module-config_jsdocConfiguration.html">config/jsdocConfiguration</a><ul class='methods'><li data-type='method'><a href="module-config_jsdocConfiguration.html#~CreateJsdocConfiguration">CreateJsdocConfiguration</a></li></ul></li><li><a href="module-config_karmaBenchConfiguration.html">config/karmaBenchConfiguration</a><ul class='methods'><li data-type='method'><a href="module-config_karmaBenchConfiguration.html#~CreateKarmaBenchmarkConfiguration">CreateKarmaBenchmarkConfiguration</a></li></ul></li><li><a href="module-config_karmaUnitConfiguration.html">config/karmaUnitConfiguration</a><ul class='methods'><li data-type='method'><a href="module-config_karmaUnitConfiguration.html#~CreateKarmaUnitTestingConfiguration">CreateKarmaUnitTestingConfiguration</a></li></ul></li><li><a href="module-config_rollupConfiguration.html">config/rollupConfiguration</a><ul class='methods'><li data-type='method'><a href="module-config_rollupConfiguration.html#~CreateRollupConfiguration">CreateRollupConfiguration</a></li></ul></li><li><a href="module-gulpfile.html">gulpfile</a><ul class='methods'><li data-type='method'><a href="module-gulpfile.html#~npmrunbench">npm run bench</a></li><li data-type='method'><a href="module-gulpfile.html#~npmrunbuild">npm run build</a></li><li data-type='method'><a href="module-gulpfile.html#~npmrunclean">npm run clean</a></li><li data-type='method'><a href="module-gulpfile.html#~npmrundoc">npm run doc</a></li><li data-type='method'><a href="module-gulpfile.html#~npmrunlint">npm run lint</a></li><li data-type='method'><a href="module-gulpfile.html#~npmrunrelease">npm run release</a></li><li data-type='method'><a href="module-gulpfile.html#~npmruntest">npm run test</a></li><li data-type='method'><a href="module-gulpfile.html#~npmrununit">npm run unit</a></li><li data-type='method'><a href="module-gulpfile.html#~npmrunhelpdefault">npm run help </a></li></ul></li><li><a href="module-Modules_JsonFile.html">Modules/JsonFile</a><ul class='methods'><li data-type='method'><a href="module-Modules_JsonFile.html#~parseFile">parseFile</a></li></ul></li><li><a href="module-Modules_UploadDispatcher.html">Modules/UploadDispatcher</a></li><li><a href="module-Routes.html">Routes</a></li><li><a href="module-Routes_404.html">Routes/404</a></li><li><a href="module-Routes_Docs.html">Routes/Docs</a></li><li><a href="module-Routes_Downloads.html">Routes/Downloads</a></li><li><a href="module-Routes_Index.html">Routes/Index</a></li><li><a href="module-Routes_Resources.html">Routes/Resources</a></li><li><a href="module-Routes_TRouteBuilder.html">Routes/TRouteBuilder</a></li><li><a href="module-Routes_Uploads.html">Routes/Uploads</a></li><li><a href="module-Routes_Views.html">Routes/Views</a><ul class='methods'><li data-type='method'><a href="module-Routes_Views.html#~onCheckContinue">onCheckContinue</a></li><li data-type='method'><a href="module-Routes_Views.html#~onClientError">onClientError</a></li><li data-type='method'><a href="module-Routes_Views.html#~onClose">onClose</a></li><li data-type='method'><a href="module-Routes_Views.html#~onConnect">onConnect</a></li><li data-type='method'><a href="module-Routes_Views.html#~onConnection">onConnection</a></li><li data-type='method'><a href="module-Routes_Views.html#~onRequest">onRequest</a></li><li data-type='method'><a href="module-Routes_Views.html#~onTimeout">onTimeout</a></li><li data-type='method'><a href="module-Routes_Views.html#~onUpgrade">onUpgrade</a></li></ul></li><li><a href="module-Schemas_BufferGeometry.html">Schemas/BufferGeometry</a></li><li><a href="module-Schemas_Geometry.html">Schemas/Geometry</a></li><li><a href="module-Schemas_LineSegment.html">Schemas/LineSegment</a></li><li><a href="module-Schemas_Material.html">Schemas/Material</a></li><li><a href="module-Schemas_Mesh.html">Schemas/Mesh</a></li><li><a href="module-Schemas_Object3D.html">Schemas/Object3D</a></li><li><a href="module-Schemas_Scene.html">Schemas/Scene</a></li><li><a href="module-TAutoReconnect.html">TAutoReconnect</a><ul class='methods'><li data-type='method'><a href="module-TAutoReconnect.html#~connectTo">connectTo</a></li><li data-type='method'><a href="module-TAutoReconnect.html#~onClose">onClose</a></li><li data-type='method'><a href="module-TAutoReconnect.html#~onConnected">onConnected</a></li><li data-type='method'><a href="module-TAutoReconnect.html#~onConnecting">onConnecting</a></li><li data-type='method'><a href="module-TAutoReconnect.html#~onDisconnected">onDisconnected</a></li><li data-type='method'><a href="module-TAutoReconnect.html#~onDisconnecting">onDisconnecting</a></li><li data-type='method'><a href="module-TAutoReconnect.html#~onError">onError</a></li><li data-type='method'><a href="module-TAutoReconnect.html#~onOpen">onOpen</a></li><li data-type='method'><a href="module-TAutoReconnect.html#~onReconnected">onReconnected</a></li><li data-type='method'><a href="module-TAutoReconnect.html#~startAutoConnect">startAutoConnect</a></li><li data-type='method'><a href="module-TAutoReconnect.html#~stopAutoConnect">stopAutoConnect</a></li></ul></li><li><a href="module-TDatabase.html">TDatabase</a></li><li><a href="module-TServerApplication.html">TServerApplication</a></li></ul><h3>Externals</h3><ul><li><a href="external-The%25252520express%25252520router%25252520module.html">The express router module</a></li><li><a href="external-The%2520http%2520nodejs%2520module.html">The http nodejs module</a></li></ul><h3>Global</h3><ul><li><a href="global.html#__checkBodyData">__checkBodyData</a></li><li><a href="global.html#__checkData">__checkData</a></li><li><a href="global.html#__checkIdParam">__checkIdParam</a></li><li><a href="global.html#_getRandomInt">_getRandomInt</a></li><li><a href="global.html#TClientAppParameters">TClientAppParameters</a></li></ul>
+</nav>
+
+<div id="main">
+    
+    <h1 class="page-title">databases/database_controllers/TDatabaseController.js</h1>
+    
+
+    
+
+
+
+    
+    <section>
+        <article>
+            <pre class="prettyprint source linenums"><code>/**
+ * @author [Tristan Valcke]{@link https://github.com/Itee}
+ * @license [BSD-3-Clause]{@link https://opensource.org/licenses/BSD-3-Clause}
+ *
+ * @class TDatabaseController
+ * @classdesc The TDatabaseController is the base class to perform CRUD operations on the database
+ */
+
+const i = require( 'i-return' )
+
+/**
+ * @constructor
+ */
+function DatabaseController ( databaseSchema ) {
+
+    if ( !databaseSchema ) { throw new Error( 'DatabaseController: Database schema cannot be null or undefined !' ) }
+
+    this._databaseSchema = databaseSchema
+
+}
+
+// Static
+Object.assign( DatabaseController, {
+
+    /**
+     * Check if requested params named 'dataName' exist in request.body, request.params or request.query
+     *
+     * @param dataName - The property name to looking for
+     * @param request - The server request
+     * @param response - The server response
+     * @returns {*} - Return the property or return error to the end user if the property doesn't exist
+     * @private
+     */
+    __checkData: function ( dataName, request, response ) {
+
+        if ( !request.body &amp;&amp; !request.params &amp;&amp; !request.query ) {
+
+            i.returnError( {
+                title:   'Erreur de paramètre',
+                message: 'Aucun paramètre n\'a été reçu !'
+            }, response )
+
+        }
+
+        if ( request.body[ dataName ] ) {
+
+            return request.body[ dataName ]
+
+        } else if ( request.params[ dataName ] ) {
+
+            return request.params[ dataName ]
+
+        } else if ( request.query[ dataName ] ) {
+
+            return request.query[ dataName ]
+
+        } else {
+
+            i.returnError( {
+                title:   'Erreur de paramètre',
+                message: dataName + " n'existe pas dans les paramètres !"
+            }, response )
+
+        }
+    },
+
+    /**
+     * Check if the property 'idName' exist in request.params properties,
+     * return the property if exist, else return an error to end user.
+     *
+     * @param idName - The id property to looking for
+     * @param request - The server request
+     * @param response - The server response
+     * @returns {*} - Return the id property or return error to the end user if the property doesn't exist
+     * @private
+     */
+    __checkIdParam: function ( idName, request, response ) {
+
+        if ( !request.params ) {
+
+            i.returnError( {
+                title:   'Erreur de paramètre',
+                message: 'Aucun paramètre n\'a été reçu !'
+            }, response )
+
+        }
+
+        if ( !request.params[ idName ] ) {
+
+            i.returnError( {
+                title:   'Erreur de paramètre',
+                message: 'L\'id  est null !'
+            }, response )
+
+        }
+
+        return request.params[ idName ]
+
+    },
+
+    /**
+     * Check if the property 'idName' exist in request.body properties,
+     * return the property if exist, else return an error to end user.
+     *
+     * @param idName - The id property to looking for
+     * @param request - The server request
+     * @param response - The server response
+     * @returns {*} - Return the id property or return error to the end user if the property doesn't exist
+     * @private
+     */
+    __checkBodyData: function ( idName, request, response ) {
+
+        if ( !request.body ) {
+            i.returnError( {
+                title:   'Erreur de paramètre',
+                message: 'Aucun paramètre n\'a été reçu !'
+            }, response )
+        }
+
+        if ( !request.body[ idName ] ) {
+            i.returnError( {
+                title:   'Erreur de paramètre',
+                message: 'L\'id  est null !'
+            }, response )
+        }
+
+        return request.body[ idName ]
+        //        return JSON.parse( request.body[ idName ] )
+
+    },
+
+    /**
+     * Returns a random integer between min (inclusive) and max (inclusive)
+     * Using Math.round() will give you a non-uniform distribution!
+     *
+     * @param min - The minimum (inclusive) range value for random number
+     * @param max - The maximum (inclusive) range value for random number
+     * @returns {Number} - A random number between man and max
+     * @private
+     */
+    _getRandomInt: function ( min, max ) {
+        return Math.floor( Math.random() * (max - min + 1) ) + min
+    }
+
+} )
+
+// Public
+Object.assign( DatabaseController.prototype, {
+
+    create ( request, response ) {
+
+        const requestBody = request.body
+        if ( !requestBody ) {
+
+            i.returnError( {
+                title:   'Erreur de paramètre',
+                message: 'Aucun paramètre n\'a été reçu !'
+            }, response )
+            return
+
+        }
+
+        this._databaseSchema.create( requestBody, i.return( response ) )
+
+    },
+
+    read ( request, response ) {
+
+        const requestBody = request.body
+        const idParam     = request.params[ 'id' ]
+
+        if ( Array.isArray( requestBody ) ) {
+
+            if ( requestBody.length === 0 ) {
+
+                i.returnError( {
+                    title:   'Erreur de paramètre',
+                    message: 'La requête ne contient pas de données !'
+                }, response )
+                return
+
+            }
+
+            //todo: check array of string id or object
+            this._databaseSchema
+                .find( { '_id': { $in: requestBody } } )
+                .lean()
+                .exec( i.return( response ) )
+
+        } else if ( idParam ) {
+
+            this._databaseSchema
+                .find( { '_id': idParam } )
+//                .find( { '_id': { $in: idParam } } )
+                .lean()
+                .exec( i.return( response ) )
+
+        } else {
+
+            this._databaseSchema
+                .find( i.return( response ) )
+
+        }
+
+    },
+
+    update ( request, response ) {
+
+        const requestBody = request.body
+        const idParam     = request.params[ 'id' ]
+
+        if ( Array.isArray( requestBody ) ) {
+
+            if ( requestBody.length === 0 ) {
+
+                i.returnError( {
+                    title:   'Erreur de paramètre',
+                    message: 'La requête ne contient pas de données !'
+                }, response )
+                return
+
+            }
+
+            //todo: check array of string id or object
+            let errors         = []
+            let results        = []
+            let data           = undefined
+            let id             = undefined
+            let numberOfUpdate = 0
+            for ( let dataIndex = 0, numberOfDatas = requestBody.length ; dataIndex &lt; numberOfDatas ; dataIndex++ ) {
+
+                data = requestBody[ dataIndex ]
+                id   = data[ '_id' ]
+                delete data[ '_id' ]
+
+                this._databaseSchema.update( { _id: id }, { $set: data }, function ( error, result ) {
+
+                    if ( error ) { errors.push( error ) }
+                    if ( result ) {results.push( result )}
+                    numberOfUpdate++
+
+                    if ( numberOfUpdate === numberOfDatas ) {
+
+                        if ( results.length > 0 &amp;&amp; errors.length > 0 ) {
+
+                            i.returnErrorAndData( errors, results, response )
+
+                        } else if ( results.length > 0 &amp;&amp; errors.length === 0 ) {
+
+                            i.returnData( results, response )
+
+                        } else if ( results.length === 0 &amp;&amp; errors.length > 0 ) {
+
+                            i.returnError( errors, response )
+
+                        } else {
+
+                            i.returnNotFound( response )
+
+                        }
+
+                    }
+
+                } )
+            }
+
+        } else if ( idParam ) {
+
+            this._databaseSchema.update( { _id: idParam }, { $set: requestBody }, i.return( response ) )
+
+        } else {
+
+            // Not allowed !
+
+        }
+
+    },
+
+    delete ( request, response ) {
+
+        const requestBody = request.body
+        const idParam     = request.params[ 'id' ]
+
+        if ( Array.isArray( requestBody ) ) {
+
+            if ( requestBody.length === 0 ) {
+
+                i.returnError( {
+                    title:   'Erreur de paramètre',
+                    message: 'La requête ne contient pas de données !'
+                }, response )
+                return
+
+            }
+
+            //todo: check array of string id or object
+            this._databaseSchema.deleteMany( { '_id': { $in: requestBody } }, i.return(response))
+
+        } else if ( idParam ) {
+
+            this._databaseSchema.remove({'_id': idParam }, i.return(response))
+
+        } else {
+
+            // Not allowed !
+
+        }
+
+    },
+
+} )
+
+module.exports = DatabaseController
+</code></pre>
+        </article>
+    </section>
+
+
+
+
+</div>
+
+<br class="clear">
+
+<footer>
+    Documentation generated by <a href="https://github.com/jsdoc3/jsdoc">JSDoc 3.5.5</a> using the <a href="https://github.com/clenemt/docdash">docdash</a> theme.
+</footer>
+
+<script>prettyPrint();</script>
+<script src="scripts/linenumber.js"></script>
+</body>
+</html>

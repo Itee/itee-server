@@ -1,0 +1,185 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <title>Routes/TRouteBuilder - Documentation</title>
+
+    <script src="scripts/prettify/prettify.js"></script>
+    <script src="scripts/prettify/lang-css.js"></script>
+    <!--[if lt IE 9]>
+      <script src="//html5shiv.googlecode.com/svn/trunk/html5.js"></script>
+    <![endif]-->
+    <link type="text/css" rel="stylesheet" href="styles/prettify.css">
+    <link type="text/css" rel="stylesheet" href="styles/jsdoc.css">
+</head>
+<body>
+
+<input type="checkbox" id="nav-trigger" class="nav-trigger" />
+<label for="nav-trigger" class="navicon-button x">
+  <div class="navicon"></div>
+</label>
+
+<label for="nav-trigger" class="overlay"></label>
+
+<nav>
+    <h2><a href="index.html">Home</a></h2><h3>Classes</h3><ul><li><a href="DatabaseController.html">DatabaseController</a></li><li><a href="module-Routes_TRouteBuilder-BuildRoutesFor.html">BuildRoutesFor</a></li><li><a href="TDatabaseController.html">TDatabaseController</a></li></ul><h3>Modules</h3><ul><li><a href="module-config_babelConfiguration.html">config/babelConfiguration</a><ul class='methods'><li data-type='method'><a href="module-config_babelConfiguration.html#~CreateBabelConfiguration">CreateBabelConfiguration</a></li></ul></li><li><a href="module-config_eslintConfiguration.html">config/eslintConfiguration</a><ul class='methods'><li data-type='method'><a href="module-config_eslintConfiguration.html#~CreateEslintConfiguration">CreateEslintConfiguration</a></li></ul></li><li><a href="module-config_iteeConfiguration.html">config/iteeConfiguration</a></li><li><a href="module-config_jsdocConfiguration.html">config/jsdocConfiguration</a><ul class='methods'><li data-type='method'><a href="module-config_jsdocConfiguration.html#~CreateJsdocConfiguration">CreateJsdocConfiguration</a></li></ul></li><li><a href="module-config_karmaBenchConfiguration.html">config/karmaBenchConfiguration</a><ul class='methods'><li data-type='method'><a href="module-config_karmaBenchConfiguration.html#~CreateKarmaBenchmarkConfiguration">CreateKarmaBenchmarkConfiguration</a></li></ul></li><li><a href="module-config_karmaUnitConfiguration.html">config/karmaUnitConfiguration</a><ul class='methods'><li data-type='method'><a href="module-config_karmaUnitConfiguration.html#~CreateKarmaUnitTestingConfiguration">CreateKarmaUnitTestingConfiguration</a></li></ul></li><li><a href="module-config_rollupConfiguration.html">config/rollupConfiguration</a><ul class='methods'><li data-type='method'><a href="module-config_rollupConfiguration.html#~CreateRollupConfiguration">CreateRollupConfiguration</a></li></ul></li><li><a href="module-gulpfile.html">gulpfile</a><ul class='methods'><li data-type='method'><a href="module-gulpfile.html#~npmrunbench">npm run bench</a></li><li data-type='method'><a href="module-gulpfile.html#~npmrunbuild">npm run build</a></li><li data-type='method'><a href="module-gulpfile.html#~npmrunclean">npm run clean</a></li><li data-type='method'><a href="module-gulpfile.html#~npmrundoc">npm run doc</a></li><li data-type='method'><a href="module-gulpfile.html#~npmrunlint">npm run lint</a></li><li data-type='method'><a href="module-gulpfile.html#~npmrunrelease">npm run release</a></li><li data-type='method'><a href="module-gulpfile.html#~npmruntest">npm run test</a></li><li data-type='method'><a href="module-gulpfile.html#~npmrununit">npm run unit</a></li><li data-type='method'><a href="module-gulpfile.html#~npmrunhelpdefault">npm run help </a></li></ul></li><li><a href="module-Modules_JsonFile.html">Modules/JsonFile</a><ul class='methods'><li data-type='method'><a href="module-Modules_JsonFile.html#~parseFile">parseFile</a></li></ul></li><li><a href="module-Modules_UploadDispatcher.html">Modules/UploadDispatcher</a></li><li><a href="module-Routes.html">Routes</a></li><li><a href="module-Routes_404.html">Routes/404</a></li><li><a href="module-Routes_Docs.html">Routes/Docs</a></li><li><a href="module-Routes_Downloads.html">Routes/Downloads</a></li><li><a href="module-Routes_Index.html">Routes/Index</a></li><li><a href="module-Routes_Resources.html">Routes/Resources</a></li><li><a href="module-Routes_TRouteBuilder.html">Routes/TRouteBuilder</a></li><li><a href="module-Routes_Uploads.html">Routes/Uploads</a></li><li><a href="module-Routes_Views.html">Routes/Views</a><ul class='methods'><li data-type='method'><a href="module-Routes_Views.html#~onCheckContinue">onCheckContinue</a></li><li data-type='method'><a href="module-Routes_Views.html#~onClientError">onClientError</a></li><li data-type='method'><a href="module-Routes_Views.html#~onClose">onClose</a></li><li data-type='method'><a href="module-Routes_Views.html#~onConnect">onConnect</a></li><li data-type='method'><a href="module-Routes_Views.html#~onConnection">onConnection</a></li><li data-type='method'><a href="module-Routes_Views.html#~onRequest">onRequest</a></li><li data-type='method'><a href="module-Routes_Views.html#~onTimeout">onTimeout</a></li><li data-type='method'><a href="module-Routes_Views.html#~onUpgrade">onUpgrade</a></li></ul></li><li><a href="module-Schemas_BufferGeometry.html">Schemas/BufferGeometry</a></li><li><a href="module-Schemas_Geometry.html">Schemas/Geometry</a></li><li><a href="module-Schemas_LineSegment.html">Schemas/LineSegment</a></li><li><a href="module-Schemas_Material.html">Schemas/Material</a></li><li><a href="module-Schemas_Mesh.html">Schemas/Mesh</a></li><li><a href="module-Schemas_Object3D.html">Schemas/Object3D</a></li><li><a href="module-Schemas_Scene.html">Schemas/Scene</a></li><li><a href="module-TAutoReconnect.html">TAutoReconnect</a><ul class='methods'><li data-type='method'><a href="module-TAutoReconnect.html#~connectTo">connectTo</a></li><li data-type='method'><a href="module-TAutoReconnect.html#~onClose">onClose</a></li><li data-type='method'><a href="module-TAutoReconnect.html#~onConnected">onConnected</a></li><li data-type='method'><a href="module-TAutoReconnect.html#~onConnecting">onConnecting</a></li><li data-type='method'><a href="module-TAutoReconnect.html#~onDisconnected">onDisconnected</a></li><li data-type='method'><a href="module-TAutoReconnect.html#~onDisconnecting">onDisconnecting</a></li><li data-type='method'><a href="module-TAutoReconnect.html#~onError">onError</a></li><li data-type='method'><a href="module-TAutoReconnect.html#~onOpen">onOpen</a></li><li data-type='method'><a href="module-TAutoReconnect.html#~onReconnected">onReconnected</a></li><li data-type='method'><a href="module-TAutoReconnect.html#~startAutoConnect">startAutoConnect</a></li><li data-type='method'><a href="module-TAutoReconnect.html#~stopAutoConnect">stopAutoConnect</a></li></ul></li><li><a href="module-TDatabase.html">TDatabase</a></li><li><a href="module-TServerApplication.html">TServerApplication</a></li></ul><h3>Externals</h3><ul><li><a href="external-The%25252520express%25252520router%25252520module.html">The express router module</a></li><li><a href="external-The%2520http%2520nodejs%2520module.html">The http nodejs module</a></li></ul><h3>Global</h3><ul><li><a href="global.html#__checkBodyData">__checkBodyData</a></li><li><a href="global.html#__checkData">__checkData</a></li><li><a href="global.html#__checkIdParam">__checkIdParam</a></li><li><a href="global.html#_getRandomInt">_getRandomInt</a></li><li><a href="global.html#TClientAppParameters">TClientAppParameters</a></li></ul>
+</nav>
+
+<div id="main">
+    
+    <h1 class="page-title">Routes/TRouteBuilder</h1>
+    
+
+    
+
+
+
+
+<section>
+
+<header>
+    
+        
+            
+        
+    
+</header>
+
+<article>
+    <div class="container-overview">
+    
+        
+            <div class="description">This module will create CRUD routes for the given schemaName</div>
+        
+
+        
+            
+
+
+
+
+<dl class="details">
+
+    
+    <dt class="tag-source">Source:</dt>
+    <dd class="tag-source"><ul class="dummy"><li>
+        <a href="routes_route_builder.js.html">routes/route_builder.js</a>, <a href="routes_route_builder.js.html#line1">line 1</a>
+    </li></ul></dd>
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+    <dt class="tag-author">Author:</dt>
+    <dd class="tag-author">
+        <ul>
+            <li><a href="https://github.com/Itee">Tristan Valcke</a></li>
+        </ul>
+    </dd>
+    
+
+    
+
+    
+    <dt class="tag-license">License:</dt>
+    <dd class="tag-license"><ul class="dummy"><li><a href="https://opensource.org/licenses/BSD-3-Clause">BSD-3-Clause</a></li></ul></dd>
+    
+
+    
+
+    
+
+    
+
+    
+</dl>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+        
+    
+    </div>
+
+    
+
+    
+
+    
+        <h3 class="subsection-title">Classes</h3>
+
+        <dl>
+            <dt><a href="module-Routes_TRouteBuilder-BuildRoutesFor.html">BuildRoutesFor</a></dt>
+            <dd></dd>
+        </dl>
+    
+
+     
+
+    
+
+    
+
+    
+
+    
+
+    
+</article>
+
+</section>
+
+
+
+
+</div>
+
+<br class="clear">
+
+<footer>
+    Documentation generated by <a href="https://github.com/jsdoc3/jsdoc">JSDoc 3.5.5</a> using the <a href="https://github.com/clenemt/docdash">docdash</a> theme.
+</footer>
+
+<script>prettyPrint();</script>
+<script src="scripts/linenumber.js"></script>
+</body>
+</html>

@@ -1,0 +1,264 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <title>modules/files/FileLoader.js - Documentation</title>
+
+    <script src="scripts/prettify/prettify.js"></script>
+    <script src="scripts/prettify/lang-css.js"></script>
+    <!--[if lt IE 9]>
+      <script src="//html5shiv.googlecode.com/svn/trunk/html5.js"></script>
+    <![endif]-->
+    <link type="text/css" rel="stylesheet" href="styles/prettify.css">
+    <link type="text/css" rel="stylesheet" href="styles/jsdoc.css">
+</head>
+<body>
+
+<input type="checkbox" id="nav-trigger" class="nav-trigger" />
+<label for="nav-trigger" class="navicon-button x">
+  <div class="navicon"></div>
+</label>
+
+<label for="nav-trigger" class="overlay"></label>
+
+<nav>
+    <h2><a href="index.html">Home</a></h2><h3>Classes</h3><ul><li><a href="DatabaseController.html">DatabaseController</a></li><li><a href="module-Routes_TRouteBuilder-BuildRoutesFor.html">BuildRoutesFor</a></li><li><a href="TDatabaseController.html">TDatabaseController</a></li></ul><h3>Modules</h3><ul><li><a href="module-config_babelConfiguration.html">config/babelConfiguration</a><ul class='methods'><li data-type='method'><a href="module-config_babelConfiguration.html#~CreateBabelConfiguration">CreateBabelConfiguration</a></li></ul></li><li><a href="module-config_eslintConfiguration.html">config/eslintConfiguration</a><ul class='methods'><li data-type='method'><a href="module-config_eslintConfiguration.html#~CreateEslintConfiguration">CreateEslintConfiguration</a></li></ul></li><li><a href="module-config_iteeConfiguration.html">config/iteeConfiguration</a></li><li><a href="module-config_jsdocConfiguration.html">config/jsdocConfiguration</a><ul class='methods'><li data-type='method'><a href="module-config_jsdocConfiguration.html#~CreateJsdocConfiguration">CreateJsdocConfiguration</a></li></ul></li><li><a href="module-config_karmaBenchConfiguration.html">config/karmaBenchConfiguration</a><ul class='methods'><li data-type='method'><a href="module-config_karmaBenchConfiguration.html#~CreateKarmaBenchmarkConfiguration">CreateKarmaBenchmarkConfiguration</a></li></ul></li><li><a href="module-config_karmaUnitConfiguration.html">config/karmaUnitConfiguration</a><ul class='methods'><li data-type='method'><a href="module-config_karmaUnitConfiguration.html#~CreateKarmaUnitTestingConfiguration">CreateKarmaUnitTestingConfiguration</a></li></ul></li><li><a href="module-config_rollupConfiguration.html">config/rollupConfiguration</a><ul class='methods'><li data-type='method'><a href="module-config_rollupConfiguration.html#~CreateRollupConfiguration">CreateRollupConfiguration</a></li></ul></li><li><a href="module-gulpfile.html">gulpfile</a><ul class='methods'><li data-type='method'><a href="module-gulpfile.html#~npmrunbench">npm run bench</a></li><li data-type='method'><a href="module-gulpfile.html#~npmrunbuild">npm run build</a></li><li data-type='method'><a href="module-gulpfile.html#~npmrunclean">npm run clean</a></li><li data-type='method'><a href="module-gulpfile.html#~npmrundoc">npm run doc</a></li><li data-type='method'><a href="module-gulpfile.html#~npmrunlint">npm run lint</a></li><li data-type='method'><a href="module-gulpfile.html#~npmrunrelease">npm run release</a></li><li data-type='method'><a href="module-gulpfile.html#~npmruntest">npm run test</a></li><li data-type='method'><a href="module-gulpfile.html#~npmrununit">npm run unit</a></li><li data-type='method'><a href="module-gulpfile.html#~npmrunhelpdefault">npm run help </a></li></ul></li><li><a href="module-Modules_JsonFile.html">Modules/JsonFile</a><ul class='methods'><li data-type='method'><a href="module-Modules_JsonFile.html#~parseFile">parseFile</a></li></ul></li><li><a href="module-Modules_UploadDispatcher.html">Modules/UploadDispatcher</a></li><li><a href="module-Routes.html">Routes</a></li><li><a href="module-Routes_404.html">Routes/404</a></li><li><a href="module-Routes_Docs.html">Routes/Docs</a></li><li><a href="module-Routes_Downloads.html">Routes/Downloads</a></li><li><a href="module-Routes_Index.html">Routes/Index</a></li><li><a href="module-Routes_Resources.html">Routes/Resources</a></li><li><a href="module-Routes_TRouteBuilder.html">Routes/TRouteBuilder</a></li><li><a href="module-Routes_Uploads.html">Routes/Uploads</a></li><li><a href="module-Routes_Views.html">Routes/Views</a><ul class='methods'><li data-type='method'><a href="module-Routes_Views.html#~onCheckContinue">onCheckContinue</a></li><li data-type='method'><a href="module-Routes_Views.html#~onClientError">onClientError</a></li><li data-type='method'><a href="module-Routes_Views.html#~onClose">onClose</a></li><li data-type='method'><a href="module-Routes_Views.html#~onConnect">onConnect</a></li><li data-type='method'><a href="module-Routes_Views.html#~onConnection">onConnection</a></li><li data-type='method'><a href="module-Routes_Views.html#~onRequest">onRequest</a></li><li data-type='method'><a href="module-Routes_Views.html#~onTimeout">onTimeout</a></li><li data-type='method'><a href="module-Routes_Views.html#~onUpgrade">onUpgrade</a></li></ul></li><li><a href="module-Schemas_BufferGeometry.html">Schemas/BufferGeometry</a></li><li><a href="module-Schemas_Geometry.html">Schemas/Geometry</a></li><li><a href="module-Schemas_LineSegment.html">Schemas/LineSegment</a></li><li><a href="module-Schemas_Material.html">Schemas/Material</a></li><li><a href="module-Schemas_Mesh.html">Schemas/Mesh</a></li><li><a href="module-Schemas_Object3D.html">Schemas/Object3D</a></li><li><a href="module-Schemas_Scene.html">Schemas/Scene</a></li><li><a href="module-TAutoReconnect.html">TAutoReconnect</a><ul class='methods'><li data-type='method'><a href="module-TAutoReconnect.html#~connectTo">connectTo</a></li><li data-type='method'><a href="module-TAutoReconnect.html#~onClose">onClose</a></li><li data-type='method'><a href="module-TAutoReconnect.html#~onConnected">onConnected</a></li><li data-type='method'><a href="module-TAutoReconnect.html#~onConnecting">onConnecting</a></li><li data-type='method'><a href="module-TAutoReconnect.html#~onDisconnected">onDisconnected</a></li><li data-type='method'><a href="module-TAutoReconnect.html#~onDisconnecting">onDisconnecting</a></li><li data-type='method'><a href="module-TAutoReconnect.html#~onError">onError</a></li><li data-type='method'><a href="module-TAutoReconnect.html#~onOpen">onOpen</a></li><li data-type='method'><a href="module-TAutoReconnect.html#~onReconnected">onReconnected</a></li><li data-type='method'><a href="module-TAutoReconnect.html#~startAutoConnect">startAutoConnect</a></li><li data-type='method'><a href="module-TAutoReconnect.html#~stopAutoConnect">stopAutoConnect</a></li></ul></li><li><a href="module-TDatabase.html">TDatabase</a></li><li><a href="module-TServerApplication.html">TServerApplication</a></li></ul><h3>Externals</h3><ul><li><a href="external-The%25252520express%25252520router%25252520module.html">The express router module</a></li><li><a href="external-The%2520http%2520nodejs%2520module.html">The http nodejs module</a></li></ul><h3>Global</h3><ul><li><a href="global.html#__checkBodyData">__checkBodyData</a></li><li><a href="global.html#__checkData">__checkData</a></li><li><a href="global.html#__checkIdParam">__checkIdParam</a></li><li><a href="global.html#_getRandomInt">_getRandomInt</a></li><li><a href="global.html#TClientAppParameters">TClientAppParameters</a></li></ul>
+</nav>
+
+<div id="main">
+    
+    <h1 class="page-title">modules/files/FileLoader.js</h1>
+    
+
+    
+
+
+
+    
+    <section>
+        <article>
+            <pre class="prettyprint source linenums"><code>/**
+ * @author [Tristan Valcke]{@link https://github.com/Itee}
+ * @license [BSD-3-Clause]{@link https://opensource.org/licenses/BSD-3-Clause}
+ *
+ * @module Modules/UploadDispatcher
+ *
+ * @description This module will dispatch the uplaod file to the correct parser.
+ */
+
+var I = require( 'i-return' )
+//var AscFile = require( './AscFile' )
+//var MtlFile = require( './MtlFile' )
+//var ObjFile = require( './ObjFile' )
+var JsonFile = require( './JSONFile' )
+
+function saveFilesInDatabase ( request, response ) {
+
+    var buildingId = request.body.buildingId
+    var fileSize   = request.body.fileSize
+
+    var errors                = []
+    var numberOfFileToProcess = 0
+
+    var files         = convertFilesObjectToArray( request.files )
+    var numberOfFiles = files.length
+
+    if ( numberOfFiles === 0 ) {
+
+        I.returnData( null, response )
+
+    } else if ( numberOfFiles === 1 ) {
+
+        parseSingleFile( buildingId, fileSize, files[ 0 ] )
+
+    } else if ( numberOfFiles === 2 ) {
+
+        //        parseAssociativeFiles( files[ 0 ], files[ 1 ] )
+
+    } else {
+
+        I.returnError( "Impossible d'analyser " + numberOfFiles + " fichiers associatifs simultanément !", response, 406 )
+
+    }
+
+    function convertFilesObjectToArray ( files ) {
+
+        var fileArray = []
+
+        for ( var field in files ) {
+
+            if ( files.hasOwnProperty( field ) ) {
+
+                fileArray.push( files[ field ] )
+
+            }
+
+        }
+
+        return fileArray
+
+    }
+
+    function parseSingleFile ( buildingId, fileSize, file ) {
+
+        var splitName      = file.filename.split( '.' )
+        var fileSize       = parseInt( fileSize )
+        var numberOfSplits = splitName.length
+
+        if ( numberOfSplits &lt; 2 ) {
+
+            errors.push( {
+                title:   'Mauvaise extension de fichier',
+                message: 'Les fichier sans extension ne sont pas géré !'
+            } )
+
+            return
+
+        }
+
+        var fileExtension = splitName[ numberOfSplits - 1 ] // Check file extension
+        switch ( fileExtension ) {
+
+            //            case 'asc':
+            //                numberOfFileToProcess++
+            //                AscFile.parse( file.file, fileParsingCallback )
+            //                break
+
+            //            case 'obj':
+            //                numberOfFileToProcess++
+            //                ObjFile.parse( file.file, null, fileParsingCallback )
+            //                break
+
+            case 'json':
+                numberOfFileToProcess++
+                JsonFile.parse( buildingId, fileSize, file, fileParsingCallback )
+                break
+
+            default:
+                errors.push( {
+                    title:   'Mauvaise extension de fichier',
+                    message: 'Le format de fichier ' + fileExtension + ' n\'est pas géré !'
+                } )
+
+        }
+
+    }
+
+    //    function parseAssociativeFiles( firstFile, secondFile ) {
+    //
+    //        var firstSplitName      = firstFile.filename.split( '.' )
+    //        var firstNumberOfSplits = firstSplitName.length
+    //
+    //        var secondSplitName      = secondFile.filename.split( '.' )
+    //        var secondNumberOfSplits = secondSplitName.length
+    //
+    //        if ( firstNumberOfSplits &lt; 2 || secondNumberOfSplits &lt; 2 ) {
+    //
+    //            errors.push( {
+    //                title:   'Mauvaise extension de fichier',
+    //                message: 'Les fichiers sans extension ne sont pas gérés !'
+    //            } )
+    //
+    //            return
+    //
+    //        }
+    //
+    //        // Check files extensions
+    //        var firstFileExtension = firstSplitName[ firstNumberOfSplits - 1 ]
+    //        var secondFileExtension = secondSplitName[ secondNumberOfSplits - 1 ]
+    //
+    //        if ( firstFileExtension === 'mtl' &amp;&amp; secondFileExtension === 'obj' ) {
+    //
+    //            numberOfFileToProcess++ // Unecessary to set to 2 due to the fact that files are considered as a single package
+    //
+    ////            mtlLoader.setTexturePath( secondFilePath + '/textures/' + TEXTURE_RESOLUTION + '/' )
+    //            MtlFile.parse( firstFile.file, function( error, materials ) {
+    //
+    //                if ( error ) {
+    //                    fileParsingCallback( error )
+    //                    return
+    //                }
+    //
+    ////                materials.preload()
+    //
+    //                ObjFile.parse( secondFile.file, materials, fileParsingCallback )
+    //
+    //            })
+    //
+    //
+    //        } else if ( firstFileExtension === 'obj' &amp;&amp; secondFileExtension === 'mtl' ) {
+    //
+    //            numberOfFileToProcess++ // Unecessary to set to 2 due to the fact that files are considered as a single package
+    //
+    //            MtlFile.parse( secondFile.file, function( error, materials ) {
+    //
+    //                if ( error ) {
+    //                    fileParsingCallback( error )
+    //                    return
+    //                }
+    //
+    //                materials.preload()
+    //
+    //                ObjFile.parse( firstFile.file, materials, fileParsingCallback )
+    //
+    //            })
+    //
+    //        } else {
+    //
+    //            errors.push( {
+    //                title:   'Mauvaise extension de fichier',
+    //                message: 'Extension de fichiers associaifs inconnue: ' + firstFileExtension + ', ' + secondFileExtension
+    //            } )
+    //
+    //        }
+    //
+    //
+    //    }
+
+    function fileParsingCallback ( error ) {
+
+        if ( error ) { errors.push( error ) }
+
+        numberOfFileToProcess--
+        checkEndOfReturns()
+
+    }
+
+    function checkEndOfReturns () {
+
+        if ( numberOfFileToProcess > 0 ) { return }
+
+        ( errors.length > 0 ) ?
+            I.returnError( errors, response, 406 ) :
+            I.returnData( null, response )
+
+    }
+
+    // In case where a single file was of an unknown type
+    checkEndOfReturns()
+
+}
+
+// Return the public interface
+module.exports = {
+    saveFileInDataBase: saveFilesInDatabase
+}
+</code></pre>
+        </article>
+    </section>
+
+
+
+
+</div>
+
+<br class="clear">
+
+<footer>
+    Documentation generated by <a href="https://github.com/jsdoc3/jsdoc">JSDoc 3.5.5</a> using the <a href="https://github.com/clenemt/docdash">docdash</a> theme.
+</footer>
+
+<script>prettyPrint();</script>
+<script src="scripts/linenumber.js"></script>
+</body>
+</html>
