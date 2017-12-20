@@ -125,13 +125,8 @@ gulp.task( 'lint', () => {
                            jsx: true
                        }
                    },
-                   plugins:           [
-                       'react'
-                   ],
-                   rules:             {
-                       "react/jsx-uses-react": "error",
-                       "react/jsx-uses-vars":  "error"
-                   },
+                   plugins:           [],
+                   rules:             {},
                    useEslintrc:       false
                } ) )
                .pipe( eslint.format( 'stylish' ) )
