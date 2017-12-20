@@ -26,7 +26,7 @@
     "test": "gulp test",
     "unit": "gulp unit",
     "bench": "gulp bench",
-    "build": "gulp build",
+    "build": "gulp build --format:iife",
     "release": "gulp release"
   },
   "dependencies": {
@@ -36,6 +36,7 @@
     "express-resource": "^1.0.0",
     "express-ws": "^3.0.0",
     "i-return": "^1.0.3",
+    "itee-client": "^1.1.5",
     "jquery": "^3.2.1",
     "method-override": "^2.3.10",
     "mongoose": "^4.13.7",
@@ -73,7 +74,7 @@
     "karma-safari-launcher": "^1.0.0",
     "mocha": "^4.0.1",
     "mochawesome": "^3.0.0",
-    "rollup": "^0.52.2",
+    "rollup": "^0.52.3",
     "rollup-plugin-buble": "^0.18.0",
     "rollup-plugin-commonjs": "^8.2.6",
     "rollup-plugin-node-resolve": "^3.0.0",
