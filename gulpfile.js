@@ -137,27 +137,6 @@ gulp.task( 'lint', () => {
                .pipe( eslint.format( 'stylish' ) )
                .pipe( eslint.failAfterError() )
 
-    // OR
-
-    //    return gulp.src([ 'gulpfile.js', 'configs/**/*.js', 'scripts/**/*.js', 'sources/**/*.js', 'tests/**/*.js' ])
-    //               .pipe(standard({
-    //                   fix:     true,   // automatically fix problems
-    //                   globals: [],  // custom global variables to declare
-    //                   plugins: [],  // custom eslint plugins
-    //                   envs:    [],     // custom eslint environment
-    //                   parser:  'babel-eslint'    // custom js parser (e.g. babel-eslint)
-    //               }))
-    //               .pipe(standard.reporter('default', {
-    //                   breakOnError:   true,
-    //                   breakOnWarning: true,
-    //                   quiet:          true,
-    //                   showRuleNames:  true,
-    //                   showFilePath:   true
-    //               }))
-    //               .pipe(gulp.dest((file) => {
-    //                   return file.base
-    //               }))
-
 } )
 
 /**
@@ -219,8 +198,8 @@ gulp.task( 'build', ( done ) => {
 
         let defaultOptions = {
             environments: [ 'development', 'production' ],
-            formats: [ 'amd', 'cjs', 'es', 'iife', 'umd' ],
-            sourceMap: false
+            formats:      [ 'amd', 'cjs', 'es', 'iife', 'umd' ],
+            sourceMap:    false
         }
 
         const argv = processArgv.slice( 3 ) // Ignore nodejs, script paths and gulp params
@@ -233,7 +212,6 @@ gulp.task( 'build', ( done ) => {
 
                 defaultOptions.formats = []
                 defaultOptions.formats.push( splitPart )
-
 
             } else if ( argument.indexOf( '-d' ) > -1 || argument.indexOf( '--dev' ) > -1 ) {
 
