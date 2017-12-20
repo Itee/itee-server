@@ -21,8 +21,6 @@
  * @requires {@link module: [gulp-util]{@link https://github.com/gulpjs/gulp-util}}
  * @requires {@link module: [gulp-jsdoc3]{@link https://github.com/mlucool/gulp-jsdoc3}}
  * @requires {@link module: [gulp-eslint]{@link https://github.com/adametry/gulp-eslint}}
- * @requires {@link module: [gulp-inject-string]{@link https://github.com/mikehazell/gulp-inject-string}}
- * @requires {@link module: [gulp-replace]{@link https://github.com/lazd/gulp-replace}}
  * @requires {@link module: [del]{@link https://github.com/sindresorhus/del}}
  * @requires {@link module: [run-sequence]{@link https://github.com/OverZealous/run-sequence}}
  * @requires {@link module: [rollup]{@link https://github.com/rollup/rollup}}
@@ -34,8 +32,6 @@ const gulp        = require( 'gulp' )
 const util        = require( 'gulp-util' )
 const jsdoc       = require( 'gulp-jsdoc3' )
 const eslint      = require( 'gulp-eslint' )
-const inject      = require( 'gulp-inject-string' )
-const replace     = require( 'gulp-replace' )
 const del         = require( 'del' )
 const runSequence = require( 'run-sequence' )
 const rollup      = require( 'rollup' )
