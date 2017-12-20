@@ -27,7 +27,8 @@
     "unit": "gulp unit",
     "bench": "gulp bench",
     "build": "gulp build --format:iife",
-    "release": "gulp release"
+    "release": "gulp release",
+    "start": "node run.js"
   },
   "dependencies": {
     "errorhandler": "^1.5.0",
