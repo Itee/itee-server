@@ -39,10 +39,10 @@ function CreateRollupConfiguration ( format, onProduction, wantSourceMap ) {
     const _onProduction  = onProduction || false
     const _wantSourceMap = wantSourceMap || false
 
-    const fileName       = 'itee-client'
+    const fileName       = 'itee-app'
     const fileExtension  = (_onProduction) ? '.min.js' : '.js'
-    const inputFilePath  = path.join( __dirname, '..', 'sources/' + fileName + '.js' )
-    const outputFilePath = path.join( __dirname, '..', 'builds/' + fileName + '.' + _format + fileExtension )
+    const inputFilePath  = path.join( __dirname, '..', `assets/${fileName}.js` )
+    const outputFilePath = path.join( __dirname, '..', `resources/application/${fileName}.${_format}${fileExtension}` )
 
     return {
         inputOptions:  {
