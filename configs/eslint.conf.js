@@ -8,6 +8,8 @@
  *
  */
 
+/* eslint-env node */
+
 /**
  * Will create an appropriate configuration object for eslint
  *

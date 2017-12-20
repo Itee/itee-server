@@ -7,6 +7,8 @@
  * @description The configuration file of the jsdoc plugin
  */
 
+/* eslint-env node */
+
 /**
  * Will create an appropriate configuration object for jsdoc
  *

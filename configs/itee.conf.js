@@ -8,6 +8,8 @@
  *
  */
 
+/* eslint-env node */
+
 const path = require('path')
 
 function CreateIteeConfiguration( process ) {
