@@ -118,7 +118,7 @@ gulp.task( 'lint', () => {
                    fix:               true,
                    quiet:             false,
                    envs:              [],
-                   configFile:        './configs/eslint.conf.json',
+                   configFile:        './configs/eslint.conf.js',
                    parser:            'babel-eslint',
                    parserOptions:     {
                        ecmaFeatures: {
