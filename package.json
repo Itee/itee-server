@@ -42,7 +42,6 @@
     "method-override": "^2.3.10",
     "mongoose": "^4.13.7",
     "mongoose-double": "0.0.1",
-    "mongoose-schema-extend": "^0.2.2",
     "morgan": "^1.9.0",
     "process": "^0.11.10",
     "pug": "^2.0.0-rc.4",
