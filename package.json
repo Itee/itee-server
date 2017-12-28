@@ -37,7 +37,7 @@
     "express-resource": "^1.0.0",
     "express-ws": "^3.0.0",
     "i-return": "^1.0.3",
-    "itee-client": "^1.1.7",
+    "itee-client": "https://github.com/Itee/itee-client.git#dev",
     "jquery": "^3.2.1",
     "method-override": "^2.3.10",
     "mongoose": "^4.13.7",
