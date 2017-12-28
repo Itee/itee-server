@@ -19,7 +19,6 @@ function CreateIteeConfiguration( process ) {
         database:    {
             database_url:           'mongodb://127.0.0.1/sight',
             auto_reconnect_timeout: 10000,
-            schemas: [ 'Scene', 'Mesh', 'LineSegment', 'Object3D', 'BufferGeometry', 'Geometry', 'Material' ] // list of all schema file name for mongoose database
         },
         application: {
             env:         (process.env.NODE_ENV) ? process.env.NODE_ENV : 'development', // env Environment mode, defaults to process.env.NODE_ENV or "development"
