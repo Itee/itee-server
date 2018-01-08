@@ -11,10 +11,10 @@ let Face3Schema = undefined
 
 module.exports = function ( mongoose ) {
 
-    if( !Face3Schema ) {
+    if ( !Face3Schema ) {
 
-        const Vector3Schema = require( './Vector3')(mongoose)
-        const ColorSchema = require( './Color')(mongoose)
+        const Vector3Schema = require( './Vector3' )( mongoose )
+        const ColorSchema   = require( './Color' )( mongoose )
 
         Face3Schema = mongoose.Schema( {
             a:             Number,

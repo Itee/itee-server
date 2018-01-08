@@ -148,21 +148,21 @@ function _saveScene ( scene, childrenIds, onError, onSuccess ) {
 
                   updateChildren( onError, onSuccess )
 
-//                  updateBuilding( onError, updateChildren.bind( this, onError, onSuccess ) )
-//
-//                  function updateBuilding ( onError, onSuccess ) {
-//
-//                      BuildingModel.findOneAndUpdate( { _id: _buildingId }, { $push: { scenes: sceneId } }, ( error ) => {
-//
-//                          if ( error ) {
-//                              onError( error )
-//                          } else {
-//                              onSuccess()
-//                          }
-//
-//                      } )
-//
-//                  }
+                  //                  updateBuilding( onError, updateChildren.bind( this, onError, onSuccess ) )
+                  //
+                  //                  function updateBuilding ( onError, onSuccess ) {
+                  //
+                  //                      BuildingModel.findOneAndUpdate( { _id: _buildingId }, { $push: { scenes: sceneId } }, ( error ) => {
+                  //
+                  //                          if ( error ) {
+                  //                              onError( error )
+                  //                          } else {
+                  //                              onSuccess()
+                  //                          }
+                  //
+                  //                      } )
+                  //
+                  //                  }
 
                   function updateChildren ( onError, onSuccess ) {
 
@@ -788,10 +788,10 @@ function _saveMaterialInDatabase ( materials, onError, onSuccess ) {
 
     if ( Array.isArray( materials ) ) {
 
-        const numberOfMaterials = materials.length
-        let materialIds = new Array( numberOfMaterials )
+        const numberOfMaterials    = materials.length
+        let materialIds            = new Array( numberOfMaterials )
         let numberOfSavedMaterials = 0
-        let material    = undefined
+        let material               = undefined
         for ( let materialIndex = 0 ; materialIndex < numberOfMaterials ; materialIndex++ ) {
 
             material         = materials[ materialIndex ]
@@ -799,7 +799,7 @@ function _saveMaterialInDatabase ( materials, onError, onSuccess ) {
 
             if ( materialId ) {
 
-                materialIds[materialIndex] = materialId
+                materialIds[ materialIndex ] = materialId
                 numberOfSavedMaterials++
 
                 // End condition
@@ -811,13 +811,13 @@ function _saveMaterialInDatabase ( materials, onError, onSuccess ) {
 
                 const materialModel = _getMaterialModel( material )
                 materialModel.save()
-                             .then( (function closeIndex(){
+                             .then( (function closeIndex () {
 
                                  const materialLocalIndex = materialIndex
 
                                  return savedMaterial => {
 
-                                     materialIds[materialLocalIndex] = savedMaterial.id
+                                     materialIds[ materialLocalIndex ] = savedMaterial.id
                                      numberOfSavedMaterials++
 
                                      // Add material id to cache
@@ -884,7 +884,7 @@ function _parseUserData ( jsonUserData ) {
 
 function _processFile ( callback ) {
 
-    const loader = new THREE.ObjectLoader()
+    const loader   = new THREE.ObjectLoader()
     const jsonData = JSON.parse( _fileData )
 
     fixUserDataIn( jsonData )
@@ -1024,7 +1024,7 @@ function parseFile ( buildingId, fileSize, file, callback ) {
     _buildingId = buildingId
 
     const MAX_FILE_SIZE = 67108864
-//    const MAX_FILE_SIZE = 134217728
+    //    const MAX_FILE_SIZE = 134217728
     const _callback     = callback || function onError ( error ) {
 
         console.error( `SERVER LOCAL CALLBACK ERROR CALL: ${error}` )
@@ -1134,8 +1134,6 @@ function parseFile ( buildingId, fileSize, file, callback ) {
         } )
 
     }
-
-
 
 }
 

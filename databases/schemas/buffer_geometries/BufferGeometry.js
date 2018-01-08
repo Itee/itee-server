@@ -71,8 +71,6 @@ module.exports = function ( mongoose ) {
         discriminatorKey: '_type'
     } ) )
 
-
-
     return mongoose
 
 }

@@ -152,10 +152,10 @@ module.exports = function ( mongoose ) {
     } ) )
 
     Object3D.discriminator( 'Scene', new Schema( {
-        background:             ColorSchema,
-        fog:                    Types.Mixed,
-        overrideMaterial:       String,
-        autoUpdate:             Boolean
+        background:       ColorSchema,
+        fog:              Types.Mixed,
+        overrideMaterial: String,
+        autoUpdate:       Boolean
     } ) )
 
     Object3D.discriminator( 'Skeleton', new Schema( {

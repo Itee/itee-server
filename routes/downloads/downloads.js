@@ -10,26 +10,26 @@
 /**
  * @external The express router module
  */
-var router = require('../../node_modules/express').Router({ mergeParams: true })
-var path = require('path')
-var fs = require('fs')
+var router = require( '../../node_modules/express' ).Router( { mergeParams: true } )
+var path   = require( 'path' )
+var fs     = require( 'fs' )
 
 router
-  .get('/:fileToDownload(*)', function (request, response, next) {
-    console.log(request.params)
+    .get( '/:fileToDownload(*)', function ( request, response, next ) {
+        console.log( request.params )
 
-    var pathToFile = path.join(__dirname, '../..', '/downloads/', request.params.fileToDownload)
+        var pathToFile = path.join( __dirname, '../..', '/downloads/', request.params.fileToDownload )
 
-    fs.stat(
-      pathToFile,
-      function (error, stats) {
-        if (error === null && stats.isFile()) {
-          response.status(200).sendFile(pathToFile)
-        } else {
-          console.error(error)
-          next()
-        }
-      })
-  })
+        fs.stat(
+            pathToFile,
+            function ( error, stats ) {
+                if ( error === null && stats.isFile() ) {
+                    response.status( 200 ).sendFile( pathToFile )
+                } else {
+                    console.error( error )
+                    next()
+                }
+            } )
+    } )
 
 module.exports = router

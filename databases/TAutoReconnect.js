@@ -13,117 +13,116 @@
  * @param config - The config to apply for database connection
  * @returns {*}
  */
-module.exports = function (mongoose, config) {
-  // CONNECTION EVENTS
-  var timer = null
+module.exports = function ( mongoose, config ) {
+    // CONNECTION EVENTS
+    var timer = null
 
-  /**
-   * Connect to Mongo DataBase with the given uri
-   */
-  function connectTo(url)
-  {
-    mongoose.connect(url, {useMongoClient: true})
-  }
-
-  /**
-   * startAutoConnect
-   */
-  function startAutoConnect () {
-    if (!timer) {
-      console.log('Démarrage de la reconnexion automatique...')
-      timer = setInterval(function () {
-        mongoose.connect(config.database_url, {useMongoClient: true})
-      }, config.auto_reconnect_timeout)
+    /**
+     * Connect to Mongo DataBase with the given uri
+     */
+    function connectTo ( url ) {
+        mongoose.connect( url, { useMongoClient: true } )
     }
-  }
 
-  /**
-   * stopAutoConnect
-   */
-  function stopAutoConnect () {
-    if (timer) {
-      console.log('Arret de la reconnexion automatique...')
-      clearInterval(timer)
-      timer = null
+    /**
+     * startAutoConnect
+     */
+    function startAutoConnect () {
+        if ( !timer ) {
+            console.log( 'Démarrage de la reconnexion automatique...' )
+            timer = setInterval( function () {
+                mongoose.connect( config.database_url, { useMongoClient: true } )
+            }, config.auto_reconnect_timeout )
+        }
     }
-  }
 
-  /**
-   * When trying to connect to the database
-   */
-  function onConnecting() {
-    console.log('Tentative de connexion à ' + config.database_url)
-  }
+    /**
+     * stopAutoConnect
+     */
+    function stopAutoConnect () {
+        if ( timer ) {
+            console.log( 'Arret de la reconnexion automatique...' )
+            clearInterval( timer )
+            timer = null
+        }
+    }
 
-  /**
-   * When successfully connected
-   */
-  function onConnected() {
-    console.log('Connexion à la base de données: Ok !')
-    stopAutoConnect()
-  }
+    /**
+     * When trying to connect to the database
+     */
+    function onConnecting () {
+        console.log( 'Tentative de connexion à ' + config.database_url )
+    }
 
-  /**
-   * If the connection is open
-   */
-  function onOpen() {
-    console.log('La connexion à la base de données est ouverte !')
-  }
+    /**
+     * When successfully connected
+     */
+    function onConnected () {
+        console.log( 'Connexion à la base de données: Ok !' )
+        stopAutoConnect()
+    }
 
-  /**
-   * When disconnecting database
-   */
-  function onDisconnecting() {
-    console.log('Tentative de déconnexion à ' + config.database_url)
-  }
+    /**
+     * If the connection is open
+     */
+    function onOpen () {
+        console.log( 'La connexion à la base de données est ouverte !' )
+    }
 
-  /**
-   * When the connection is disconnected
-   */
-  function onDisconnected() {
-    console.log('Déconnexion à la base de données: Ok !')
-  }
+    /**
+     * When disconnecting database
+     */
+    function onDisconnecting () {
+        console.log( 'Tentative de déconnexion à ' + config.database_url )
+    }
 
-  /**
-   * If the connection is reconnected
-   */
-  function onReconnected() {
-    console.log('Reconnexion à la base de données...')
-    stopAutoConnect()
-  }
+    /**
+     * When the connection is disconnected
+     */
+    function onDisconnected () {
+        console.log( 'Déconnexion à la base de données: Ok !' )
+    }
 
-  /**
-   * If the connection is close
-   */
-  function onClose() {
-    console.log('Connexion à la base de données fermé !')
-    startAutoConnect()
-  }
+    /**
+     * If the connection is reconnected
+     */
+    function onReconnected () {
+        console.log( 'Reconnexion à la base de données...' )
+        stopAutoConnect()
+    }
 
-  /**
-   * If the connection throws an error
-   * @param error - A mongoose error
-   */
-  function onError(error) {
-    console.error('Connexion à la base de données: Erreur...')
-    console.error(error.message)
-    startAutoConnect()
-  }
+    /**
+     * If the connection is close
+     */
+    function onClose () {
+        console.log( 'Connexion à la base de données fermé !' )
+        startAutoConnect()
+    }
 
-  /* EVENTS */
-  mongoose.connection
-    .on('connecting', onConnecting)
-    .on('connected', onConnected)
-    .on('open', onOpen)
-    .on('disconnecting', onDisconnecting)
-    .on('disconnected', onDisconnected)
-    .on('reconnected', onReconnected)
-    .on('close', onClose)
-    .on('error', onError)
+    /**
+     * If the connection throws an error
+     * @param error - A mongoose error
+     */
+    function onError ( error ) {
+        console.error( 'Connexion à la base de données: Erreur...' )
+        console.error( error.message )
+        startAutoConnect()
+    }
 
-  /* CONNECT TO DATABASE */
-  connectTo(config.database_url)
-//  mongoose.connect(config.database_url)
+    /* EVENTS */
+    mongoose.connection
+            .on( 'connecting', onConnecting )
+            .on( 'connected', onConnected )
+            .on( 'open', onOpen )
+            .on( 'disconnecting', onDisconnecting )
+            .on( 'disconnected', onDisconnected )
+            .on( 'reconnected', onReconnected )
+            .on( 'close', onClose )
+            .on( 'error', onError )
 
-  return mongoose
+    /* CONNECT TO DATABASE */
+    connectTo( config.database_url )
+    //  mongoose.connect(config.database_url)
+
+    return mongoose
 }

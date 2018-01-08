@@ -9,8 +9,8 @@
 
 module.exports = function ( mongoose ) {
 
-    const Vector3Schema = require( '../../_core_schemas/Vector3')(mongoose)
-    const Face3Schema = require( '../../_core_schemas/Face3')(mongoose)
+    const Vector3Schema = require( '../../_core_schemas/Vector3' )( mongoose )
+    const Face3Schema   = require( '../../_core_schemas/Face3' )( mongoose )
 
     const GeometrySchema = mongoose.Schema( {
         isGeometry:              {

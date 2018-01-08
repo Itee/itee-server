@@ -18,17 +18,17 @@
 /**
  * @external The http nodejs module
  */
-var http = require('http')
+var http = require( 'http' )
 
 /**
  * Handle timeout event
  * @param data
  */
-function onTimeout(data) {
+function onTimeout ( data ) {
 
-//  console.log( "Server event timeout !" );
-//  console.dir( data );
-//  console.log('\n');
+    //  console.log( "Server event timeout !" );
+    //  console.dir( data );
+    //  console.log('\n');
 
 }
 
@@ -37,15 +37,15 @@ function onTimeout(data) {
  * @param request - The user request
  * @param response - The server response
  */
-function onRequest(request, response) {
+function onRequest ( request, response ) {
 
-//  console.log("Server event request !");
-//  console.log(request.url);
-//  console.log(request.query);
-//  console.log(request.route);
-//
-//  console.log(request);
-//  console.log('\n');
+    //  console.log("Server event request !");
+    //  console.log(request.url);
+    //  console.log(request.query);
+    //  console.log(request.route);
+    //
+    //  console.log(request);
+    //  console.log('\n');
 
 }
 
@@ -53,21 +53,21 @@ function onRequest(request, response) {
  * Handle connection event
  * @param socket
  */
-function onConnection(socket) {
+function onConnection ( socket ) {
 
-//  console.log("Server event connection !");
-//  console.dir( socket );
-//  console.log('\n');
+    //  console.log("Server event connection !");
+    //  console.dir( socket );
+    //  console.log('\n');
 
 }
 
 /**
  * Handle close event
  */
-function onClose() {
+function onClose () {
 
-//  console.log("Server event close !");
-//  console.log('\n');
+    //  console.log("Server event close !");
+    //  console.log('\n');
 
 }
 
@@ -76,12 +76,12 @@ function onClose() {
  * @param request
  * @param response
  */
-function onCheckContinue(request, response) {
+function onCheckContinue ( request, response ) {
 
-//  console.log("Server event checkContinue !");
-//  console.log("Request : "  + request);
-//  console.log("Response :"  + response);
-//  console.log('\n');
+    //  console.log("Server event checkContinue !");
+    //  console.log("Request : "  + request);
+    //  console.log("Response :"  + response);
+    //  console.log('\n');
 
 }
 
@@ -91,13 +91,13 @@ function onCheckContinue(request, response) {
  * @param socket
  * @param head
  */
-function onConnect(request, socket, head) {
+function onConnect ( request, socket, head ) {
 
-//  console.log("Server event connect !");
-//  console.log("Request : "  + request);
-//  console.log("Socket : " + socket);
-//  console.log("Head : " + head);
-//  console.log('\n');
+    //  console.log("Server event connect !");
+    //  console.log("Request : "  + request);
+    //  console.log("Socket : " + socket);
+    //  console.log("Head : " + head);
+    //  console.log('\n');
 
 }
 
@@ -107,13 +107,13 @@ function onConnect(request, socket, head) {
  * @param socket
  * @param head
  */
-function onUpgrade(request, socket, head) {
+function onUpgrade ( request, socket, head ) {
 
-//  console.log("Server event upgrade !");
-//  console.log("Request : "  + request);
-//  console.log("Socket : " + socket);
-//  console.log("Head : " + head);
-//  console.log('\n');
+    //  console.log("Server event upgrade !");
+    //  console.log("Request : "  + request);
+    //  console.log("Socket : " + socket);
+    //  console.log("Head : " + head);
+    //  console.log('\n');
 
 }
 
@@ -122,12 +122,12 @@ function onUpgrade(request, socket, head) {
  * @param exception
  * @param socket
  */
-function onClientError(exception, socket) {
+function onClientError ( exception, socket ) {
 
-//  console.log("Server event clientError !");
-//  console.log("Exception : "  + exception);
-//  console.log("Socket : " + socket);
-//  console.log('\n');
+    //  console.log("Server event clientError !");
+    //  console.log("Exception : "  + exception);
+    //  console.log("Socket : " + socket);
+    //  console.log('\n');
 
 }
 
@@ -140,26 +140,26 @@ function onClientError(exception, socket) {
 //  console.log('\n')
 //}
 
-module.exports = function initServer(app, config) {
+module.exports = function initServer ( app, config ) {
 
-  var server = http.createServer(app)
-  server.maxHeadersCount = config.max_headers_count
-  server.timeout = config.timeout;
-  server
-    .on('request', onRequest)
-    .on('connection', onConnection)
-    .on('close', onClose)
-    .on('timeout', onTimeout)
-    .on('checkContinue', onCheckContinue)
-    .on('connect', onConnect)
-    .on('upgrade', onUpgrade)
-    .on('clientError', onClientError)
-    .listen(app.get('port'), app.get('hostName'), function startListening() {
-      console.log('Server start listening on : ' + app.get('hostName') + ':' + app.get('port') + ' at ' + new Date() + ' on ' + app.get('env') + ' environment.')
-      console.timeEnd('Server launch time')
-      console.log('\n')
-    })
+    var server             = http.createServer( app )
+    server.maxHeadersCount = config.max_headers_count
+    server.timeout         = config.timeout;
+    server
+        .on( 'request', onRequest )
+        .on( 'connection', onConnection )
+        .on( 'close', onClose )
+        .on( 'timeout', onTimeout )
+        .on( 'checkContinue', onCheckContinue )
+        .on( 'connect', onConnect )
+        .on( 'upgrade', onUpgrade )
+        .on( 'clientError', onClientError )
+        .listen( app.get( 'port' ), app.get( 'hostName' ), function startListening () {
+            console.log( 'Server start listening on : ' + app.get( 'hostName' ) + ':' + app.get( 'port' ) + ' at ' + new Date() + ' on ' + app.get( 'env' ) + ' environment.' )
+            console.timeEnd( 'Server launch time' )
+            console.log( '\n' )
+        } )
 
-  return server
+    return server
 
 }

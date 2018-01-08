@@ -10,9 +10,9 @@
 
 /* eslint-env node */
 
-const path = require('path')
+const path = require( 'path' )
 
-function CreateIteeConfiguration( process ) {
+function CreateIteeConfiguration ( process ) {
 
     return {
         debug:       false,
@@ -30,13 +30,13 @@ function CreateIteeConfiguration( process ) {
                 strict_routing:          false,                          // strict routing Enable strict routing, by default "/foo" and "/foo/" are treated the same by the router
                 view_cache:              false,                          // view cache Enables view template compilation caching, enabled in production by default
                 view_engine:             'pug',
-                views:                   path.join(__dirname, '..', 'views'),
+                views:                   path.join( __dirname, '..', 'views' ),
                 jsonp_callback_name:     'callbackJson',                 // jsonp callback name Changes the default callback name of ?callback=
                 jsonp_replacer:          null,                           // json replacer JSON replacer callback, null by default
                 jsonp_spaces:            '2',                            // json spaces JSON response spaces for formatting, defaults to 2 in development, 0 in production
                 db_uri:                  'localhost/dev',
-                path_to_log:             path.join(__dirname, '..', '/logs/access.log'),
-                path_to_favicon:         path.join(__dirname, '..', '/resources/favicon.ico'),
+                path_to_log:             path.join( __dirname, '..', '/logs/access.log' ),
+                path_to_favicon:         path.join( __dirname, '..', '/resources/favicon.ico' ),
                 method_override_keyword: '_method'
             },
             production:  {
@@ -47,23 +47,23 @@ function CreateIteeConfiguration( process ) {
                 strict_routing:          false,                          // strict routing Enable strict routing, by default "/foo" and "/foo/" are treated the same by the router
                 view_cache:              false,                          // view cache Enables view template compilation caching, enabled in production by default
                 view_engine:             'jade',
-                views:                   path.join(__dirname, '..', 'views'),
+                views:                   path.join( __dirname, '..', 'views' ),
                 jsonp_callback_name:     'callbackJson',                 // jsonp callback name Changes the default callback name of ?callback=
                 jsonp_replacer:          null,                           // json replacer JSON replacer callback, null by default
                 jsonp_spaces:            '0',                            // json spaces JSON response spaces for formatting, defaults to 2 in development, 0 in production
                 db_uri:                  '',
-                path_to_log:             path.join(__dirname, '..', '/logs/access.log'),
-                path_to_favicon:         path.join(__dirname, '..', '/resources/favicon.ico'),
+                path_to_log:             path.join( __dirname, '..', '/logs/access.log' ),
+                path_to_favicon:         path.join( __dirname, '..', '/resources/favicon.ico' ),
                 method_override_keyword: '_method'
             },
-            bus_boy: {
-                upload: true,
+            bus_boy:     {
+                upload:      true,
                 allowedPath: /^\/uploads$/
             }
         },
         server:      {
             max_headers_count: 1100,
-            timeout: 30000
+            timeout:           30000
         }
     };
 

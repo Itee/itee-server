@@ -101,7 +101,7 @@ function _getFilesPathsUnder ( filePaths ) {
  * @param mongoose - The mongoose driver database to extend
  * @returns {*} - The extended mongoose driver
  */
-module.exports = function SchemaRegister( config ) {
+module.exports = function SchemaRegister ( config ) {
 
     /*
      * IMPORT MONGOOSE PLUGINS

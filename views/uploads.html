@@ -7,55 +7,59 @@
 
 		<link rel="stylesheet" type="text/css" href="../resources/css/style.css">
 		<style type="text/css">
-		/* layout.css Style */
-		.upload-drop-zone {
-			height:        200px;
-			border-width:  2px;
-			margin-bottom: 20px;
-		}
+			/* layout.css Style */
+			.upload-drop-zone {
+				height:        200px;
+				border-width:  2px;
+				margin-bottom: 20px;
+			}
 
-		/* skin.css Style*/
-		.upload-drop-zone {
-			color:        #cccccc;
-			border-style: dashed;
-			border-color: #cccccc;
-			line-height:  200px;
-			text-align:   center
-		}
+			/* skin.css Style*/
+			.upload-drop-zone {
+				color:        #cccccc;
+				border-style: dashed;
+				border-color: #cccccc;
+				line-height:  200px;
+				text-align:   center
+			}
 
-		.upload-drop-zone.drop {
-			color:        #222222;
-			border-color: #222222;
-		}
+			.upload-drop-zone.drop {
+				color:        #222222;
+				border-color: #222222;
+			}
 
-		.inline-progress {
-			margin: 0;
-		}
+			.inline-progress {
+				margin: 0;
+			}
 
-		.align-center {
-			text-align: center;
-		}
+			.align-center {
+				text-align: center;
+			}
 
-		.label {
-			float:        left;
-			margin-right: 10px;
-			color:        black;
-			font-weight:  bold;
-			font-size:    inherit;
-		}
+			.label {
+				float:        left;
+				margin-right: 10px;
+				color:        black;
+				font-weight:  bold;
+				font-size:    inherit;
+			}
 
-		.message {
-			display: inline-block;
-		}
+			.message {
+				display: inline-block;
+			}
 		</style>
 
 	</head>
 	<body>
 
 		<nav id="mainNavBar" class="navbar navbar-inverse">
-		<ul class="nav navbar-nav">
-		<li><a href="/" data-toggle="tooltip" title="Retourner à l'acceuil"><i class="fa fa-home"></i></a></li>
-		</ul>
+			<ul class="nav navbar-nav">
+				<li>
+					<a href="/" data-toggle="tooltip" title="Retourner à l'acceuil">
+						<i class="fa fa-home"></i>
+					</a>
+				</li>
+			</ul>
 		</nav>
 
 		<div class="container">
@@ -606,7 +610,7 @@
 
                 function upload ( data, methods, route, view ) {
 
-                    const request                = new XMLHttpRequest()
+                    const request              = new XMLHttpRequest()
                     request.onreadystatechange = onReadyStateChange
                     request.upload.addEventListener( 'progress', onProgress, false )
                     request.onload  = onLoad

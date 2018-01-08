@@ -11,10 +11,10 @@ let BufferAttribute = undefined
 
 module.exports = function ( mongoose ) {
 
-    const Schema        = mongoose.Schema
-    const Types         = Schema.Types
+    const Schema = mongoose.Schema
+    const Types  = Schema.Types
 
-    if( !BufferAttribute ) {
+    if ( !BufferAttribute ) {
 
         BufferAttribute = new Schema( {
             array:       [ Number ],

@@ -191,7 +191,7 @@ Object.assign( DatabaseController.prototype, {
 
             this._databaseSchema
                 .find( { '_id': idParam } )
-//                .find( { '_id': { $in: idParam } } )
+                //                .find( { '_id': { $in: idParam } } )
                 .lean()
                 .exec( i.return( response ) )
 
@@ -294,11 +294,11 @@ Object.assign( DatabaseController.prototype, {
             }
 
             //todo: check array of string id or object
-            this._databaseSchema.deleteMany( { '_id': { $in: requestBody } }, i.return(response))
+            this._databaseSchema.deleteMany( { '_id': { $in: requestBody } }, i.return( response ) )
 
         } else if ( idParam ) {
 
-            this._databaseSchema.remove({'_id': idParam }, i.return(response))
+            this._databaseSchema.remove( { '_id': idParam }, i.return( response ) )
 
         } else {
 

@@ -23,21 +23,21 @@ module.exports = function ( mongoose ) {
         } ) )
 
     Curve.discriminator( 'ArcCurve', new Schema( {
-        aX: Number,
-        aY: Number,
-        xRadius: Number,
-        yRadius: Number,
+        aX:          Number,
+        aY:          Number,
+        xRadius:     Number,
+        yRadius:     Number,
         aStartAngle: Number,
         aEndAngle:   Number,
-        aClockwise: Boolean,
-        aRotation: Number
+        aClockwise:  Boolean,
+        aRotation:   Number
     } ) )
 
     Curve.discriminator( 'CatmullRomCurve3', new Schema( {
-        points: [ Vector3Schema ],
-        closed: Boolean,
+        points:    [ Vector3Schema ],
+        closed:    Boolean,
         curveType: String,
-        tension: Number
+        tension:   Number
     } ) )
 
     Curve.discriminator( 'CubicBezierCurve', new Schema( {
@@ -55,14 +55,14 @@ module.exports = function ( mongoose ) {
     } ) )
 
     Curve.discriminator( 'EllipseCurve', new Schema( {
-        aX: Number,
-        aY: Number,
-        xRadius: Number,
-        yRadius: Number,
+        aX:          Number,
+        aY:          Number,
+        xRadius:     Number,
+        yRadius:     Number,
         aStartAngle: Number,
         aEndAngle:   Number,
-        aClockwise: Boolean,
-        aRotation: Number
+        aClockwise:  Boolean,
+        aRotation:   Number
     } ) )
 
     Curve.discriminator( 'LineCurve', new Schema( {
