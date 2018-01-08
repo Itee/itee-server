@@ -26,7 +26,7 @@
     "test": "gulp test",
     "unit": "gulp unit",
     "bench": "gulp bench",
-    "build": "gulp build --format:iife",
+    "build": "gulp build --format:iife -d",
     "release": "gulp release",
     "start": "node run.js"
   },
