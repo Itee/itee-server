@@ -87,6 +87,7 @@ function _getSceneModel ( scene, childrenIds ) {
         uuid:                   scene.uuid,
         name:                   scene.name,
         type:                   scene.type,
+        parent:                 _buildingId,
         children:               childrenIds,
         up:                     {
             x: scene.up.x,
