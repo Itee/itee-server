@@ -219,8 +219,7 @@ body.no-overflow-y.box
 
     script(src='../resources/configs/config.' + config + '.js', type='application/javascript')
     script.
-
-        TClientAppParameters = mergeDeep( TClientAppParameters, extraParams )
+        var TUrlParameters = !{JSON.stringify( urlParams )} || {} // Todo: should use js-stringify in prod ?
 
     if env === "production"
         script(src='../resources/javascript/jquery.min.js', type='text/javascript')

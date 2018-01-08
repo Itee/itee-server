@@ -53,8 +53,8 @@ import * as Client from '../node_modules/itee-client/sources/itee-client'
     // Create App
     // Retrieve parameters
     const appContainer  = document.getElementById( 'mainContainer' )
-    const appParameters = TClientAppParameters || {}
-    const appOnReady    = function appOnReady() {}
+    const appParameters = mergeDeep( window.TConfigParameters || {}, window.TUrlParameters || {} )
+    const appOnReady    = function () {}
 
     const clientApp = new Client.TApplication( appContainer, appParameters, appOnReady )
 
