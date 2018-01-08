@@ -40,7 +40,7 @@
     "itee-client": "git+https://github.com/Itee/itee-client.git#66742fbf8922c9c19aa53738c2e7ddb09709336d",
     "jquery": "^3.2.1",
     "method-override": "^2.3.10",
-    "mongoose": "^4.13.7",
+    "mongoose": "^4.13.8",
     "mongoose-double": "0.0.1",
     "morgan": "^1.9.0",
     "process": "^0.11.10",
@@ -50,7 +50,7 @@
     "three": "^0.87.1"
   },
   "devDependencies": {
-    "babel-eslint": "^8.0.3",
+    "babel-eslint": "^8.1.2",
     "benchmark": "^2.1.4",
     "chai": "^4.1.2",
     "del": "^3.0.0",
@@ -70,8 +70,8 @@
     "karma-mocha-reporter": "^2.2.5",
     "karma-opera-launcher": "^1.0.0",
     "karma-safari-launcher": "^1.0.0",
-    "mocha": "^4.0.1",
-    "mochawesome": "^3.0.0",
+    "mocha": "^4.1.0",
+    "mochawesome": "^3.0.1",
     "rollup": "^0.52.3",
     "rollup-plugin-buble": "^0.18.0",
     "rollup-plugin-commonjs": "^8.2.6",
@@ -79,6 +79,6 @@
     "rollup-plugin-replace": "^2.0.0",
     "rollup-plugin-strip": "^1.1.1",
     "rollup-plugin-uglify-es": "0.0.1",
-    "run-sequence": "^2.2.0"
+    "run-sequence": "^2.2.1"
   }
 }
