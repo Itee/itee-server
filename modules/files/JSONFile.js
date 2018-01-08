@@ -788,19 +788,22 @@ function _saveMaterialInDatabase ( materials, onError, onSuccess ) {
 
     if ( Array.isArray( materials ) ) {
 
-        let materialIds = []
+        const numberOfMaterials = materials.length
+        let materialIds = new Array( numberOfMaterials )
+        let numberOfSavedMaterials = 0
         let material    = undefined
-        for ( var materialIndex = 0, numberOfMaterials = materials.length ; materialIndex < numberOfMaterials ; materialIndex++ ) {
+        for ( let materialIndex = 0 ; materialIndex < numberOfMaterials ; materialIndex++ ) {
 
             material         = materials[ materialIndex ]
             const materialId = _checkIfMaterialAlreadyExist( material )
 
             if ( materialId ) {
 
-                materialIds.push( materialId )
+                materialIds[materialIndex] = materialId
+                numberOfSavedMaterials++
 
                 // End condition
-                if ( materialIds.length === materials.length ) {
+                if ( numberOfSavedMaterials === numberOfMaterials ) {
                     onSuccess( materialIds )
                 }
 
@@ -808,19 +811,26 @@ function _saveMaterialInDatabase ( materials, onError, onSuccess ) {
 
                 const materialModel = _getMaterialModel( material )
                 materialModel.save()
-                             .then( savedMaterial => {
+                             .then( (function closeIndex(){
 
-                                 materialIds.push( savedMaterial.id )
+                                 const materialLocalIndex = materialIndex
 
-                                 // Add material id to cache
-                                 _materialCache[ savedMaterial.uuid ] = savedMaterial.id
+                                 return savedMaterial => {
 
-                                 // End condition
-                                 if ( materialIds.length === materials.length ) {
-                                     onSuccess( materialIds )
+                                     materialIds[materialLocalIndex] = savedMaterial.id
+                                     numberOfSavedMaterials++
+
+                                     // Add material id to cache
+                                     _materialCache[ savedMaterial.uuid ] = savedMaterial.id
+
+                                     // End condition
+                                     if ( numberOfSavedMaterials === numberOfMaterials ) {
+                                         onSuccess( materialIds )
+                                     }
+
                                  }
 
-                             } )
+                             })() )
                              .catch( onError )
 
             }
