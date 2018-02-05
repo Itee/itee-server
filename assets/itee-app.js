@@ -44,7 +44,7 @@ import * as Client from '../node_modules/itee-client/sources/itee-client'
     }
 
     // Check if webgl is available
-    const message = Client.WebGLDetector.getWebGLErrorMessage()
+    const message = Client.Detector.getWebGLErrorMessage()
     if ( message.innerText ) {
         alert( message.innerText )
         return
