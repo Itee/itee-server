@@ -1,0 +1,27 @@
+<div class="form-group-sm">
+    <label class="col-sm-12 control-label">Class methods:</label>
+</div>
+<ul id="methods-list" style="list-style-type: none" ng-show="classManager.methods" ng-repeat="method in classManager.methods">
+    <li>{{method.toString()}}</li>
+</ul>
+
+<form name="methodForm" ng-submit="methodCtrl.addMethod(classManager)">
+    <div class="form-group-sm">
+        <label class="col-sm-1 control-label">Type:</label>
+        <div class="col-sm-3">
+            <select class="form-control" ng-model="methodCtrl.method.state">
+                <option>private</option>
+                <option>public</option>
+            </select>
+        </div>
+        <label class="col-sm-1 control-label">Name:</label>
+        <div class="col-sm-3">
+            <input type="text" class="form-control" placeholder="MyMethod" ng-model="methodCtrl.method.name">
+        </div>
+        <label class="col-sm-1 control-label">Attributes:</label>
+        <div class="col-sm-3">
+            <input type="text" class="form-control" placeholder="Methods inputs" ng-model="methodCtrl.method.inputAttributes[0]">
+        </div>
+        <button type="submit" class="btn btn-default btn-sm">Add</button>
+    </div>
+</form>

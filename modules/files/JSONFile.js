@@ -1019,12 +1019,57 @@ function _parse ( object, onError, onSuccess ) {
  * INTERFACE
  */
 
+let isProcessing = false
+let filesQueue    = []
+
+function addFileToQueue ( buildingId, fileSize, file, callback ) {
+
+    filesQueue.push( {
+        buildingId,
+        fileSize,
+        file,
+        callback
+    } )
+
+    if( !isProcessing ) {
+        processQueue()
+    }
+
+}
+
+function processQueue () {
+
+    if ( filesQueue.length > 0 ) {
+
+        isProcessing = true
+
+        const fileData = filesQueue.shift()
+
+        _buildingId    = undefined
+        _fileData      = ''
+        _geometryCache = {}
+        _materialCache = {}
+
+        parseFile ( fileData.buildingId, fileData.fileSize, fileData.file, function( error ) {
+
+            fileData.callback( error )
+            processQueue()
+
+        } )
+
+    } else {
+
+        isProcessing = false
+
+    }
+
+}
+
 function parseFile ( buildingId, fileSize, file, callback ) {
 
     _buildingId = buildingId
 
-    const MAX_FILE_SIZE = 67108864
-    //    const MAX_FILE_SIZE = 134217728
+    const MAX_FILE_SIZE = 67108864 // 134217728
     const _callback     = callback || function onError ( error ) {
 
         console.error( `SERVER LOCAL CALLBACK ERROR CALL: ${error}` )
@@ -1082,7 +1127,7 @@ function parseFile ( buildingId, fileSize, file, callback ) {
                     if ( !isOnError ) { _processFile( _callback ) }
                     _freeMemory()
 
-                    fs.unlink( file.file, error => {
+                    fs.unlink( file, error => {
 
                         if ( error ) { _callback( error )}
 
@@ -1138,7 +1183,7 @@ function parseFile ( buildingId, fileSize, file, callback ) {
 }
 
 module.exports = {
-    parse: parseFile
+    parse: addFileToQueue
 }
 
 //export default parseFile
