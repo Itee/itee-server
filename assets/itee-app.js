@@ -5,7 +5,9 @@
  * @license MIT
  */
 
-import * as Client from '../node_modules/itee-client/sources/itee-client'
+import * as Client from 'itee-client'
+//import * as Client from '../node_modules/itee-client/sources/itee-client'
+
 
 (() => {
 
