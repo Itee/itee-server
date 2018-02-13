@@ -51,7 +51,7 @@
     "serve-favicon": "^2.4.5",
     "serve-static": "^1.13.1",
     "three": "^0.87.1",
-    "itee-client": "git@github.com:Itee/itee-client.git#d78f76180ece8348a643bc0a2f74ef1d95fbf787"
+    "itee-client": "git@github.com:Itee/itee-client.git#IteeNormalization"
   },
   "devDependencies": {
     "babel-core": "^6.26.0",
