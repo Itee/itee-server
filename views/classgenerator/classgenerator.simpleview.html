@@ -1,0 +1,12 @@
+<div class="col-md-12">
+    <span>{{classManager.name}}</span>
+    <span ng-show="classManager.inheritFrom"> extends {{classManager.inheritFrom}}</span>
+    <hr>
+    <ul id="attributes-list" style="list-style-type: none" ng-show="classManager.attributes" ng-repeat="attribute in classManager.attributes">
+        <li>{{attribute.toString()}}</li>
+    </ul>
+    <hr>
+    <ul id="methods-list" style="list-style-type: none" ng-show="classManager.methods" ng-repeat="method in classManager.methods">
+        <li>{{method.toString()}}</li>
+    </ul>
+</div>

@@ -1,0 +1,32 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+        <title>Socket.io</title>
+		
+
+    </head>
+ 
+    <body>
+        <h1>Communication avec socket.io !</h1>
+		
+		<div style="float:left;width:100px;border-right:1px solid black;height:300px;padding:10px;overflow:auto;">
+			<b>Utilisateurs</b>
+			<ul id="users"></ul>
+		</div>
+		
+		<div style="float:left;width:300px;height:250px;overflow:auto;padding:10px;">
+			<input id="data" style="width:200px;">
+			<input type="button" id="datasend" value="Envoyer">
+			<div id="conversation"></div>
+		</div>
+
+        <div style="float:left;width:100px;border-right:1px solid black;height:300px;padding:10px;overflow:auto;">
+            <b>Salon</b>
+            <ul id="salons"></ul>
+        </div>
+
+        <script src="/socket.io/socket.io.js"></script>
+        <script src="../resources/script/MeetingArea.js"></script>
+    </body>
+</html>
