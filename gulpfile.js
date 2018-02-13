@@ -221,7 +221,6 @@ gulp.task( 'build-style', () => {
     ]
 
     return gulp.src( styleFiles )
-               .pipe( gulpif( !util.env.production, plumber(), util.noop() ) )
                .pipe( gulpif( /[.]less$/, less() ) )
                .pipe( concat( 'style.css' ) )
                .pipe( gulpif( util.env.production, rename( 'style.min.css' ), util.noop() ) )
