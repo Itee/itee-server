@@ -26,6 +26,7 @@ const busBoy         = require( 'express-busboy' )
 const webSocket      = require( 'express-ws' )
 const fs             = require( 'fs' )
 const morgan         = require( 'morgan' )
+const rfs            = require( 'rotating-file-stream' )
 const errorHandler   = require( 'errorhandler' )
 const bodyParser     = require( 'body-parser' )
 const methodOverride = require( 'method-override' )
@@ -72,17 +73,19 @@ module.exports = function ( config ) {
     (config[ env ].view_cache) ? app.enable( 'view cache' ) : app.disabled( 'view cache' );
 
     // ////////// CONNECT MIDDLEWARE //////////////
-    const logFilePath = config[ env ].path_to_log
+    const logFilePath  = config[ env ].path_to_log
+    const logDirectory = path.dirname( logFilePath )
 
-    // Create log folder if not exist
-    const logFolder = path.dirname( logFilePath )
-    if ( !fs.existsSync( logFolder ) ) {
-        fs.mkdirSync( logFolder )
-    }
+    // Ensure log directory exists
+    fs.existsSync( logDirectory ) || fs.mkdirSync( logDirectory )
 
-    app.use( morgan( 'combined', {
-        stream: fs.createWriteStream( logFilePath, { flags: 'a' } )
-    } ) )
+    // create a rotating write stream
+    const accessLogStream = rfs( 'access.log', {
+        interval: '1d', // rotate daily
+        path:     logDirectory
+    } )
+
+    app.use( morgan( 'combined', { stream: accessLogStream } ) )
 
     app.use( errorHandler() )
     app.use( favicon( config[ env ].path_to_favicon ) )
