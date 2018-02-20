@@ -32,10 +32,6 @@ const gulp        = require( 'gulp' )
 const util        = require( 'gulp-util' )
 const jsdoc       = require( 'gulp-jsdoc3' )
 const eslint      = require( 'gulp-eslint' )
-const gulpif      = require( 'gulp-if' )
-const less        = require( 'gulp-less' )
-const cleanCss    = require( 'gulp-clean-css' )
-const rename      = require( 'gulp-rename' )
 const nodemon     = require( 'gulp-nodemon' )
 const liveReload  = require( 'gulp-livereload' )
 const del         = require( 'del' )
@@ -115,16 +111,13 @@ gulp.task( 'lint', () => {
     const filesToLint = [
         'gulpfile.js',
         'run.js',
-        'configs/**/*.js',
-        'scripts/**/*.js',
-        'sources/**/*',
-        'tests/**/*.js',
         'application/**/*',
+        'assets/javascript/**/*',
+        'configs/**/*.js',
         'database/**/*',
         'modules/**/*',
         'routes/**/*',
-        'server/**/*',
-        'assets/javascript/**/*'
+        'server/**/*'
     ]
 
     return gulp.src( filesToLint )
@@ -162,7 +155,6 @@ gulp.task( 'doc', () => {
         'README.md',
         'gulpfile.js',
         'run.js',
-        '_config.js',
         'application/*',
         'database/*',
         'modules/*',
@@ -205,41 +197,7 @@ gulp.task( 'bench', () => {
 
 } )
 
-/**
- *
- * @description Build less files from assets, and concat them into one file
- */
-gulp.task( 'build-style', () => {
 
-    log( 'Building:', blue( (util.env.production) ? 'style.min.css' : 'style.css' ), '...' )
-
-    const styleFiles = [
-        './assets/node_modules/font-awesome/less/font-awesome.less',
-        './assets/node_modules/bootstrap/less/bootstrap.less',
-        './assets/node_modules/bootstrap-slider/dist/css/bootstrap-slider.css',
-        './assets/less/**/*'
-    ]
-
-    return gulp.src( styleFiles )
-               .pipe( gulpif( /[.]less$/, less() ) )
-               .pipe( concat( 'style.css' ) )
-               .pipe( gulpif( util.env.production, rename( 'style.min.css' ), util.noop() ) )
-               .pipe( gulpif( util.env.production, cleanCss( { compatibility: 'ie8' } ), util.noop() ) )
-               .pipe( gulp.dest( './resources/css/' ) )
-
-} )
-
-/**
- * Add watcher to assets less/css files and run build-style on file change
- */
-gulp.task( 'watch-style', [ 'build-style' ], done => {
-
-    log( 'Add watcher to style files !' )
-
-    gulp.watch( styleFiles, [ 'build-style' ] )
-    done()
-
-} )
 
 /**
  * @method npm run build
@@ -369,7 +327,7 @@ gulp.task( 'build', done => {
         runSequence(
             'clean',
             'lint',
-            [ 'watch-style', 'watch-scripts' ],
+            'watch-scripts',
             done
         )
 
@@ -378,7 +336,7 @@ gulp.task( 'build', done => {
         runSequence(
             'clean',
             'lint',
-            [ 'build-style', 'build-scripts' ],
+            'build-scripts',
             'doc',
             done
         )
@@ -387,7 +345,7 @@ gulp.task( 'build', done => {
 
         runSequence(
             'clean',
-            [ 'build-style', 'build-scripts' ],
+            'build-scripts',
             done
         )
 
@@ -445,8 +403,8 @@ gulp.task( 'nodemon', done => {
             '.git',
             '.idea',
             'assets',
-            'docs',
-            'downloads',
+            'configs',
+            'documentation',
             'logs',
             'node_modules',
             'resources',
@@ -455,12 +413,7 @@ gulp.task( 'nodemon', done => {
             'views',
 
             // Files
-            '.babelrc',
-            '.eslintrc',
             '.gitignore',
-            'install_win.cmd',
-            'jsdoc.json',
-            'karma.conf',
             'LICENSE.md',
             'package.json',
             'package-lock.json',
