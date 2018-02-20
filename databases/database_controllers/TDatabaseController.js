@@ -191,7 +191,13 @@ Object.assign( DatabaseController.prototype, {
 
             this._databaseSchema
                 .find( { '_id': idParam } )
-                //                .find( { '_id': { $in: idParam } } )
+                .lean()
+                .exec( i.return( response ) )
+
+        } else if ( requestBody ) {
+
+            this._databaseSchema
+                .find( requestBody )
                 .lean()
                 .exec( i.return( response ) )
 
