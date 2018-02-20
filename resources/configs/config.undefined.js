@@ -4,6 +4,8 @@
 
 let TConfigParameters = {
     error: (function UndefinedIteeClientConfiguration () {
-        console.error( "The TConfigParameters are not defined, or the file not existing on the actual server. Please accept our appologies !" );
+        var errorMessage = "The TClientAppParameters are not defined, or the file not existing on the actual server. Please accept our appologies !"
+        console.error(errorMessage)
+        return errorMessage
     })()
 }
