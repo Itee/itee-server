@@ -315,6 +315,18 @@ gulp.task( 'build-scripts', ( done ) => {
 } )
 
 /**
+ * Add watcher to assets javascript files and run build-js on file change
+ */
+gulp.task( 'watch-script', (done) => {
+
+    log( 'Add watcher to javascript files !' )
+
+    gulp.watch( './assets/javascript/**/*.js', [ 'build-script' ] )
+    done()
+
+} )
+
+/**
  * Build css and javascript files
  */
 gulp.task( 'build', done => {
@@ -353,17 +365,6 @@ gulp.task( 'build', done => {
 
 } )
 
-/**
- * Add watcher to assets javascript files and run build-js on file change
- */
-gulp.task( 'watch-scripts', [ 'build-scripts' ], done => {
-
-    log( 'Add watcher to javascript files !' )
-
-    gulp.watch( './assets/javascript/**/*.js', [ 'build-js' ] )
-    done()
-
-} )
 
 /**
  * @method npm run release
