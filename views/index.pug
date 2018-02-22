@@ -89,13 +89,13 @@ html(lang='en')
                 border-bottom: 1px solid #4eaeff;
             }
 
-            .dropdown-content {
+            .tMenu .dropdown-content {
                 background-color: #323232f2;
                 box-shadow:       2px 2px 2px 0px rgba(0, 0, 0, 0.2);
                 border-top:       1px solid #4eaeff;
             }
 
-            .dropdown-content a {
+            .tMenu .dropdown-content a {
                 color:           white;
                 padding:         12px 16px;
                 text-decoration: none;
@@ -103,9 +103,20 @@ html(lang='en')
                 text-align:      left;
             }
 
-            .dropdown-content a:hover {
+            .tMenu .dropdown-content a:hover {
                 background-color: rgba(150, 150, 150, 1);
             }
+
+            .tToolBar .tDropDownMenu a {
+                padding: 10px 15px
+            }
+
+            /*fontSize:     '46px',*/
+            /*marginRight:  '11px',*/
+            /*marginBottom: '6px',*/
+            /*marginTop:    '6px',*/
+            /*color:        'white'*/
+
 
             /* SEPARATOR */
             .tSplit {
@@ -338,8 +349,8 @@ html(lang='en')
     body
         itee-application-root
 
-    //script(src='../resources/configs/config.' + config + '.js', type='application/javascript')
+    script(src='../resources/configs/config.' + config + '.js', type='application/javascript')
     script.
-        var URLParameters = { urlQuery: !{JSON.stringify( urlParams )} } || {} // Todo: use js-stringify in prod
+        var TUrlParameters = { urlQuery: !{JSON.stringify( urlParams )} } || {} // Todo: use js-stringify in prod
 
     script(src='../resources/application/itee-app.iife.js', type='text/javascript')
