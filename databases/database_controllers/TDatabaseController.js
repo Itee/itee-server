@@ -272,6 +272,16 @@ Object.assign( DatabaseController.prototype, {
 
         } else if ( idParam ) {
 
+            if ( !requestBody ) {
+
+                i.returnError( {
+                    title:   'Erreur de paramètre',
+                    message: 'La requête ne contient pas de données !'
+                }, response )
+                return
+
+            }
+
             this._databaseSchema.update( { _id: idParam }, { $set: requestBody }, i.return( response ) )
 
         } else {
