@@ -61,9 +61,10 @@ module.exports = function routing ( app ) {
     app.use( '/views', require( './views/views.js' )( env ) )
     app.use( '/uploads', require( './uploads/uploads.js' ) )
 
-    //    app.use( '/companies', buildRouteFor( 'Company' ) )
-    //    app.use( '/sites', buildRouteFor( 'Site' ) )
-    //    app.use( '/buildings', buildRouteFor( 'Building' ) )
+    app.use( '/users', buildRouteFor( 'User' ) )
+    app.use( '/companies', buildRouteFor( 'Company' ) )
+    app.use( '/sites', buildRouteFor( 'Site' ) )
+    app.use( '/buildings', buildRouteFor( 'Building' ) )
     app.use( '/scenes', buildRouteFor( 'Scene' ) )
     app.use( '/objects', buildRouteFor( 'Object3D' ) )
     app.use( '/meshes', buildRouteFor( 'Mesh' ) )
