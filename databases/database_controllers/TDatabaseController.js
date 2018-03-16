@@ -318,7 +318,8 @@ Object.assign( DatabaseController.prototype, {
 
         } else {
 
-            // Not allowed !
+            // Todo: Not allowed in production !
+            this._databaseSchema.collection.drop( i.return( response ) )
 
         }
 
