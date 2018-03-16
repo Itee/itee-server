@@ -19,6 +19,18 @@ import * as Itee from './itee-client.es'
 
     // Create App
     const appParameters = Itee.extend( window.TConfigParameters || {}, window.TUrlParameters || {} )
-    const application = Itee.TApplicationFactory.createApplication( appParameters )
+
+    Itee.TApplicationFactory.createApplication( appParameters )
+
+
+//const environment  = Itee.analyseEnvironment()
+//const rawMaterial  = Itee.getRawMaterial( environment )
+//const reactor      = Itee.createReactor( rawMaterial.fuel )
+//const fuselage     = Itee.createFuselage( rawMaterial.alloy )
+//const flyingSaucer = Itee.createFlyingSaucer( reactor, fuselage )
+//
+//flyingSaucer.launch()
+
+
 
 })()
