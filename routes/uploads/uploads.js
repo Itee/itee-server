@@ -10,11 +10,13 @@
 /*
  * MODULES
  */
-var express    = require( '../../node_modules/express' )
-var router     = express.Router( { mergeParams: true } )
-var path       = require( 'path' )
-var fs         = require( 'fs' )
-var FileLoader = require( '../../modules/files/FileLoader.js' )
+const express    = require( '../../node_modules/express' )
+const router     = express.Router( { mergeParams: true } )
+const path       = require( 'path' )
+const fs         = require( 'fs' )
+const FilesToDatabase = require( '../../modules/files/FilesToDatabase.js' )
+
+const filesToDatabase = new FilesToDatabase()
 
 /*
  * ROUTER
@@ -35,6 +37,6 @@ router
                 }
             } )
     } )
-    .post( '/', FileLoader.saveFileInDataBase )
+    .post( '/', filesToDatabase.saveFilesInDatabase.bind(filesToDatabase) )
 
 module.exports = router
