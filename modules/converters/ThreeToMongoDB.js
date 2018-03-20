@@ -161,7 +161,7 @@ class ThreeToMongoDB {
 
     _getSceneModel ( scene, childrenIds ) {
 
-        return new SceneModel( {
+        return SceneModel( {
             uuid:                   scene.uuid,
             name:                   scene.name,
             type:                   scene.type,
@@ -279,7 +279,7 @@ class ThreeToMongoDB {
 
     _getObject3DModel ( object, childrenIds ) {
 
-        return new Object3DModel( {
+        return Object3DModel( {
             uuid:                   object.uuid,
             name:                   object.name,
             type:                   object.type,
@@ -345,7 +345,7 @@ class ThreeToMongoDB {
 
     _getMeshModel ( mesh, childrenIds, geometryId, materialIds ) {
 
-        return new MeshModel( {
+        return MeshModel( {
             uuid:                   mesh.uuid,
             name:                   mesh.name,
             type:                   mesh.type,
@@ -481,7 +481,7 @@ class ThreeToMongoDB {
 
     _getLineSegmentModel ( lineSegment, childrenIds, geometryId, materialIds ) {
 
-        return new LineSegmentModel( {
+        return LineSegmentModel( {
             uuid:                   lineSegment.uuid,
             name:                   lineSegment.name,
             type:                   lineSegment.type,
