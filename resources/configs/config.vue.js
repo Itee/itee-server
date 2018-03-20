@@ -955,15 +955,13 @@ const UploadPage = {
                         </div>
     
                         <TContainerVertical class="container" vAlign="start" hAlign="stretch" expand="true">
-                            <TViewport3D
-                                :scene=previewViewport.scene 
-                                camera="perspective"
-                                control="orbit"
-                                effect="none"
-                                renderer="webgl"
-                                :showStat=false
+
+                             <TViewport3D
+                                id="previewViewportId"
                                 style="display:flex; flex: 1;"
+                                v-bind="previewViewport"
                              />
+                             <TProgress :done="progressBarData.done" :todo="progressBarData.todo" :isVisible="progressBarData.isVisible"/>
                         </TContainerVertical>
                      
                     </TContainerHorizontal>
@@ -971,7 +969,7 @@ const UploadPage = {
                 </div>
                 <div class="modal-footer">
                     <button type="button" class="btn btn-secondary" data-dismiss="modal" v-on:click.stop="onToggleModalVisibility('modal-file-data')">Fermer</button>
-                    <button type="button" class="btn btn-primary" v-on:click.stop="uploadFileInputData">Valider</button>
+                    <button type="button" class="btn btn-primary" v-on:click.stop="startUpload( filesList )">Valider</button>
                 </div>
             </div>
         </div>
@@ -992,6 +990,7 @@ const UploadPage = {
             buildingsManager: new Itee.TDataBaseManager(),
             buildings:        [],
             selectedBuilding: '',
+            filesList:       [],
             filesNames:       [],
             modalData:        {
                 title:  'Prévisualisation',
@@ -1005,7 +1004,31 @@ const UploadPage = {
                 }
             },
             previewViewport:  {
-                scene: new Itee.Scene()
+                scene:           new Itee.Scene(),
+                control:         "orbit",
+                effect:          "none",
+                renderer:        "webgl",
+                camera:          {
+                    type:     'perspective',
+                    position: {
+                        x: 7,
+                        y: 2,
+                        z: 5
+                    },
+                    target:   {
+                        x: 0,
+                        y: 0,
+                        z: 0
+                    }
+                },
+                showStat:        false,
+                backgroundColor: 0xb2b2b2,
+                needResize: false
+            },
+            progressBarData:  {
+                done:      0,
+                todo:      1,
+                isVisible: false
             }
         }
 
@@ -1121,18 +1144,30 @@ const UploadPage = {
         displayPreview ( changeEvent ) {
             'use strict'
 
-            const fileList = changeEvent.target.files
+            this.filesList = changeEvent.target.files
 
             // Update input label
             let filesNames = []
-            for ( let i = 0, n = fileList.length ; i < n ; i++ ) {
-                let file = fileList[ i ]
+            for ( let i = 0, n = this.filesList.length ; i < n ; i++ ) {
+                let file = this.filesList[ i ]
                 filesNames.push( file.name )
             }
             this.filesNames = filesNames
 
+            // Need to Force viewport resize :-s
             this.onToggleModalVisibility( 'modal-file-data' )
-            this.importFilesToViewportScene( fileList )
+            this.toggleProgressBarVisibility()
+
+            // clearScene()
+            this.previewViewport.scene.children = []
+            const envGroup = new Itee.Group()
+            envGroup.add( new Itee.GridHelper( 200, 20 ) )
+
+            // Ambiant light
+            envGroup.add( new Itee.AmbientLight( 0x777777 ) )
+            this.previewViewport.scene.add(envGroup)
+
+            this.importFilesToViewportScene( this.filesList )
 
         },
 
@@ -1287,6 +1322,8 @@ const UploadPage = {
         },
 
         startUpload ( files ) {
+
+            this.onToggleModalVisibility( 'modal-file-data' )
 
             if ( files.length === 0 ) {
                 return;
@@ -1546,7 +1583,33 @@ const UploadPage = {
 
         // Create default stuff for 3d preview
         const envGroup = new Itee.Group()
-        envGroup.add( new Itee.GridHelper( 20, 20 ) )
+        envGroup.add( new Itee.GridHelper( 200, 20 ) )
+
+        // Ambiant light
+        envGroup.add( new Itee.AmbientLight( 0x777777 ) )
+
+        /// Hemi light
+        //        const hemiLight = new Itee.HemisphereLight( 0xffffff, 0xffffff, 0.8 )
+        //        hemiLight.color.setHSL( 0.6, 1, 0.6 )
+        //        hemiLight.groundColor.setHSL( 0.095, 1, 0.75 )
+        //        hemiLight.position.set( -100, 400, 50 )
+        //        envGroup.add( hemiLight )
+
+        //        const hemiLightHelper = new Itee.HemisphereLightHelper( hemiLight, 100 )
+        //        envGroup.add( hemiLightHelper )
+
+        /// dir light
+        //        const dirLight = new Itee.DirectionalLight( 0xffffff, 1 )
+        //        dirLight.color.setHSL( 0.1, 1, 0.95 )
+        //        dirLight.position.set( -100, 175, 50 )
+        //        dirLight.target.set( -100, 0, -50 )
+        //        dirLight.castShadow            = true
+        //        dirLight.shadow.mapSize.width  = 2048
+        //        dirLight.shadow.mapSize.height = 2048
+        //        envGroup.add( dirLight )
+        //
+        //        const dirLightHeper = new Itee.DirectionalLightHelper( dirLight, 10 )
+        //        envGroup.add( dirLightHeper )
 
         this.previewViewport.scene.add( envGroup )
 
