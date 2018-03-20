@@ -1180,18 +1180,117 @@ const UploadPage = {
             const self            = this
             const universalLoader = new Itee.TUniversalLoader()
 
+            // reset data for camera centering
+            const boundingSphereCenter = []
+
             universalLoader.load(
                 fileList,
                 ( data ) => {
 
+                    extractBoundingSphere( data )
+                    const barycenter  = computeBarycenter( boundingSphereCenter )
+                    const maxDistance = computeMaxDistanceFromBarycenter( barycenter ) * 2 || 5
+                    updateCameraData( barycenter, maxDistance )
+
+                    self.toggleProgressBarVisibility()
+                    self.previewViewport.needResize = true
                     self.previewViewport.scene.add( data )
 
-                },
-                ( progress ) => {
+                    function extractBoundingSphere ( object ) {
 
-                    console.log( progress )
+                        if ( object.children && object.children.length > 0 ) {
+
+                            for ( let childIndex = 0, numberOfChildren = object.children.length ; childIndex < numberOfChildren ; childIndex++ ) {
+                                let child = object.children[ childIndex ]
+                                extractBoundingSphere( child )
+                            }
+
+                        }
+
+                        if ( !object.isMesh ) {
+                            return
+                        }
+
+                        const geometry = object.geometry
+                        if ( !geometry ) {
+                            return
+                        }
+
+                        if ( geometry.isGeometry ) {
+
+                            const bs = object.geometry.computeBoundingSphere()
+                            boundingSphereCenter.push( bs.center )
+
+                        } else if ( geometry.isBufferGeometry ) {
+
+                            object.geometry.computeBoundingBox()
+                            const center   = object.geometry.boundingBox.getCenter()
+                            const position = object.position
+
+                            boundingSphereCenter.push( {
+                                x: position.x + center.x,
+                                y: position.y + center.y,
+                                z: position.z + center.z,
+                            } )
+
+                        }
+
+                    }
+
+                    function computeBarycenter ( boundingSphereCenters ) {
+
+                        const centerSum = boundingSphereCenters.reduce( ( a, b ) => ({
+                            x: a.x + b.x,
+                            y: a.y + b.y,
+                            z: a.z + b.z
+                        }) )
+
+                        const numberOfCenter = boundingSphereCenters.length || 1
+
+                        return {
+                            x: centerSum.x / numberOfCenter,
+                            y: centerSum.y / numberOfCenter,
+                            z: centerSum.z / numberOfCenter
+                        }
+
+                    }
+
+                    function computeMaxDistanceFromBarycenter ( barycenter ) {
+
+                        const baryX            = barycenter.x
+                        const baryY            = barycenter.y
+                        const baryZ            = barycenter.z
+                        let maxCubiqueDistance = 0
+                        let indexOfTheFarest   = null
+                        boundingSphereCenter.filter( ( a, index ) => {
+
+                            const currentCubiqueDistance = ((baryX - a.x) * (baryX - a.x)) + ((baryY - a.y) * (baryY - a.y)) + ((baryZ - a.z) * (baryZ - a.z))
+
+                            if ( currentCubiqueDistance > maxCubiqueDistance ) {
+                                maxCubiqueDistance = currentCubiqueDistance
+                                indexOfTheFarest   = index
+                            }
+                            return false
+
+                        } )
+
+                        return Math.sqrt( maxCubiqueDistance )
+
+                    }
+
+                    function updateCameraData ( barycenter, maxDistance ) {
+
+                        self.previewViewport.camera.position = {
+                            x: barycenter.x + maxDistance,
+                            y: barycenter.y + maxDistance,
+                            z: barycenter.z + maxDistance
+                        }
+                        self.previewViewport.camera.target   = barycenter
+
+                    }
 
                 },
+                self.updateProgressBar.bind(self),
                 ( error ) => {
 
                     console.error( error )
