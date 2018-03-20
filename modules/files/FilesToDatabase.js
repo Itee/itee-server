@@ -115,8 +115,6 @@ class FilesToDatabase {
 
     _fileConversionSuccessCallback ( response, extraSuccessCallback, data ) {
 
-        console.log( data )
-
         if ( extraSuccessCallback ) {
             extraSuccessCallback( data )
             return
@@ -138,8 +136,6 @@ class FilesToDatabase {
     _fileConversionProgressCallback ( response, progress ) {
 
         console.log( progress )
-
-        const progressEvent = new ProgressEvent()
 
     }
 
