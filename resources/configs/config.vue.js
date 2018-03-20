@@ -17,7 +17,7 @@ const AppPage = {
             <THeader id="appHeader" style="min-height: 60px;">
                 <TAppBar height="60px">
                     <TContainer vAlign="center" hAlign="start">
-                        <TLabel class="tBrand" label="Geomap-Imagis" />
+                        <TLabel class="tBrand" icon="eye" label="Geomap-Imagis" />
                         <!--<TLabel class="tBrand" label="Geomap-Imagis" icon="rocket" />-->
                     </TContainer>
                     <TMenu>
@@ -58,9 +58,10 @@ const AppPage = {
             </TContent>
             
             <TFooter id="appFooter" style="min-height: 30px;">
-                <div id="footerProgress" class="progress" style="display: none; flex: 1; margin-left: 15px; margin-right: 15px;">
-                    <div class="progress-bar" role="progressbar" style="width: 0%;">0%</div>
-                </div>
+                <!--<TProgress id="footerProgress" style="display: none;" ></TProgress>-->
+                <!--<div id="footerProgress" class="progress" style="display: none; flex: 1; margin-left: 15px; margin-right: 15px;">-->
+                    <!--<div class="progress-bar" role="progressbar" style="width: 0%;">0%</div>-->
+                <!--</div>-->
             </TFooter>
             
             <TContainerCentered id="splashScreen" expand=true>
@@ -112,7 +113,7 @@ const AppPage = {
                 document.getElementById( 'appFooter' ).style.display    = 'flex'
                 document.getElementById( 'splashScreen' ).style.display = 'none'
 
-            }, 2000 )
+            }, 20 )
 
             self.isInit = true
 
@@ -871,13 +872,11 @@ const UploadPage = {
                 <h5 class="align-center">Selectionner les fichiers depuis votre ordinateur</h5>
                 <div class="input-group mb-3">
                     <div class="custom-file">
-                        <input id="js-upload-files" class="custom-file-input" type="file" name="files[]" multiple v-on:click="resetFileInputLabel" v-on:change="uploadFileInputData">
-                        <label for="js-upload-files" class="custom-file-label">Sélectionner les fichiers à téléverser</label>
+                        <input id="js-upload-files" class="custom-file-input" type="file" name="files[]" multiple v-on:click="resetFileInputLabel" v-on:change="displayPreview">
+                        <label v-if="filesNames.length > 0" for="js-upload-files" class="custom-file-label">{{filesNames.toString()}}</label>
+                        <label v-else for="js-upload-files" class="custom-file-label">Sélectionner les fichiers à téléverser</label>
                     </div>
                 </div>
-                <ul>
-                    <li v-for="fileName in filesNames">{{fileName}}</li>
-                </ul>
 
             </TContainerVertical>
      
@@ -911,6 +910,74 @@ const UploadPage = {
         </div>
     </TContainerVertical>
     
+    <div id="modal-file-data" v-on:click="onToggleModalVisibility('modal-file-data')" class="modal fade" tabindex="-1" role="dialog" aria-labelledby="exampleModalCenterTitle" aria-hidden="true">
+        <div class="modal-dialog modal-dialog-centered modal-lg" role="document">
+            <div v-on:click.stop class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="exampleModalLongTitle">{{modalData.title}}</h5>
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Close" v-on:click.stop="onToggleModalVisibility('modal-file-data')">
+                        <span aria-hidden="true">&times;</span>
+                    </button>
+                </div>
+                <div class="modal-body">
+            
+                    <TContainerHorizontal vAlign="stretch" hAlign="start" expand="true">
+
+                        <TContainerVertical class="container" vAlign="start" hAlign="stretch" expand="true">
+                            <div v-for="(inputValue, inputKey) in modalData.inputs" class="input-group mb-3">
+                                <div class="input-group-prepend">
+                                    <label class="input-group-text">{{inputKey}}</label>
+                                </div>
+                                <input v-if="(typeof inputValue === 'string')" type="text" class="form-control" v-model="modalData.inputs[inputKey]">
+                                <input v-else-if="(typeof inputValue === 'number')" type="number" class="form-control" v-model="modalData.inputs[inputKey]">
+                                <div v-else-if="(typeof inputValue === 'boolean')" class="form-control">
+                                    <input v-model="modalData.inputs[inputKey]" type="checkbox" :value="inputValue">
+                                </div>
+                                <div v-else-if="Array.isArray(inputValue)" class="list-group" style="flex: 1 1 auto;">
+                                    <div v-if="inputValue.length > 0" v-for="(arrayInputValue, index) in inputValue" class="list-group-item" >
+                                        <div class="input-group">
+                                            <input type="text" class="form-control" v-model="modalData.inputs[inputKey][index]">
+                                            <div class="input-group-append">
+                                                <button class="btn btn-danger" v-on:click="onDeleteModalArrayItem( key, inputKey, index )">X</button>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div class="list-group-item">
+                                        <button class="btn btn-success btn-block" v-on:click="onAddModalArrayItem( key, inputKey )">Ajouter</button>
+                                    </div>
+                                </div>
+                                <input v-else type="text" class="form-control" value="undefined" readonly>
+                            </div>
+                        </TContainerVertical>
+    
+                        <div class="d-flex flex-column align-items-center justify-content-center stretchChildren">
+                            <TDivider orientation="vertical" style="margin-bottom: 0px;" />
+                        </div>
+    
+                        <TContainerVertical class="container" vAlign="start" hAlign="stretch" expand="true">
+                            <TViewport3D
+                                :scene=previewViewport.scene 
+                                camera="perspective"
+                                control="orbit"
+                                effect="none"
+                                renderer="webgl"
+                                :showStat=false
+                                style="display:flex; flex: 1;"
+                             />
+                        </TContainerVertical>
+                     
+                    </TContainerHorizontal>
+                   
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-dismiss="modal" v-on:click.stop="onToggleModalVisibility('modal-file-data')">Fermer</button>
+                    <button type="button" class="btn btn-primary" v-on:click.stop="uploadFileInputData">Valider</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    
 </TContainerHorizontal>
     `,
     data:     function () {
@@ -925,7 +992,21 @@ const UploadPage = {
             buildingsManager: new Itee.TDataBaseManager(),
             buildings:        [],
             selectedBuilding: '',
-            filesNames:       []
+            filesNames:       [],
+            modalData:        {
+                title:  'Prévisualisation',
+                inputs: {
+                    rotateX:    0,
+                    rotateY:    0,
+                    rotateZ:    0,
+                    translateX: 0,
+                    translateY: 0,
+                    translateZ: 0
+                }
+            },
+            previewViewport:  {
+                scene: new Itee.Scene()
+            }
         }
 
     },
@@ -1037,7 +1118,7 @@ const UploadPage = {
 
         },
 
-        uploadFileInputData ( changeEvent ) {
+        displayPreview ( changeEvent ) {
             'use strict'
 
             const fileList = changeEvent.target.files
@@ -1050,7 +1131,66 @@ const UploadPage = {
             }
             this.filesNames = filesNames
 
+            this.onToggleModalVisibility( 'modal-file-data' )
+            this.importFilesToViewportScene( fileList )
+
+        },
+
+        importFilesToViewportScene ( fileList ) {
+            'use strict'
+            console.log( 'importFilesToViewportScene' )
+
+            if ( !fileList ) { return }
+
+            const self            = this
+            const universalLoader = new Itee.TUniversalLoader()
+
+            universalLoader.load(
+                fileList,
+                ( data ) => {
+
+                    self.previewViewport.scene.add( data )
+
+                },
+                ( progress ) => {
+
+                    console.log( progress )
+
+                },
+                ( error ) => {
+
+                    console.error( error )
+
+                },
+            )
+
+        },
+
+        uploadFileInputData ( changeEvent ) {
+            'use strict'
+
             this.startUpload( fileList )
+
+        },
+
+        onToggleModalVisibility ( modalId ) {
+            'use strict'
+
+            console.log( 'onToggleModalVisibility' )
+
+            const modal = document.getElementById( modalId )
+            if ( modal ) {
+
+                if ( modal.className === 'modal fade' ) {
+                    modal.className             = 'modal fade show'
+                    modal.style.display         = 'block'
+                    modal.style.backgroundColor = '#f9f9f980'
+                } else {
+                    modal.className     = 'modal fade'
+                    modal.style.display = 'none'
+                }
+
+            }
 
         },
 
@@ -1060,9 +1200,10 @@ const UploadPage = {
 
             const request              = new XMLHttpRequest()
             request.onreadystatechange = onReadyStateChange
-            request.upload.addEventListener( 'progress', onProgress, false )
-            request.onload  = onLoad
-            request.onerror = onError
+            request.upload.addEventListener( 'progress', onUploadProgress, false )
+            request.onload     = onLoad
+            request.onprogress = onServerProgress
+            request.onerror    = onError
 
             request.open( methods, route )
             request.send( data )
@@ -1087,10 +1228,25 @@ const UploadPage = {
 
             }
 
-            function onProgress ( progressEvent ) {
+            function onUploadProgress ( progressEvent ) {
 
-                var progressValue = Math.ceil( (progressEvent.loaded / progressEvent.total ) * 100 ) + '%';
-                view.setProgress( progressValue )
+                if ( progressEvent.lengthComputable ) {
+                    const progressValue = Math.ceil( (progressEvent.loaded / progressEvent.total ) * 100 ) + '%';
+                    view.setProgress( progressValue )
+                } else {
+                    // Impossible de calculer la progression puisque la taille totale est inconnue
+                }
+
+            }
+
+            function onServerProgress ( progressEvent ) {
+
+                if ( progressEvent.lengthComputable ) {
+                    const progressValue = Math.ceil( (progressEvent.loaded / progressEvent.total ) * 100 ) + '%';
+                    view.setProgress( progressValue )
+                } else {
+                    // Impossible de calculer la progression puisque la taille totale est inconnue
+                }
 
             }
 
@@ -1157,6 +1313,25 @@ const UploadPage = {
                     view.setLabel( fileName )
                     view.setError( 'Mauvaise extension de fichier: Les fichier sans extension ne sont pas géré !' )
 
+                } else if ( fileExtension === 'shp' || fileExtension === 'dbf' ) {
+
+                    var associateExtension = ( fileExtension === 'shp' ) ? 'dbf' : 'shp'
+                    view.setLabel( fileName + '/' + associateExtension )
+
+                    var associateFileName = fileName.split( '.' )[ 0 ] + '.' + associateExtension
+                    var associatedFile    = this.searchFileWithName( associateFileName, files )
+
+                    if ( !associatedFile ) {
+
+                        console.warn( `Impossible de trouver le fichier ${associateFileName} à associer...` );
+                        this.upload( this.convertFileToFormData( file ), 'POST', '../uploads', view )
+
+                    } else {
+
+                        this.upload( this.convertFilesToFormData( [ file, associatedFile ] ), 'POST', '../uploads', view )
+
+                    }
+
                 } else if ( fileExtension === 'obj' || fileExtension === 'mtl' ) {
 
                     var associateExtension = ( fileExtension === 'obj' ) ? 'mtl' : 'obj'
@@ -1213,7 +1388,7 @@ const UploadPage = {
         convertFilesToFormData ( files ) {
 
             let data = new FormData()
-            data.append( 'buildingId', document.getElementById( 'building-name-select' ).value )
+            data.append( 'parentId', this.$data.selectedBuilding )
 
             let file = undefined
             for ( let fileIndex = 0, numberOfFiles = files.length ; fileIndex < numberOfFiles ; fileIndex++ ) {
@@ -1227,8 +1402,7 @@ const UploadPage = {
         convertFileToFormData ( file ) {
 
             let data = new FormData()
-            data.append( 'buildingId', this.selectedBuilding )
-            data.append( 'fileSize', file.size )
+            data.append( 'parentId', this.selectedBuilding )
             data.append( file.name, file )
 
             return data
@@ -1365,11 +1539,17 @@ const UploadPage = {
 
         // récupérer les données lorsque la vue est créée et
         // que les données sont déjà observées
-
         this.companiesManager.basePath = '/companies'
         this.sitesManager.basePath     = '/sites'
         this.buildingsManager.basePath = '/buildings'
         this.readCompanies( {} ) // all
+
+        // Create default stuff for 3d preview
+        const envGroup = new Itee.Group()
+        envGroup.add( new Itee.GridHelper( 20, 20 ) )
+
+        this.previewViewport.scene.add( envGroup )
+
     }
 
 }
@@ -1379,6 +1559,9 @@ const ViewerPage = {
    <TContainerVertical vAlign="start" hAlign="stretch" expand="true">
      
         <TToolBar>
+            <TToolItem icon="hand-pointer" tooltip="Sélection" :onClick=toggleSelectionMode />
+            <TToolItem icon="wifi" tooltip="Rayon X" :onClick=alertFooBar />
+            <TToolItem icon="cut" tooltip="Outil de découpe" :onClick=alertFooBar />
             <TToolDropDown popAt="bottomLeft" icon="crosshairs" tooltip="Outils de mesure" >
                 <TToolItem icon="mars" label="Segment" tooltip="Prendre une distance entre un point A et un point B" :onClick=setMesureModeOfType onClickData="segment" />
                 <TToolItem icon="share-alt" label="PolyLigne" tooltip="Prendre des distances entre plusieurs points qui se suivent" :onClick=setMesureModeOfType onClickData="polyline" />
@@ -1391,9 +1574,6 @@ const ViewerPage = {
                 <TToolItem class="disabled" :icon="['fab', 'dribbble']" label="Sphère" tooltip="Volume sphèrique" :onClick=setMesureModeOfType onClickData="sphere" />
                 <TToolItem class="disabled" icon="cube" label="Cube" tooltip="Volume cubique" :onClick=setMesureModeOfType onClickData="cube" />
             </TToolDropDown>
-            <TToolItem icon="wifi" tooltip="Rayon X" :onClick=alertFooBar />
-            <TToolItem icon="cut" tooltip="Outil de découpe" :onClick=alertFooBar />
-            <TToolItem icon="hand-pointer" tooltip="Sélection" :onClick=alertFooBar />
 
             <TDivider orientation="vertical" />
 
@@ -1412,10 +1592,11 @@ const ViewerPage = {
             </TToolDropDown>
 
             <TDivider orientation="vertical" />
-
+            
+            <TToolItem icon="chart-bar" tooltip="Afficher les statistiques webgl" :onClick=toggleViewportStats />
             <TToolItem icon="cloud" :onClick=alertFooBar />
             <TToolDropDown popAt="bottomLeft" icon="th">
-                <TToolItem label="Plan XY" :onClick=addCube />
+                <TToolItem label="Plan XY" :onClick=addGrid />
                 <TToolItem label="Plan XZ" :onClick=alertFooBar />
                 <TToolItem label="Plan YZ" :onClick=alertFooBar />
             </TToolDropDown>
@@ -1428,10 +1609,14 @@ const ViewerPage = {
                 :scene=viewport.scene 
                 :camera=viewport.camera
                 :control=viewport.control
+                :effect=viewport.effect
                 :renderer=viewport.renderer
+                :showStat=viewport.showStat
                 :backgroundColor=0x232323
              />
         </TSplitter>
+        
+        <TProgress v-if="showProgressBar" v-bind:done=progressBar.done v-bind:todo=progressBar.todo></TProgress>
         
     </TContainerVertical>
     `,
@@ -1445,16 +1630,47 @@ const ViewerPage = {
             viewport:          {
                 scene:           new Itee.Scene(),
                 camera:          'perspective',
+                control:         'orbital',
+                effect:          'normal',
                 renderer:        new Itee.WebGLRenderer( { antialias: true } ),
+                showStat:        true,
                 backgroundColor: 0x123456,
-                control:         'orbital'
             },
-            treeItems:         [],
-            progressBarTimeoutId: undefined,
+            progressBar:       {
+                timeoutId: undefined,
+                done:      0,
+                todo:      0
+            },
+            showProgressBar:   false
+
         }
 
     },
     methods:  {
+
+        addObjectOfType ( objectType ) {
+            'use strict'
+
+            const newObject = new Itee[ objectType ]()
+            this.viewport.scene.add( newObject )
+
+        },
+
+        ////
+
+        toggleSelectionMode () {
+            'use strict'
+
+            this.viewport.isRaycastable = !this.viewport.isRaycastable
+
+        },
+
+        setMesureModeOfType ( effectType ) {
+            'use strict'
+
+        },
+
+        ////
 
         setCameraOfType ( cameraType ) {
             'use strict'
@@ -1475,8 +1691,12 @@ const ViewerPage = {
 
         },
 
-        setMesureModeOfType ( effectType ) {
+        ////
+
+        toggleViewportStats () {
             'use strict'
+
+            this.viewport.showStat = !this.viewport.showStat
 
         },
 
@@ -1485,156 +1705,89 @@ const ViewerPage = {
             alert( 'foo bar' )
         },
 
-        addCube () {
+        addGrid () {
             'use strict'
 
-            const mainGroup     = new Itee.Group()
-            mainGroup.name      = "MainGroup"
-            mainGroup.modifiers = [
-                {
-                    type:    'checkbox',
-                    value:   'checked',
-                    onClick: this.toggleVisibilityOf( mainGroup )
-                }
-            ]
-            this.viewport.scene.add( mainGroup )
-
-            const group     = new Itee.Group()
-            group.name      = "MyGroup"
-            group.modifiers = [
-                {
-                    type:    'checkbox',
-                    value:   'checked',
-                    onClick: this.toggleVisibilityOf( group )
-                },
-                {
-                    type:     'range',
-                    onChange: function onChangeHandler ( changeEvent ) {
-
-                        const opacity  = changeEvent.target.valueAsNumber / 100
-                        const children = group.children
-
-                        let child = undefined
-                        for ( let childIndex = 0, numberOfChildren = children.length ; childIndex < numberOfChildren ; childIndex++ ) {
-                            child = children[ childIndex ]
-
-                            if ( !child.material.transparent ) {
-                                child.material.transparent = true
-                            }
-                            child.material.opacity = opacity
-
-                        }
-
-                    }
-                }
-            ]
-            mainGroup.add( group )
-
-            const gridHelperXZ_10     = new Itee.GridHelper( 20, 20 )
-            gridHelperXZ_10.name      = "gridHelperXZ_10"
-            gridHelperXZ_10.modifiers = [
-                {
-                    type:    'checkbox',
-                    value:   'checked',
-                    onClick: this.toggleVisibilityOf( gridHelperXZ_10 )
-                }
-            ]
-            group.add( gridHelperXZ_10 )
-
-            const gridHelperXZ_100     = new Itee.GridHelper( 200, 20 )
-            gridHelperXZ_100.name      = "gridHelperXZ"
-            gridHelperXZ_100.modifiers = [
-                {
-                    type:    'checkbox',
-                    value:   'checked',
-                    onClick: this.toggleVisibilityOf( gridHelperXZ_100 )
-                }
-            ]
-            group.add( gridHelperXZ_100 )
-
-            const gridHelperXZ_1000     = new Itee.GridHelper( 2000, 20 )
-            gridHelperXZ_1000.name      = "gridHelperXZ_10"
-            gridHelperXZ_1000.modifiers = [
-                {
-                    type:    'checkbox',
-                    value:   'checked',
-                    onClick: this.toggleVisibilityOf( gridHelperXZ_1000 )
-                }
-            ]
-            group.add( gridHelperXZ_1000 )
-
-            // ----
-
-            const cubeGroup     = new Itee.Group()
-            cubeGroup.name      = "Cubes"
-            cubeGroup.modifiers = [
-                {
-                    type:    'checkbox',
-                    value:   'checked',
-                    onClick: this.toggleVisibilityOf( cubeGroup )
-                }
-            ]
-            mainGroup.add( cubeGroup )
-
-            const geometry   = new Itee.BoxBufferGeometry( 1, 1, 1 )
-            const material   = new Itee.MeshPhongMaterial( 0x0096FF )
-            const tCube1     = new Itee.Mesh( geometry, material )
-            tCube1.name      = "tCube1"
-            tCube1.modifiers = [
-                {
-                    type:    'checkbox',
-                    value:   'checked',
-                    onClick: this.toggleVisibilityOf( tCube1 )
-                },
-                {
-                    type:     'range',
-                    onChange: function onChangeHandler ( changeEvent ) {
-
-                        const opacity = changeEvent.target.valueAsNumber / 100
-
-                        if ( !tCube1.material.transparent ) {
-                            tCube1.material.transparent = true
-                        }
-
-                        tCube1.material.opacity = opacity
-
-                    }
-                }
-            ]
-            cubeGroup.add( tCube1 )
-
-        },
-
-        addTreeItem () {
-            'use strict'
-
-            //            if( !parent.children ) {
-            //                parent.children = []
-            //            }
-
-            this.treeItems.push( {
-                id:        "quxId",
-                name:      "quxName",
-                isChecked: false,
-                modifiers: [
+            let aidesGroup = this.viewport.scene.getObjectByName( "Environement" )
+            if ( !aidesGroup ) {
+                aidesGroup           = new Itee.Group()
+                aidesGroup.name      = "Environement"
+                aidesGroup.modifiers = [
                     {
-                        type:    'button',
-                        value:   'Add',
-                        onClick: this.addTreeItem
+                        type:    'checkbox',
+                        value:   'checked',
+                        onClick: this.toggleVisibilityOf( aidesGroup )
                     },
                     {
-                        type:    'button',
-                        value:   'Remove',
-                        onClick: this.removeTreeItem
+                        type:     'range',
+                        onChange: function onChangeHandler ( changeEvent ) {
+
+                            const opacity  = changeEvent.target.valueAsNumber / 100
+                            const children = group.children
+
+                            let child = undefined
+                            for ( let childIndex = 0, numberOfChildren = children.length ; childIndex < numberOfChildren ; childIndex++ ) {
+                                child = children[ childIndex ]
+
+                                if ( !child.material.transparent ) {
+                                    child.material.transparent = true
+                                }
+                                child.material.opacity = opacity
+
+                            }
+
+                        }
                     }
                 ]
-            } )
+                this.viewport.scene.add( aidesGroup )
+            }
 
-        },
+            let gridGroup = aidesGroup.getObjectByName( "Grilles" )
+            if ( !gridGroup ) {
+                gridGroup           = new Itee.Group()
+                gridGroup.name      = "Grilles"
+                gridGroup.modifiers = [
+                    {
+                        type:    'checkbox',
+                        value:   'checked',
+                        onClick: this.toggleVisibilityOf( gridGroup )
+                    },
+                    {
+                        type:     'range',
+                        onChange: function onChangeHandler ( changeEvent ) {
 
-        removeTreeItem ( parent ) {
-            'use strict'
-            console.log( "remove item" )
+                            const opacity  = changeEvent.target.valueAsNumber / 100
+                            const children = group.children
+
+                            let child = undefined
+                            for ( let childIndex = 0, numberOfChildren = children.length ; childIndex < numberOfChildren ; childIndex++ ) {
+                                child = children[ childIndex ]
+
+                                if ( !child.material.transparent ) {
+                                    child.material.transparent = true
+                                }
+                                child.material.opacity = opacity
+
+                            }
+
+                        }
+                    }
+                ]
+                aidesGroup.add( gridGroup )
+            }
+
+            const gridHelperXZ_1 = new Itee.GridHelper( 20, 20 )
+            gridHelperXZ_1.name  = "Grille XY - Mètrique"
+            gridGroup.add( gridHelperXZ_1 )
+
+            const gridHelperXZ_10 = new Itee.GridHelper( 200, 20 )
+            gridHelperXZ_10.name  = "Grille XY - Décamètrique"
+            gridGroup.add( gridHelperXZ_10 )
+
+            const gridHelperXZ_100 = new Itee.GridHelper( 2000, 20 )
+            gridHelperXZ_100.name  = "Grille XY - Hectomètrique"
+            gridGroup.add( gridHelperXZ_100 )
+
         },
 
         filterTreeItem ( item ) {
@@ -1658,29 +1811,21 @@ const ViewerPage = {
         onProgress ( loaded, total ) {
             'use strict'
 
-            const progressBar = document.getElementById( 'footerProgress' )
-
-
-            let progressValue                     = Math.ceil( ( loaded / total ) * 100 ) // Todo: should be floor but nnot retrieve all item so waiting fix
-            if ( progressValue > 0 ) {
-
-                progressBar.style.display             = 'flex'
-
+            if ( !this.showProgressBar ) {
+                this.showProgressBar = true
             }
 
-            progressBar.children[ 0 ].style.width = progressValue + '%'
-            progressBar.children[ 0 ].innerText   = `${loaded}/${total}`
+            this.progressBar.done = loaded
+            this.progressBar.todo = total
 
-            if ( progressValue === 100 ) {
+            if ( loaded === total ) {
 
-                if( this.progressBarTimeoutId ) {
-                    clearTimeout( this.progressBarTimeoutId )
+                if ( this.progressBar.timeoutId ) {
+                    clearTimeout( this.progressBar.timeoutId )
                 }
 
-                this.progressBarTimeoutId = setTimeout( () => {
-                    progressBar.style.display             = 'none'
-                    progressBar.children[ 0 ].style.width = '0%'
-                    progressBar.children[ 0 ].innerText   = ''
+                this.progressBar.timeoutId = setTimeout( () => {
+                    this.showProgressBar = false
                 }, 1000 )
 
             }
