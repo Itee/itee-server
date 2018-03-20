@@ -128,25 +128,27 @@ class ThreeToMongoDB {
             return item
         } )
 
-        if ( object.isMesh ) {
+        const objectType = object.type
+
+        if ( objectType === 'Mesh' ) {
 
             this._saveMesh( object, childrenIds, onError, onSuccess )
 
-        } else if ( object.type === 'LineSegments' ) {
+        } else if ( objectType === 'LineSegments' ) {
 
             this._saveLineSegment( object, childrenIds, onError, onSuccess )
 
-        } else if ( object.type === 'Group' || object.type === 'Object3D' ) {
+        } else if ( objectType === 'Group' || objectType === 'Object3D' ) {
 
             this._saveObject3D( object, childrenIds, onError, onSuccess )
 
-        } else if ( object.type === 'Scene' ) {
+        } else if ( objectType === 'Scene' ) {
 
             this._saveScene( object, childrenIds, onError, onSuccess )
 
         } else {
 
-            console.error( `Unknown object type: ${object.type}` )
+            console.error( `Unknown object type: ${objectType}` )
 
             // In view to allow checkNextChild without break we return a null id and clear it before save in db
             onSuccess( null )
