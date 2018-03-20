@@ -1201,10 +1201,22 @@ const UploadPage = {
 
         },
 
-        uploadFileInputData ( changeEvent ) {
+        updateProgressBar ( progressEvent ) {
             'use strict'
 
-            this.startUpload( fileList )
+            if( progressEvent.lengthComputable ) {
+
+                this.progressBarData.done = progressEvent.loaded
+                this.progressBarData.todo = progressEvent.total
+
+            }
+
+        },
+
+        toggleProgressBarVisibility () {
+            'use strict'
+
+            this.progressBarData.isVisible = !this.progressBarData.isVisible
 
         },
 
