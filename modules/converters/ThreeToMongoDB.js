@@ -218,60 +218,60 @@ class ThreeToMongoDB {
 
     _saveScene ( scene, childrenIds, onError, onSuccess ) {
 
-        const sceneModel = this._getSceneModel( scene, childrenIds )
-        sceneModel.save()
-                  .then( savedScene => {
+        this._getSceneModel( scene, childrenIds )
+            .save()
+            .then( savedScene => {
 
-                      const sceneId = savedScene.id
+                const sceneId = savedScene.id
 
-                      updateChildren( onError, onSuccess )
+                updateChildren( onError, onSuccess )
 
-                      //                  updateBuilding( onError, updateChildren.bind( this, onError, onSuccess ) )
-                      //
-                      //                  function updateBuilding ( onError, onSuccess ) {
-                      //
-                      //                      BuildingModel.findOneAndUpdate( { _id: _buildingId }, { $push: { scenes: sceneId } }, ( error ) => {
-                      //
-                      //                          if ( error ) {
-                      //                              onError( error )
-                      //                          } else {
-                      //                              onSuccess()
-                      //                          }
-                      //
-                      //                      } )
-                      //
-                      //                  }
+                //                  updateBuilding( onError, updateChildren.bind( this, onError, onSuccess ) )
+                //
+                //                  function updateBuilding ( onError, onSuccess ) {
+                //
+                //                      BuildingModel.findOneAndUpdate( { _id: _buildingId }, { $push: { scenes: sceneId } }, ( error ) => {
+                //
+                //                          if ( error ) {
+                //                              onError( error )
+                //                          } else {
+                //                              onSuccess()
+                //                          }
+                //
+                //                      } )
+                //
+                //                  }
 
-                      function updateChildren ( onError, onSuccess ) {
+                function updateChildren ( onError, onSuccess ) {
 
-                          const savedChildrenIds = savedScene._doc.children
-                          const numberOfChildren = savedChildrenIds.length
+                    const savedChildrenIds = savedScene._doc.children
+                    const numberOfChildren = savedChildrenIds.length
 
-                          let endUpdates = 0
-                          let childIndex
-                          let childId
+                    let endUpdates = 0
+                    let childIndex
+                    let childId
 
-                          for ( childIndex = 0 ; childIndex < numberOfChildren ; childIndex++ ) {
+                    for ( childIndex = 0 ; childIndex < numberOfChildren ; childIndex++ ) {
 
-                              childId = savedChildrenIds[ childIndex ]
+                        childId = savedChildrenIds[ childIndex ]
 
-                              MeshModel.update( { _id: childId }, { $set: { parent: sceneId } }, () => {
+                        MeshModel.update( { _id: childId }, { $set: { parent: sceneId } }, () => {
 
-                                  endUpdates++
-                                  if ( endUpdates < numberOfChildren ) {
-                                      return
-                                  }
+                            endUpdates++
+                            if ( endUpdates < numberOfChildren ) {
+                                return
+                            }
 
-                                  onSuccess( sceneId )
+                            onSuccess( sceneId )
 
-                              } );
+                        } );
 
-                          }
+                    }
 
-                      }
+                }
 
-                  } )
-                  .catch( onError )
+            } )
+            .catch( onError )
 
     }
 
@@ -448,14 +448,14 @@ class ThreeToMongoDB {
 
     _saveMeshInDatabase ( object, childrenIds, geometryId, materialId, onError, onSuccess ) {
 
-        const meshModel = this._getMeshModel( object, childrenIds, geometryId, materialId )
-        meshModel.save()
-                 .then( savedMesh => {
+        this._getMeshModel( object, childrenIds, geometryId, materialId )
+            .save()
+            .then( savedMesh => {
 
-                     onSuccess( savedMesh.id )
+                onSuccess( savedMesh.id )
 
-                 } )
-                 .catch( onError )
+            } )
+            .catch( onError )
 
     }
 
@@ -536,14 +536,14 @@ class ThreeToMongoDB {
 
     _saveLineSegmentInDatabase ( lineSegment, childrenIds, geometryId, materialIds, onError, onSuccess ) {
 
-        const lineSegmentModel = this._getLineSegmentModel( lineSegment, childrenIds, geometryId, materialIds )
-        lineSegmentModel.save()
-                        .then( savedLineSegment => {
+        this._getLineSegmentModel( lineSegment, childrenIds, geometryId, materialIds )
+            .save()
+            .then( savedLineSegment => {
 
-                            onSuccess( savedLineSegment.id )
+                onSuccess( savedLineSegment.id )
 
-                        } )
-                        .catch( onError )
+            } )
+            .catch( onError )
 
     }
 
@@ -555,35 +555,37 @@ class ThreeToMongoDB {
 
     }
 
-    _getGeometryModel ( geometry ) {
+    _getGeometryModel ( geometry, onError, onSuccess ) {
 
         const geometryType = geometry.type
 
         if ( geometryType === 'Geometry' ) {
 
-            return GeometryModel( {
-                uuid:                    geometry.uuid,
-                name:                    geometry.name,
-                type:                    geometry.type,
-                vertices:                geometry.vertices,
-                colors:                  geometry.colors,
-                faces:                   geometry.faces,
-                faceVertexUvs:           geometry.faceVertexUvs,
-                morphTargets:            geometry.morphTargets,
-                morphNormals:            geometry.morphNormals,
-                skinWeights:             geometry.skinWeights,
-                skinIndices:             geometry.skinIndices,
-                lineDistances:           geometry.lineDistances,
-                boundingBox:             null,
-                boundingSphere:          null,
-                elementsNeedUpdate:      geometry.elementsNeedUpdate,
-                verticesNeedUpdate:      geometry.verticesNeedUpdate,
-                uvsNeedUpdate:           geometry.uvsNeedUpdate,
-                normalsNeedUpdate:       geometry.normalsNeedUpdate,
-                colorsNeedUpdate:        geometry.colorsNeedUpdate,
-                lineDistancesNeedUpdate: geometry.lineDistancesNeedUpdate,
-                groupsNeedUpdate:        geometry.groupsNeedUpdate
-            } )
+            onSuccess(
+                GeometryModel( {
+                    uuid:                    geometry.uuid,
+                    name:                    geometry.name,
+                    type:                    geometry.type,
+                    vertices:                geometry.vertices,
+                    colors:                  geometry.colors,
+                    faces:                   geometry.faces,
+                    faceVertexUvs:           geometry.faceVertexUvs,
+                    morphTargets:            geometry.morphTargets,
+                    morphNormals:            geometry.morphNormals,
+                    skinWeights:             geometry.skinWeights,
+                    skinIndices:             geometry.skinIndices,
+                    lineDistances:           geometry.lineDistances,
+                    boundingBox:             null,
+                    boundingSphere:          null,
+                    elementsNeedUpdate:      geometry.elementsNeedUpdate,
+                    verticesNeedUpdate:      geometry.verticesNeedUpdate,
+                    uvsNeedUpdate:           geometry.uvsNeedUpdate,
+                    normalsNeedUpdate:       geometry.normalsNeedUpdate,
+                    colorsNeedUpdate:        geometry.colorsNeedUpdate,
+                    lineDistancesNeedUpdate: geometry.lineDistancesNeedUpdate,
+                    groupsNeedUpdate:        geometry.groupsNeedUpdate
+                } )
+            )
 
         } else if ( geometryType === 'BufferGeometry' ) {
 
@@ -681,20 +683,22 @@ class ThreeToMongoDB {
                 }
             }
 
-            return BufferGeometryModel( {
-                attributes:     attributes,
-                boundingBox:    null,
-                boundingSphere: null,
-                drawRange:      geometry.drawRange,
-                groups:         geometry.groups,
-                index:          indexes,
-                name:           geometry.name,
-                uuid:           geometry.uuid
-            } )
+            onSuccess(
+                BufferGeometryModel( {
+                    attributes:     attributes,
+                    boundingBox:    null,
+                    boundingSphere: null,
+                    drawRange:      geometry.drawRange,
+                    groups:         geometry.groups,
+                    index:          indexes,
+                    name:           geometry.name,
+                    uuid:           geometry.uuid
+                } )
+            )
 
         } else {
 
-            console.error( 'Invalide geometry type !' )
+            onError( `Invalid geometry type: ${geometryType}` )
 
         }
 
@@ -711,18 +715,21 @@ class ThreeToMongoDB {
 
         } else {
 
-            const geometryModel = this._getGeometryModel( geometry )
-            geometryModel.save()
-                         .then( savedGeometry => {
+            this._getGeometryModel( geometry, onError, ( geometryModel ) => {
 
-                             // Add geometry id to cache
-                             self._geometryCache[ savedGeometry.uuid ] = savedGeometry.id
+                geometryModel.save()
+                             .then( savedGeometry => {
 
-                             // Return id
-                             onSuccess( savedGeometry.id )
+                                 // Add geometry id to cache
+                                 self._geometryCache[ savedGeometry.uuid ] = savedGeometry.id
 
-                         } )
-                         .catch( onError )
+                                 // Return id
+                                 onSuccess( savedGeometry.id )
+
+                             } )
+                             .catch( onError )
+
+            } )
 
         }
 
@@ -736,170 +743,174 @@ class ThreeToMongoDB {
 
     }
 
-    _getMaterialModel ( material ) {
+    _getMaterialModel ( material, onError, onSuccess ) {
 
-        let materialModel = undefined
+        let materialType = material.type
 
-        if ( material.type === "MeshPhongMaterial" ) {
+        if ( materialType === "MeshPhongMaterial" ) {
 
-            materialModel = MeshPhongMaterialModel( {
-                uuid:                material.uuid,
-                name:                material.name,
-                type:                material.type,
-                fog:                 material.fog,
-                lights:              material.lights,
-                blending:            material.blending,
-                side:                material.side,
-                flatShading:         material.flatShading,
-                vertexColors:        material.vertexColors,
-                opacity:             material.opacity,
-                transparent:         material.transparent,
-                blendSrc:            material.blendSrc,
-                blendDst:            material.blendDst,
-                blendEquation:       material.blendEquation,
-                blendSrcAlpha:       material.blendSrcAlpha,
-                blendDstAlpha:       material.blendDstAlpha,
-                blendEquationAlpha:  material.blendEquationAlpha,
-                depthFunc:           material.depthFunc,
-                depthTest:           material.depthTest,
-                depthWrite:          material.depthWrite,
-                clippingPlanes:      material.clippingPlanes,
-                clipIntersection:    material.clipIntersection,
-                clipShadows:         material.clipShadows,
-                colorWrite:          material.colorWrite,
-                precision:           material.precision,
-                polygonOffset:       material.polygonOffset,
-                polygonOffsetFactor: material.polygonOffsetFactor,
-                polygonOffsetUnits:  material.polygonOffsetUnits,
-                dithering:           material.dithering,
-                alphaTest:           material.alphaTest,
-                premultipliedAlpha:  material.premultipliedAlpha,
-                overdraw:            material.overdraw,
-                visible:             material.visible,
-                userData:            this._parseUserData( material.userData ),
-                needsUpdate:         material.needsUpdate,
-                color:               material.color,
-                specular:            material.specular,
-                shininess:           material.shininess,
-                map:                 material.map,
-                lightMap:            material.lightMap,
-                lightMapIntensity:   material.lightMapIntensity,
-                aoMap:               material.aoMap,
-                aoMapIntensity:      material.aoMapIntensity,
-                emissive:            material.emissive,
-                emissiveIntensity:   material.emissiveIntensity,
-                emissiveMap:         material.emissiveMap,
-                bumpMap:             material.bumpMap,
-                bumpScale:           material.bumpScale,
-                normalMap:           material.normalMap,
-                normalScale:         material.normalScale,
-                displacementMap:     material.displacementMap,
-                displacementScale:   material.displacementScale,
-                displacementBias:    material.displacementBias,
-                specularMap:         material.specularMap,
-                alphaMap:            material.alphaMap,
-                envMap:              material.alphaMap,
-                combine:             material.combine,
-                reflectivity:        material.reflectivity,
-                refractionRatio:     material.refractionRatio,
-                wireframe:           material.wireframe,
-                wireframeLinewidth:  material.wireframeLinewidth,
-                wireframeLinecap:    material.wireframeLinecap,
-                wireframeLinejoin:   material.wireframeLinejoin,
-                skinning:            material.skinning,
-                morphTargets:        material.morphTargets,
-                morphNormals:        material.morphNormals
-            } )
+            onSuccess(
+                MeshPhongMaterialModel( {
+                    uuid:                material.uuid,
+                    name:                material.name,
+                    type:                material.type,
+                    fog:                 material.fog,
+                    lights:              material.lights,
+                    blending:            material.blending,
+                    side:                material.side,
+                    flatShading:         material.flatShading,
+                    vertexColors:        material.vertexColors,
+                    opacity:             material.opacity,
+                    transparent:         material.transparent,
+                    blendSrc:            material.blendSrc,
+                    blendDst:            material.blendDst,
+                    blendEquation:       material.blendEquation,
+                    blendSrcAlpha:       material.blendSrcAlpha,
+                    blendDstAlpha:       material.blendDstAlpha,
+                    blendEquationAlpha:  material.blendEquationAlpha,
+                    depthFunc:           material.depthFunc,
+                    depthTest:           material.depthTest,
+                    depthWrite:          material.depthWrite,
+                    clippingPlanes:      material.clippingPlanes,
+                    clipIntersection:    material.clipIntersection,
+                    clipShadows:         material.clipShadows,
+                    colorWrite:          material.colorWrite,
+                    precision:           material.precision,
+                    polygonOffset:       material.polygonOffset,
+                    polygonOffsetFactor: material.polygonOffsetFactor,
+                    polygonOffsetUnits:  material.polygonOffsetUnits,
+                    dithering:           material.dithering,
+                    alphaTest:           material.alphaTest,
+                    premultipliedAlpha:  material.premultipliedAlpha,
+                    overdraw:            material.overdraw,
+                    visible:             material.visible,
+                    userData:            this._parseUserData( material.userData ),
+                    needsUpdate:         material.needsUpdate,
+                    color:               material.color,
+                    specular:            material.specular,
+                    shininess:           material.shininess,
+                    map:                 material.map,
+                    lightMap:            material.lightMap,
+                    lightMapIntensity:   material.lightMapIntensity,
+                    aoMap:               material.aoMap,
+                    aoMapIntensity:      material.aoMapIntensity,
+                    emissive:            material.emissive,
+                    emissiveIntensity:   material.emissiveIntensity,
+                    emissiveMap:         material.emissiveMap,
+                    bumpMap:             material.bumpMap,
+                    bumpScale:           material.bumpScale,
+                    normalMap:           material.normalMap,
+                    normalScale:         material.normalScale,
+                    displacementMap:     material.displacementMap,
+                    displacementScale:   material.displacementScale,
+                    displacementBias:    material.displacementBias,
+                    specularMap:         material.specularMap,
+                    alphaMap:            material.alphaMap,
+                    envMap:              material.alphaMap,
+                    combine:             material.combine,
+                    reflectivity:        material.reflectivity,
+                    refractionRatio:     material.refractionRatio,
+                    wireframe:           material.wireframe,
+                    wireframeLinewidth:  material.wireframeLinewidth,
+                    wireframeLinecap:    material.wireframeLinecap,
+                    wireframeLinejoin:   material.wireframeLinejoin,
+                    skinning:            material.skinning,
+                    morphTargets:        material.morphTargets,
+                    morphNormals:        material.morphNormals
+                } )
+            )
 
-        } else if ( material.type === "LineBasicMaterial" ) {
+        } else if ( materialType === "LineBasicMaterial" ) {
 
-            materialModel = LineBasicMaterialModel( {
-                uuid:                material.uuid,
-                name:                material.name,
-                type:                material.type,
-                fog:                 material.fog,
-                lights:              material.lights,
-                blending:            material.blending,
-                side:                material.side,
-                flatShading:         material.flatShading,
-                vertexColors:        material.vertexColors,
-                opacity:             material.opacity,
-                transparent:         material.transparent,
-                blendSrc:            material.blendSrc,
-                blendDst:            material.blendDst,
-                blendEquation:       material.blendEquation,
-                blendSrcAlpha:       material.blendSrcAlpha,
-                blendDstAlpha:       material.blendDstAlpha,
-                blendEquationAlpha:  material.blendEquationAlpha,
-                depthFunc:           material.depthFunc,
-                depthTest:           material.depthTest,
-                depthWrite:          material.depthWrite,
-                clippingPlanes:      material.clippingPlanes,
-                clipIntersection:    material.clipIntersection,
-                clipShadows:         material.clipShadows,
-                colorWrite:          material.colorWrite,
-                precision:           material.precision,
-                polygonOffset:       material.polygonOffset,
-                polygonOffsetFactor: material.polygonOffsetFactor,
-                polygonOffsetUnits:  material.polygonOffsetUnits,
-                dithering:           material.dithering,
-                alphaTest:           material.alphaTest,
-                premultipliedAlpha:  material.premultipliedAlpha,
-                overdraw:            material.overdraw,
-                visible:             material.visible,
-                userData:            this._parseUserData( material.userData ),
-                needsUpdate:         material.needsUpdate,
-                color:               material.color,
-                light:               material.light,
-                lineWidth:           material.lineWidth,
-                linecap:             material.linecap,
-                linejoin:            material.linejoin
+            onSuccess(
+                LineBasicMaterialModel( {
+                    uuid:                material.uuid,
+                    name:                material.name,
+                    type:                material.type,
+                    fog:                 material.fog,
+                    lights:              material.lights,
+                    blending:            material.blending,
+                    side:                material.side,
+                    flatShading:         material.flatShading,
+                    vertexColors:        material.vertexColors,
+                    opacity:             material.opacity,
+                    transparent:         material.transparent,
+                    blendSrc:            material.blendSrc,
+                    blendDst:            material.blendDst,
+                    blendEquation:       material.blendEquation,
+                    blendSrcAlpha:       material.blendSrcAlpha,
+                    blendDstAlpha:       material.blendDstAlpha,
+                    blendEquationAlpha:  material.blendEquationAlpha,
+                    depthFunc:           material.depthFunc,
+                    depthTest:           material.depthTest,
+                    depthWrite:          material.depthWrite,
+                    clippingPlanes:      material.clippingPlanes,
+                    clipIntersection:    material.clipIntersection,
+                    clipShadows:         material.clipShadows,
+                    colorWrite:          material.colorWrite,
+                    precision:           material.precision,
+                    polygonOffset:       material.polygonOffset,
+                    polygonOffsetFactor: material.polygonOffsetFactor,
+                    polygonOffsetUnits:  material.polygonOffsetUnits,
+                    dithering:           material.dithering,
+                    alphaTest:           material.alphaTest,
+                    premultipliedAlpha:  material.premultipliedAlpha,
+                    overdraw:            material.overdraw,
+                    visible:             material.visible,
+                    userData:            this._parseUserData( material.userData ),
+                    needsUpdate:         material.needsUpdate,
+                    color:               material.color,
+                    light:               material.light,
+                    lineWidth:           material.lineWidth,
+                    linecap:             material.linecap,
+                    linejoin:            material.linejoin
 
-            } )
+                } )
+            )
 
         } else {
 
-            materialModel = MaterialModel( {
-                uuid:                material.uuid,
-                name:                material.name,
-                type:                material.type,
-                fog:                 material.fog,
-                lights:              material.lights,
-                blending:            material.blending,
-                side:                material.side,
-                flatShading:         material.flatShading,
-                vertexColors:        material.vertexColors,
-                opacity:             material.opacity,
-                transparent:         material.transparent,
-                blendSrc:            material.blendSrc,
-                blendDst:            material.blendDst,
-                blendEquation:       material.blendEquation,
-                blendSrcAlpha:       material.blendSrcAlpha,
-                blendDstAlpha:       material.blendDstAlpha,
-                blendEquationAlpha:  material.blendEquationAlpha,
-                depthFunc:           material.depthFunc,
-                depthTest:           material.depthTest,
-                depthWrite:          material.depthWrite,
-                clippingPlanes:      material.clippingPlanes,
-                clipIntersection:    material.clipIntersection,
-                clipShadows:         material.clipShadows,
-                colorWrite:          material.colorWrite,
-                precision:           material.precision,
-                polygonOffset:       material.polygonOffset,
-                polygonOffsetFactor: material.polygonOffsetFactor,
-                polygonOffsetUnits:  material.polygonOffsetUnits,
-                dithering:           material.dithering,
-                alphaTest:           material.alphaTest,
-                premultipliedAlpha:  material.premultipliedAlpha,
-                overdraw:            material.overdraw,
-                visible:             material.visible,
-                userData:            this._parseUserData( material.userData ),
-                needsUpdate:         material.needsUpdate
-            } )
+            onError( `Invalid material type: ${materialType}` )
+
+            //            materialModel = MaterialModel( {
+            //                uuid:                material.uuid,
+            //                name:                material.name,
+            //                type:                material.type,
+            //                fog:                 material.fog,
+            //                lights:              material.lights,
+            //                blending:            material.blending,
+            //                side:                material.side,
+            //                flatShading:         material.flatShading,
+            //                vertexColors:        material.vertexColors,
+            //                opacity:             material.opacity,
+            //                transparent:         material.transparent,
+            //                blendSrc:            material.blendSrc,
+            //                blendDst:            material.blendDst,
+            //                blendEquation:       material.blendEquation,
+            //                blendSrcAlpha:       material.blendSrcAlpha,
+            //                blendDstAlpha:       material.blendDstAlpha,
+            //                blendEquationAlpha:  material.blendEquationAlpha,
+            //                depthFunc:           material.depthFunc,
+            //                depthTest:           material.depthTest,
+            //                depthWrite:          material.depthWrite,
+            //                clippingPlanes:      material.clippingPlanes,
+            //                clipIntersection:    material.clipIntersection,
+            //                clipShadows:         material.clipShadows,
+            //                colorWrite:          material.colorWrite,
+            //                precision:           material.precision,
+            //                polygonOffset:       material.polygonOffset,
+            //                polygonOffsetFactor: material.polygonOffsetFactor,
+            //                polygonOffsetUnits:  material.polygonOffsetUnits,
+            //                dithering:           material.dithering,
+            //                alphaTest:           material.alphaTest,
+            //                premultipliedAlpha:  material.premultipliedAlpha,
+            //                overdraw:            material.overdraw,
+            //                visible:             material.visible,
+            //                userData:            this._parseUserData( material.userData ),
+            //                needsUpdate:         material.needsUpdate
+            //            } )
 
         }
-
-        return materialModel
 
     }
 
@@ -929,29 +940,32 @@ class ThreeToMongoDB {
 
                 } else {
 
-                    const materialModel = this._getMaterialModel( material )
-                    materialModel.save()
-                                 .then( (function closeIndex () {
+                    (function closeIndex () {
 
-                                     const materialLocalIndex = materialIndex
+                        const materialLocalIndex = materialIndex
 
-                                     return savedMaterial => {
+                        this._getMaterialModel( materials, onError, ( materialModel ) => {
 
-                                         materialIds[ materialLocalIndex ] = savedMaterial.id
-                                         numberOfSavedMaterials++
+                            materialModel.save()
+                                         .then( savedMaterial => {
 
-                                         // Add material id to cache
-                                         self._materialCache[ savedMaterial.uuid ] = savedMaterial.id
+                                             materialIds[ materialLocalIndex ] = savedMaterial.id
+                                             numberOfSavedMaterials++
 
-                                         // End condition
-                                         if ( numberOfSavedMaterials === numberOfMaterials ) {
-                                             onSuccess( materialIds )
-                                         }
+                                             // Add material id to cache
+                                             self._materialCache[ savedMaterial.uuid ] = savedMaterial.id
 
-                                     }
+                                             // End condition
+                                             if ( numberOfSavedMaterials === numberOfMaterials ) {
+                                                 onSuccess( materialIds )
+                                             }
 
-                                 })() )
-                                 .catch( onError )
+                                         } )
+                                         .catch( onError )
+
+                        } )
+
+                    })()
 
                 }
 
@@ -967,18 +981,21 @@ class ThreeToMongoDB {
 
             } else {
 
-                const materialModel = this._getMaterialModel( materials )
-                materialModel.save()
-                             .then( savedMaterial => {
+                this._getMaterialModel( materials, onError, ( materialModel ) => {
 
-                                 // Add material id to cache
-                                 self._materialCache[ savedMaterial.uuid ] = savedMaterial.id
+                    materialModel.save()
+                                 .then( savedMaterial => {
 
-                                 // Return id
-                                 onSuccess( savedMaterial.id )
+                                     // Add material id to cache
+                                     self._materialCache[ savedMaterial.uuid ] = savedMaterial.id
 
-                             } )
-                             .catch( onError )
+                                     // Return id
+                                     onSuccess( savedMaterial.id )
+
+                                 } )
+                                 .catch( onError )
+
+                } )
 
             }
 
