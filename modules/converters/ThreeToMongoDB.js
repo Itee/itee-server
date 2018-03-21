@@ -8,24 +8,88 @@
  *
  */
 
-const mongoose               = require( 'mongoose' )
-const SceneModel             = mongoose.model( 'Scene' )
-const Object3DModel          = mongoose.model( 'Object3D' )
-const MeshModel              = mongoose.model( 'Mesh' )
-const LineSegmentModel       = mongoose.model( 'LineSegments' )
-const BufferGeometryModel    = mongoose.model( 'BufferGeometry' )
-const GeometryModel          = mongoose.model( 'Geometry' )
-const MaterialModel          = mongoose.model( 'Material' )
-const MeshPhongMaterialModel = mongoose.model( 'MeshPhongMaterial' )
-const LineBasicMaterialModel = mongoose.model( 'LineBasicMaterial' )
+const mongoose = require( 'mongoose' )
+
+// Geometry
+const GeometryModel             = mongoose.model( 'Geometry' )
+const BoxGeometryModel          = mongoose.model( 'BoxGeometry' )
+const CircleGeometryModel       = mongoose.model( 'CircleGeometry' )
+const CylinderGeometryModel     = mongoose.model( 'CylinderGeometry' )
+const ConeGeometryModel         = mongoose.model( 'ConeGeometry' )
+const DodecahedronGeometryModel = mongoose.model( 'DodecahedronGeometry' )
+const ExtrudeGeometryModel      = mongoose.model( 'ExtrudeGeometry' )
+const IcosahedronGeometryModel  = mongoose.model( 'IcosahedronGeometry' )
+const LatheGeometryModel        = mongoose.model( 'LatheGeometry' )
+const ParametricGeometryModel   = mongoose.model( 'ParametricGeometry' )
+const PlaneGeometryModel        = mongoose.model( 'PlaneGeometry' )
+const OctahedronGeometryModel   = mongoose.model( 'OctahedronGeometry' )
+const PolyhedronGeometryModel   = mongoose.model( 'PolyhedronGeometry' )
+const RingGeometryModel         = mongoose.model( 'RingGeometry' )
+const ShapeGeometryModel        = mongoose.model( 'ShapeGeometry' )
+const TetrahedronGeometryModel  = mongoose.model( 'TetrahedronGeometry' )
+const TextGeometryModel         = mongoose.model( 'TextGeometry' )
+const TorusGeometryModel        = mongoose.model( 'TorusGeometry' )
+const TorusKnotGeometryModel    = mongoose.model( 'TorusKnotGeometry' )
+const TubeGeometryModel         = mongoose.model( 'TubeGeometry' )
+
+// BufferGeometry
+const BufferGeometryModel            = mongoose.model( 'BufferGeometry' )
+const BoxBufferGeometryModel         = mongoose.model( 'BoxBufferGeometry' )
+const CircleBufferGeometryModel      = mongoose.model( 'CircleBufferGeometry' )
+const CylinderBufferGeometryModel    = mongoose.model( 'CylinderBufferGeometry' )
+const ConeBufferGeometryModel        = mongoose.model( 'ConeBufferGeometry' )
+const EdgesGeometryModel             = mongoose.model( 'EdgesGeometry' )
+const ExtrudeBufferGeometryModel     = mongoose.model( 'ExtrudeBufferGeometry' )
+const TextBufferGeometryModel        = mongoose.model( 'TextBufferGeometry' )
+const InstancedBufferGeometryModel   = mongoose.model( 'InstancedBufferGeometry' )
+const LatheBufferGeometryModel       = mongoose.model( 'LatheBufferGeometry' )
+const ParametricBufferGeometryModel  = mongoose.model( 'ParametricBufferGeometry' )
+const PlaneBufferGeometryModel       = mongoose.model( 'PlaneBufferGeometry' )
+const PolyhedronBufferGeometryModel  = mongoose.model( 'PolyhedronBufferGeometry' )
+const IcosahedronBufferGeometryModel = mongoose.model( 'IcosahedronBufferGeometry' )
+const OctahedronBufferGeometryModel  = mongoose.model( 'OctahedronBufferGeometry' )
+const TetrahedronBufferGeometryModel = mongoose.model( 'TetrahedronBufferGeometry' )
+const RingBufferGeometryModel        = mongoose.model( 'RingBufferGeometry' )
+const ShapeBufferGeometryModel       = mongoose.model( 'ShapeBufferGeometry' )
+const SphereBufferGeometryModel      = mongoose.model( 'SphereBufferGeometry' )
+const TorusBufferGeometryModel       = mongoose.model( 'TorusBufferGeometry' )
+const TorusKnotBufferGeometryModel   = mongoose.model( 'TorusKnotBufferGeometry' )
+const TubeBufferGeometryModel        = mongoose.model( 'TubeBufferGeometry' )
+const WireframeBufferGeometryModel   = mongoose.model( 'WireframeBufferGeometry' )
+
+// Materials
+const LineBasicMaterialModel    = mongoose.model( 'LineBasicMaterial' )
+const LineDashedMaterialModel   = mongoose.model( 'LineDashedMaterial' )
+const MeshBasicMaterialModel    = mongoose.model( 'MeshBasicMaterial' )
+const MeshDepthMaterialModel    = mongoose.model( 'MeshDepthMaterial' )
+const MeshDistanceMaterialModel = mongoose.model( 'MeshDistanceMaterial' )
+const MeshLambertMaterialModel  = mongoose.model( 'MeshLambertMaterial' )
+const MeshNormalMaterialModel   = mongoose.model( 'MeshNormalMaterial' )
+const MeshPhongMaterialModel    = mongoose.model( 'MeshPhongMaterial' )
+const MeshToonMaterialModel     = mongoose.model( 'MeshToonMaterial' )
+const MeshPhysicalMaterialModel = mongoose.model( 'MeshPhysicalMaterial' )
+const MeshStandardMaterialModel = mongoose.model( 'MeshStandardMaterial' )
+const PointsMaterialModel       = mongoose.model( 'PointsMaterial' )
+const ShaderMaterialModel       = mongoose.model( 'ShaderMaterial' )
+const ShadowMaterialModel       = mongoose.model( 'ShadowMaterial' )
+const SpriteMaterialModel       = mongoose.model( 'SpriteMaterial' )
+
+// Object3D
+const Object3DModel = mongoose.model( 'Object3D' )
+const SceneModel       = mongoose.model( 'Scene' )
+const MeshModel        = mongoose.model( 'Mesh' )
+const LineSegmentModel = mongoose.model( 'LineSegments' )
 
 class ThreeToMongoDB {
 
     constructor () {
 
-        this._geometryCache = {}
-        this._materialCache = {}
-        this._parentId      = undefined
+        this._objectCache         = {}
+        this._geometryCache       = {}
+        this._bufferGeometryCache = {}
+        this._materialCache       = {}
+        this._textureCache        = {}
+        this._parentId            = undefined
 
     }
 
@@ -578,146 +642,688 @@ class ThreeToMongoDB {
 
         const geometryType = geometry.type
 
-        if ( geometryType === 'Geometry' ) {
+        switch ( geometryType ) {
 
-            onSuccess(
-                GeometryModel( {
-                    uuid:                    geometry.uuid,
-                    name:                    geometry.name,
-                    type:                    geometry.type,
-                    vertices:                geometry.vertices,
-                    colors:                  geometry.colors,
-                    faces:                   geometry.faces,
-                    faceVertexUvs:           geometry.faceVertexUvs,
-                    morphTargets:            geometry.morphTargets,
-                    morphNormals:            geometry.morphNormals,
-                    skinWeights:             geometry.skinWeights,
-                    skinIndices:             geometry.skinIndices,
-                    lineDistances:           geometry.lineDistances,
-                    boundingBox:             null,
-                    boundingSphere:          null,
-                    elementsNeedUpdate:      geometry.elementsNeedUpdate,
-                    verticesNeedUpdate:      geometry.verticesNeedUpdate,
-                    uvsNeedUpdate:           geometry.uvsNeedUpdate,
-                    normalsNeedUpdate:       geometry.normalsNeedUpdate,
-                    colorsNeedUpdate:        geometry.colorsNeedUpdate,
-                    lineDistancesNeedUpdate: geometry.lineDistancesNeedUpdate,
-                    groupsNeedUpdate:        geometry.groupsNeedUpdate
-                } )
-            )
+            case 'Geometry': {
 
-        } else if ( geometryType === 'BufferGeometry' ) {
+                onSuccess(
+                    GeometryModel( {
+                        uuid:                    geometry.uuid,
+                        name:                    geometry.name,
+                        type:                    geometry.type,
+                        vertices:                geometry.vertices,
+                        colors:                  geometry.colors,
+                        faces:                   geometry.faces,
+                        faceVertexUvs:           geometry.faceVertexUvs,
+                        morphTargets:            geometry.morphTargets,
+                        morphNormals:            geometry.morphNormals,
+                        skinWeights:             geometry.skinWeights,
+                        skinIndices:             geometry.skinIndices,
+                        lineDistances:           geometry.lineDistances,
+                        boundingBox:             null,
+                        boundingSphere:          null,
+                        elementsNeedUpdate:      geometry.elementsNeedUpdate,
+                        verticesNeedUpdate:      geometry.verticesNeedUpdate,
+                        uvsNeedUpdate:           geometry.uvsNeedUpdate,
+                        normalsNeedUpdate:       geometry.normalsNeedUpdate,
+                        colorsNeedUpdate:        geometry.colorsNeedUpdate,
+                        lineDistancesNeedUpdate: geometry.lineDistancesNeedUpdate,
+                        groupsNeedUpdate:        geometry.groupsNeedUpdate
+                    } )
+                )
 
-            // Retrieve attributes
-            const geometryAttributes = geometry.attributes
-            let attributes           = {}
-            if ( geometryAttributes ) {
-                // TODO: use loop instead
-
-                const geometryAttributesPosition = geometryAttributes[ 'position' ]
-                if ( geometryAttributesPosition ) {
-                    attributes[ 'position' ] = {
-                        //                    array:       geometryAttributesPosition.array,
-                        array:       Array.from( geometryAttributesPosition.array ),
-                        count:       geometryAttributesPosition.count,
-                        dynamic:     geometryAttributesPosition.dynamic,
-                        itemSize:    geometryAttributesPosition.itemSize,
-                        name:        geometryAttributesPosition.name,
-                        needsUpdate: geometryAttributesPosition.needsUpdate,
-                        normalized:  geometryAttributesPosition.normalized,
-                        updateRange: geometryAttributesPosition.updateRange,
-                        uuid:        geometryAttributesPosition.uuid,
-                        version:     geometryAttributesPosition.version
-                    }
-                }
-
-                const geometryAttributesColor = geometryAttributes[ 'color' ]
-                if ( geometryAttributesColor ) {
-                    attributes[ 'color' ] = {
-                        //                    array:       geometryAttributesColor.array,
-                        array:       Array.from( geometryAttributesColor.array ),
-                        count:       geometryAttributesColor.count,
-                        dynamic:     geometryAttributesColor.dynamic,
-                        itemSize:    geometryAttributesColor.itemSize,
-                        name:        geometryAttributesColor.name,
-                        needsUpdate: geometryAttributesColor.needsUpdate,
-                        normalized:  geometryAttributesColor.normalized,
-                        updateRange: geometryAttributesColor.updateRange,
-                        uuid:        geometryAttributesColor.uuid,
-                        version:     geometryAttributesColor.version
-                    }
-                }
-
-                const geometryAttributesNormal = geometryAttributes[ 'normal' ]
-                if ( geometryAttributesNormal ) {
-                    attributes[ 'normal' ] = {
-                        //                    array:       geometryAttributesNormal.array,
-                        array:       Array.from( geometryAttributesNormal.array ),
-                        count:       geometryAttributesNormal.count,
-                        dynamic:     geometryAttributesNormal.dynamic,
-                        itemSize:    geometryAttributesNormal.itemSize,
-                        name:        geometryAttributesNormal.name,
-                        needsUpdate: geometryAttributesNormal.needsUpdate,
-                        normalized:  geometryAttributesNormal.normalized,
-                        updateRange: geometryAttributesNormal.updateRange,
-                        uuid:        geometryAttributesNormal.uuid,
-                        version:     geometryAttributesNormal.version
-                    }
-                }
-
-                const geometryAttributesUV = geometryAttributes[ 'uv' ]
-                if ( geometryAttributesUV ) {
-                    attributes[ 'uv' ] = {
-                        //                    array:       geometryAttributesUV.array,
-                        array:       Array.from( geometryAttributesUV.array ),
-                        count:       geometryAttributesUV.count,
-                        dynamic:     geometryAttributesUV.dynamic,
-                        itemSize:    geometryAttributesUV.itemSize,
-                        name:        geometryAttributesUV.name,
-                        needsUpdate: geometryAttributesUV.needsUpdate,
-                        normalized:  geometryAttributesUV.normalized,
-                        updateRange: geometryAttributesUV.updateRange,
-                        uuid:        geometryAttributesUV.uuid,
-                        version:     geometryAttributesUV.version
-                    }
-                }
             }
+                break
 
-            // Retrieve index
-            const geometryIndexes = geometry.index
-            let indexes           = {}
-            if ( geometryIndexes ) {
-                indexes = {
-                    //                array:       geometryIndexes.array,
-                    array:       Array.from( geometryIndexes.array ),
-                    count:       geometryIndexes.count,
-                    dynamic:     geometryIndexes.dynamic,
-                    itemSize:    geometryIndexes.itemSize,
-                    name:        geometryIndexes.name,
-                    needsUpdate: geometryIndexes.needsUpdate,
-                    normalized:  geometryIndexes.normalized,
-                    updateRange: geometryIndexes.updateRange,
-                    uuid:        geometryIndexes.uuid,
-                    version:     geometryIndexes.version
-                }
+            case 'BoxGeometry': {
+
+                onSuccess(
+                    BoxGeometryModel( {
+                        uuid:                    geometry.uuid,
+                        name:                    geometry.name,
+                        type:                    geometry.type,
+                        vertices:                geometry.vertices,
+                        colors:                  geometry.colors,
+                        faces:                   geometry.faces,
+                        faceVertexUvs:           geometry.faceVertexUvs,
+                        morphTargets:            geometry.morphTargets,
+                        morphNormals:            geometry.morphNormals,
+                        skinWeights:             geometry.skinWeights,
+                        skinIndices:             geometry.skinIndices,
+                        lineDistances:           geometry.lineDistances,
+                        boundingBox:             null,
+                        boundingSphere:          null,
+                        elementsNeedUpdate:      geometry.elementsNeedUpdate,
+                        verticesNeedUpdate:      geometry.verticesNeedUpdate,
+                        uvsNeedUpdate:           geometry.uvsNeedUpdate,
+                        normalsNeedUpdate:       geometry.normalsNeedUpdate,
+                        colorsNeedUpdate:        geometry.colorsNeedUpdate,
+                        lineDistancesNeedUpdate: geometry.lineDistancesNeedUpdate,
+                        groupsNeedUpdate:        geometry.groupsNeedUpdate,
+
+                        // Specific stuff
+
+                    } )
+                )
+
             }
+                break
 
-            onSuccess(
-                BufferGeometryModel( {
-                    attributes:     attributes,
-                    boundingBox:    null,
-                    boundingSphere: null,
-                    drawRange:      geometry.drawRange,
-                    groups:         geometry.groups,
-                    index:          indexes,
-                    name:           geometry.name,
-                    uuid:           geometry.uuid
-                } )
-            )
+            case 'CircleGeometry': {
 
-        } else {
+                onSuccess(
+                    CircleGeometryModel( {
+                        uuid:                    geometry.uuid,
+                        name:                    geometry.name,
+                        type:                    geometry.type,
+                        vertices:                geometry.vertices,
+                        colors:                  geometry.colors,
+                        faces:                   geometry.faces,
+                        faceVertexUvs:           geometry.faceVertexUvs,
+                        morphTargets:            geometry.morphTargets,
+                        morphNormals:            geometry.morphNormals,
+                        skinWeights:             geometry.skinWeights,
+                        skinIndices:             geometry.skinIndices,
+                        lineDistances:           geometry.lineDistances,
+                        boundingBox:             null,
+                        boundingSphere:          null,
+                        elementsNeedUpdate:      geometry.elementsNeedUpdate,
+                        verticesNeedUpdate:      geometry.verticesNeedUpdate,
+                        uvsNeedUpdate:           geometry.uvsNeedUpdate,
+                        normalsNeedUpdate:       geometry.normalsNeedUpdate,
+                        colorsNeedUpdate:        geometry.colorsNeedUpdate,
+                        lineDistancesNeedUpdate: geometry.lineDistancesNeedUpdate,
+                        groupsNeedUpdate:        geometry.groupsNeedUpdate,
 
-            onError( `Invalid geometry type: ${geometryType}` )
+                        // Specific stuff
+
+                    } )
+                )
+
+            }
+                break
+
+            case 'CylinderGeometry': {
+
+                onSuccess(
+                    CylinderGeometryModel( {
+                        uuid:                    geometry.uuid,
+                        name:                    geometry.name,
+                        type:                    geometry.type,
+                        vertices:                geometry.vertices,
+                        colors:                  geometry.colors,
+                        faces:                   geometry.faces,
+                        faceVertexUvs:           geometry.faceVertexUvs,
+                        morphTargets:            geometry.morphTargets,
+                        morphNormals:            geometry.morphNormals,
+                        skinWeights:             geometry.skinWeights,
+                        skinIndices:             geometry.skinIndices,
+                        lineDistances:           geometry.lineDistances,
+                        boundingBox:             null,
+                        boundingSphere:          null,
+                        elementsNeedUpdate:      geometry.elementsNeedUpdate,
+                        verticesNeedUpdate:      geometry.verticesNeedUpdate,
+                        uvsNeedUpdate:           geometry.uvsNeedUpdate,
+                        normalsNeedUpdate:       geometry.normalsNeedUpdate,
+                        colorsNeedUpdate:        geometry.colorsNeedUpdate,
+                        lineDistancesNeedUpdate: geometry.lineDistancesNeedUpdate,
+                        groupsNeedUpdate:        geometry.groupsNeedUpdate,
+
+                        // Specific stuff
+
+                    } )
+                )
+
+            }
+                break
+
+            case 'ConeGeometry': {
+
+                onSuccess(
+                    ConeGeometryModel( {
+                        uuid:                    geometry.uuid,
+                        name:                    geometry.name,
+                        type:                    geometry.type,
+                        vertices:                geometry.vertices,
+                        colors:                  geometry.colors,
+                        faces:                   geometry.faces,
+                        faceVertexUvs:           geometry.faceVertexUvs,
+                        morphTargets:            geometry.morphTargets,
+                        morphNormals:            geometry.morphNormals,
+                        skinWeights:             geometry.skinWeights,
+                        skinIndices:             geometry.skinIndices,
+                        lineDistances:           geometry.lineDistances,
+                        boundingBox:             null,
+                        boundingSphere:          null,
+                        elementsNeedUpdate:      geometry.elementsNeedUpdate,
+                        verticesNeedUpdate:      geometry.verticesNeedUpdate,
+                        uvsNeedUpdate:           geometry.uvsNeedUpdate,
+                        normalsNeedUpdate:       geometry.normalsNeedUpdate,
+                        colorsNeedUpdate:        geometry.colorsNeedUpdate,
+                        lineDistancesNeedUpdate: geometry.lineDistancesNeedUpdate,
+                        groupsNeedUpdate:        geometry.groupsNeedUpdate,
+
+                        // Specific stuff
+
+                    } )
+                )
+
+            }
+                break
+
+            case 'DodecahedronGeometry': {
+
+                onSuccess(
+                    DodecahedronGeometryModel( {
+                        uuid:                    geometry.uuid,
+                        name:                    geometry.name,
+                        type:                    geometry.type,
+                        vertices:                geometry.vertices,
+                        colors:                  geometry.colors,
+                        faces:                   geometry.faces,
+                        faceVertexUvs:           geometry.faceVertexUvs,
+                        morphTargets:            geometry.morphTargets,
+                        morphNormals:            geometry.morphNormals,
+                        skinWeights:             geometry.skinWeights,
+                        skinIndices:             geometry.skinIndices,
+                        lineDistances:           geometry.lineDistances,
+                        boundingBox:             null,
+                        boundingSphere:          null,
+                        elementsNeedUpdate:      geometry.elementsNeedUpdate,
+                        verticesNeedUpdate:      geometry.verticesNeedUpdate,
+                        uvsNeedUpdate:           geometry.uvsNeedUpdate,
+                        normalsNeedUpdate:       geometry.normalsNeedUpdate,
+                        colorsNeedUpdate:        geometry.colorsNeedUpdate,
+                        lineDistancesNeedUpdate: geometry.lineDistancesNeedUpdate,
+                        groupsNeedUpdate:        geometry.groupsNeedUpdate,
+
+                        // Specific stuff
+
+                    } )
+                )
+
+            }
+                break
+
+            case 'ExtrudeGeometry': {
+
+                onSuccess(
+                    ExtrudeGeometryModel( {
+                        uuid:                    geometry.uuid,
+                        name:                    geometry.name,
+                        type:                    geometry.type,
+                        vertices:                geometry.vertices,
+                        colors:                  geometry.colors,
+                        faces:                   geometry.faces,
+                        faceVertexUvs:           geometry.faceVertexUvs,
+                        morphTargets:            geometry.morphTargets,
+                        morphNormals:            geometry.morphNormals,
+                        skinWeights:             geometry.skinWeights,
+                        skinIndices:             geometry.skinIndices,
+                        lineDistances:           geometry.lineDistances,
+                        boundingBox:             null,
+                        boundingSphere:          null,
+                        elementsNeedUpdate:      geometry.elementsNeedUpdate,
+                        verticesNeedUpdate:      geometry.verticesNeedUpdate,
+                        uvsNeedUpdate:           geometry.uvsNeedUpdate,
+                        normalsNeedUpdate:       geometry.normalsNeedUpdate,
+                        colorsNeedUpdate:        geometry.colorsNeedUpdate,
+                        lineDistancesNeedUpdate: geometry.lineDistancesNeedUpdate,
+                        groupsNeedUpdate:        geometry.groupsNeedUpdate,
+
+                        // Specific stuff
+
+                    } )
+                )
+
+            }
+                break
+
+            case 'IcosahedronGeometry': {
+
+                onSuccess(
+                    IcosahedronGeometryModel( {
+                        uuid:                    geometry.uuid,
+                        name:                    geometry.name,
+                        type:                    geometry.type,
+                        vertices:                geometry.vertices,
+                        colors:                  geometry.colors,
+                        faces:                   geometry.faces,
+                        faceVertexUvs:           geometry.faceVertexUvs,
+                        morphTargets:            geometry.morphTargets,
+                        morphNormals:            geometry.morphNormals,
+                        skinWeights:             geometry.skinWeights,
+                        skinIndices:             geometry.skinIndices,
+                        lineDistances:           geometry.lineDistances,
+                        boundingBox:             null,
+                        boundingSphere:          null,
+                        elementsNeedUpdate:      geometry.elementsNeedUpdate,
+                        verticesNeedUpdate:      geometry.verticesNeedUpdate,
+                        uvsNeedUpdate:           geometry.uvsNeedUpdate,
+                        normalsNeedUpdate:       geometry.normalsNeedUpdate,
+                        colorsNeedUpdate:        geometry.colorsNeedUpdate,
+                        lineDistancesNeedUpdate: geometry.lineDistancesNeedUpdate,
+                        groupsNeedUpdate:        geometry.groupsNeedUpdate,
+
+                        // Specific stuff
+
+                    } )
+                )
+
+            }
+                break
+
+            case 'LatheGeometry': {
+
+                onSuccess(
+                    LatheGeometryModel( {
+                        uuid:                    geometry.uuid,
+                        name:                    geometry.name,
+                        type:                    geometry.type,
+                        vertices:                geometry.vertices,
+                        colors:                  geometry.colors,
+                        faces:                   geometry.faces,
+                        faceVertexUvs:           geometry.faceVertexUvs,
+                        morphTargets:            geometry.morphTargets,
+                        morphNormals:            geometry.morphNormals,
+                        skinWeights:             geometry.skinWeights,
+                        skinIndices:             geometry.skinIndices,
+                        lineDistances:           geometry.lineDistances,
+                        boundingBox:             null,
+                        boundingSphere:          null,
+                        elementsNeedUpdate:      geometry.elementsNeedUpdate,
+                        verticesNeedUpdate:      geometry.verticesNeedUpdate,
+                        uvsNeedUpdate:           geometry.uvsNeedUpdate,
+                        normalsNeedUpdate:       geometry.normalsNeedUpdate,
+                        colorsNeedUpdate:        geometry.colorsNeedUpdate,
+                        lineDistancesNeedUpdate: geometry.lineDistancesNeedUpdate,
+                        groupsNeedUpdate:        geometry.groupsNeedUpdate,
+
+                        // Specific stuff
+
+                    } )
+                )
+
+            }
+                break
+
+            case 'OctahedronGeometry': {
+
+                onSuccess(
+                    OctahedronGeometryModel( {
+                        uuid:                    geometry.uuid,
+                        name:                    geometry.name,
+                        type:                    geometry.type,
+                        vertices:                geometry.vertices,
+                        colors:                  geometry.colors,
+                        faces:                   geometry.faces,
+                        faceVertexUvs:           geometry.faceVertexUvs,
+                        morphTargets:            geometry.morphTargets,
+                        morphNormals:            geometry.morphNormals,
+                        skinWeights:             geometry.skinWeights,
+                        skinIndices:             geometry.skinIndices,
+                        lineDistances:           geometry.lineDistances,
+                        boundingBox:             null,
+                        boundingSphere:          null,
+                        elementsNeedUpdate:      geometry.elementsNeedUpdate,
+                        verticesNeedUpdate:      geometry.verticesNeedUpdate,
+                        uvsNeedUpdate:           geometry.uvsNeedUpdate,
+                        normalsNeedUpdate:       geometry.normalsNeedUpdate,
+                        colorsNeedUpdate:        geometry.colorsNeedUpdate,
+                        lineDistancesNeedUpdate: geometry.lineDistancesNeedUpdate,
+                        groupsNeedUpdate:        geometry.groupsNeedUpdate,
+
+                        // Specific stuff
+
+                    } )
+                )
+
+            }
+                break
+
+            case 'ParametricGeometry': {
+
+                onSuccess(
+                    ParametricGeometryModel( {
+                        uuid:                    geometry.uuid,
+                        name:                    geometry.name,
+                        type:                    geometry.type,
+                        vertices:                geometry.vertices,
+                        colors:                  geometry.colors,
+                        faces:                   geometry.faces,
+                        faceVertexUvs:           geometry.faceVertexUvs,
+                        morphTargets:            geometry.morphTargets,
+                        morphNormals:            geometry.morphNormals,
+                        skinWeights:             geometry.skinWeights,
+                        skinIndices:             geometry.skinIndices,
+                        lineDistances:           geometry.lineDistances,
+                        boundingBox:             null,
+                        boundingSphere:          null,
+                        elementsNeedUpdate:      geometry.elementsNeedUpdate,
+                        verticesNeedUpdate:      geometry.verticesNeedUpdate,
+                        uvsNeedUpdate:           geometry.uvsNeedUpdate,
+                        normalsNeedUpdate:       geometry.normalsNeedUpdate,
+                        colorsNeedUpdate:        geometry.colorsNeedUpdate,
+                        lineDistancesNeedUpdate: geometry.lineDistancesNeedUpdate,
+                        groupsNeedUpdate:        geometry.groupsNeedUpdate,
+
+                        // Specific stuff
+
+                    } )
+                )
+
+            }
+                break
+
+            case 'PlaneGeometry': {
+
+                onSuccess(
+                    PlaneGeometryModel( {
+                        uuid:                    geometry.uuid,
+                        name:                    geometry.name,
+                        type:                    geometry.type,
+                        vertices:                geometry.vertices,
+                        colors:                  geometry.colors,
+                        faces:                   geometry.faces,
+                        faceVertexUvs:           geometry.faceVertexUvs,
+                        morphTargets:            geometry.morphTargets,
+                        morphNormals:            geometry.morphNormals,
+                        skinWeights:             geometry.skinWeights,
+                        skinIndices:             geometry.skinIndices,
+                        lineDistances:           geometry.lineDistances,
+                        boundingBox:             null,
+                        boundingSphere:          null,
+                        elementsNeedUpdate:      geometry.elementsNeedUpdate,
+                        verticesNeedUpdate:      geometry.verticesNeedUpdate,
+                        uvsNeedUpdate:           geometry.uvsNeedUpdate,
+                        normalsNeedUpdate:       geometry.normalsNeedUpdate,
+                        colorsNeedUpdate:        geometry.colorsNeedUpdate,
+                        lineDistancesNeedUpdate: geometry.lineDistancesNeedUpdate,
+                        groupsNeedUpdate:        geometry.groupsNeedUpdate,
+
+                        // Specific stuff
+
+                    } )
+                )
+
+            }
+                break
+
+            case 'PolyhedronGeometry': {
+
+                onSuccess(
+                    PolyhedronGeometryModel( {
+                        uuid:                    geometry.uuid,
+                        name:                    geometry.name,
+                        type:                    geometry.type,
+                        vertices:                geometry.vertices,
+                        colors:                  geometry.colors,
+                        faces:                   geometry.faces,
+                        faceVertexUvs:           geometry.faceVertexUvs,
+                        morphTargets:            geometry.morphTargets,
+                        morphNormals:            geometry.morphNormals,
+                        skinWeights:             geometry.skinWeights,
+                        skinIndices:             geometry.skinIndices,
+                        lineDistances:           geometry.lineDistances,
+                        boundingBox:             null,
+                        boundingSphere:          null,
+                        elementsNeedUpdate:      geometry.elementsNeedUpdate,
+                        verticesNeedUpdate:      geometry.verticesNeedUpdate,
+                        uvsNeedUpdate:           geometry.uvsNeedUpdate,
+                        normalsNeedUpdate:       geometry.normalsNeedUpdate,
+                        colorsNeedUpdate:        geometry.colorsNeedUpdate,
+                        lineDistancesNeedUpdate: geometry.lineDistancesNeedUpdate,
+                        groupsNeedUpdate:        geometry.groupsNeedUpdate,
+
+                        // Specific stuff
+
+                    } )
+                )
+
+            }
+                break
+
+            case 'RingGeometry': {
+
+                onSuccess(
+                    RingGeometryModel( {
+                        uuid:                    geometry.uuid,
+                        name:                    geometry.name,
+                        type:                    geometry.type,
+                        vertices:                geometry.vertices,
+                        colors:                  geometry.colors,
+                        faces:                   geometry.faces,
+                        faceVertexUvs:           geometry.faceVertexUvs,
+                        morphTargets:            geometry.morphTargets,
+                        morphNormals:            geometry.morphNormals,
+                        skinWeights:             geometry.skinWeights,
+                        skinIndices:             geometry.skinIndices,
+                        lineDistances:           geometry.lineDistances,
+                        boundingBox:             null,
+                        boundingSphere:          null,
+                        elementsNeedUpdate:      geometry.elementsNeedUpdate,
+                        verticesNeedUpdate:      geometry.verticesNeedUpdate,
+                        uvsNeedUpdate:           geometry.uvsNeedUpdate,
+                        normalsNeedUpdate:       geometry.normalsNeedUpdate,
+                        colorsNeedUpdate:        geometry.colorsNeedUpdate,
+                        lineDistancesNeedUpdate: geometry.lineDistancesNeedUpdate,
+                        groupsNeedUpdate:        geometry.groupsNeedUpdate,
+
+                        // Specific stuff
+
+                    } )
+                )
+
+            }
+                break
+
+            case 'ShapeGeometry': {
+
+                onSuccess(
+                    ShapeGeometryModel( {
+                        uuid:                    geometry.uuid,
+                        name:                    geometry.name,
+                        type:                    geometry.type,
+                        vertices:                geometry.vertices,
+                        colors:                  geometry.colors,
+                        faces:                   geometry.faces,
+                        faceVertexUvs:           geometry.faceVertexUvs,
+                        morphTargets:            geometry.morphTargets,
+                        morphNormals:            geometry.morphNormals,
+                        skinWeights:             geometry.skinWeights,
+                        skinIndices:             geometry.skinIndices,
+                        lineDistances:           geometry.lineDistances,
+                        boundingBox:             null,
+                        boundingSphere:          null,
+                        elementsNeedUpdate:      geometry.elementsNeedUpdate,
+                        verticesNeedUpdate:      geometry.verticesNeedUpdate,
+                        uvsNeedUpdate:           geometry.uvsNeedUpdate,
+                        normalsNeedUpdate:       geometry.normalsNeedUpdate,
+                        colorsNeedUpdate:        geometry.colorsNeedUpdate,
+                        lineDistancesNeedUpdate: geometry.lineDistancesNeedUpdate,
+                        groupsNeedUpdate:        geometry.groupsNeedUpdate,
+
+                        // Specific stuff
+
+                    } )
+                )
+
+            }
+                break
+
+            case 'TetrahedronGeometry': {
+
+                onSuccess(
+                    TetrahedronGeometryModel( {
+                        uuid:                    geometry.uuid,
+                        name:                    geometry.name,
+                        type:                    geometry.type,
+                        vertices:                geometry.vertices,
+                        colors:                  geometry.colors,
+                        faces:                   geometry.faces,
+                        faceVertexUvs:           geometry.faceVertexUvs,
+                        morphTargets:            geometry.morphTargets,
+                        morphNormals:            geometry.morphNormals,
+                        skinWeights:             geometry.skinWeights,
+                        skinIndices:             geometry.skinIndices,
+                        lineDistances:           geometry.lineDistances,
+                        boundingBox:             null,
+                        boundingSphere:          null,
+                        elementsNeedUpdate:      geometry.elementsNeedUpdate,
+                        verticesNeedUpdate:      geometry.verticesNeedUpdate,
+                        uvsNeedUpdate:           geometry.uvsNeedUpdate,
+                        normalsNeedUpdate:       geometry.normalsNeedUpdate,
+                        colorsNeedUpdate:        geometry.colorsNeedUpdate,
+                        lineDistancesNeedUpdate: geometry.lineDistancesNeedUpdate,
+                        groupsNeedUpdate:        geometry.groupsNeedUpdate,
+
+                        // Specific stuff
+
+                    } )
+                )
+
+            }
+                break
+
+            case 'TextGeometry': {
+
+                onSuccess(
+                    TextGeometryModel( {
+                        uuid:                    geometry.uuid,
+                        name:                    geometry.name,
+                        type:                    geometry.type,
+                        vertices:                geometry.vertices,
+                        colors:                  geometry.colors,
+                        faces:                   geometry.faces,
+                        faceVertexUvs:           geometry.faceVertexUvs,
+                        morphTargets:            geometry.morphTargets,
+                        morphNormals:            geometry.morphNormals,
+                        skinWeights:             geometry.skinWeights,
+                        skinIndices:             geometry.skinIndices,
+                        lineDistances:           geometry.lineDistances,
+                        boundingBox:             null,
+                        boundingSphere:          null,
+                        elementsNeedUpdate:      geometry.elementsNeedUpdate,
+                        verticesNeedUpdate:      geometry.verticesNeedUpdate,
+                        uvsNeedUpdate:           geometry.uvsNeedUpdate,
+                        normalsNeedUpdate:       geometry.normalsNeedUpdate,
+                        colorsNeedUpdate:        geometry.colorsNeedUpdate,
+                        lineDistancesNeedUpdate: geometry.lineDistancesNeedUpdate,
+                        groupsNeedUpdate:        geometry.groupsNeedUpdate,
+
+                        // Specific stuff
+
+                    } )
+                )
+
+            }
+                break
+
+            case 'TorusGeometry': {
+
+                onSuccess(
+                    TorusGeometryModel( {
+                        uuid:                    geometry.uuid,
+                        name:                    geometry.name,
+                        type:                    geometry.type,
+                        vertices:                geometry.vertices,
+                        colors:                  geometry.colors,
+                        faces:                   geometry.faces,
+                        faceVertexUvs:           geometry.faceVertexUvs,
+                        morphTargets:            geometry.morphTargets,
+                        morphNormals:            geometry.morphNormals,
+                        skinWeights:             geometry.skinWeights,
+                        skinIndices:             geometry.skinIndices,
+                        lineDistances:           geometry.lineDistances,
+                        boundingBox:             null,
+                        boundingSphere:          null,
+                        elementsNeedUpdate:      geometry.elementsNeedUpdate,
+                        verticesNeedUpdate:      geometry.verticesNeedUpdate,
+                        uvsNeedUpdate:           geometry.uvsNeedUpdate,
+                        normalsNeedUpdate:       geometry.normalsNeedUpdate,
+                        colorsNeedUpdate:        geometry.colorsNeedUpdate,
+                        lineDistancesNeedUpdate: geometry.lineDistancesNeedUpdate,
+                        groupsNeedUpdate:        geometry.groupsNeedUpdate,
+
+                        // Specific stuff
+
+                    } )
+                )
+
+            }
+                break
+
+            case 'TorusKnotGeometry': {
+
+                onSuccess(
+                    TorusKnotGeometryModel( {
+                        uuid:                    geometry.uuid,
+                        name:                    geometry.name,
+                        type:                    geometry.type,
+                        vertices:                geometry.vertices,
+                        colors:                  geometry.colors,
+                        faces:                   geometry.faces,
+                        faceVertexUvs:           geometry.faceVertexUvs,
+                        morphTargets:            geometry.morphTargets,
+                        morphNormals:            geometry.morphNormals,
+                        skinWeights:             geometry.skinWeights,
+                        skinIndices:             geometry.skinIndices,
+                        lineDistances:           geometry.lineDistances,
+                        boundingBox:             null,
+                        boundingSphere:          null,
+                        elementsNeedUpdate:      geometry.elementsNeedUpdate,
+                        verticesNeedUpdate:      geometry.verticesNeedUpdate,
+                        uvsNeedUpdate:           geometry.uvsNeedUpdate,
+                        normalsNeedUpdate:       geometry.normalsNeedUpdate,
+                        colorsNeedUpdate:        geometry.colorsNeedUpdate,
+                        lineDistancesNeedUpdate: geometry.lineDistancesNeedUpdate,
+                        groupsNeedUpdate:        geometry.groupsNeedUpdate,
+
+                        // Specific stuff
+
+                    } )
+                )
+
+            }
+                break
+
+            case 'TubeGeometry': {
+
+                onSuccess(
+                    TubeGeometryModel( {
+                        uuid:                    geometry.uuid,
+                        name:                    geometry.name,
+                        type:                    geometry.type,
+                        vertices:                geometry.vertices,
+                        colors:                  geometry.colors,
+                        faces:                   geometry.faces,
+                        faceVertexUvs:           geometry.faceVertexUvs,
+                        morphTargets:            geometry.morphTargets,
+                        morphNormals:            geometry.morphNormals,
+                        skinWeights:             geometry.skinWeights,
+                        skinIndices:             geometry.skinIndices,
+                        lineDistances:           geometry.lineDistances,
+                        boundingBox:             null,
+                        boundingSphere:          null,
+                        elementsNeedUpdate:      geometry.elementsNeedUpdate,
+                        verticesNeedUpdate:      geometry.verticesNeedUpdate,
+                        uvsNeedUpdate:           geometry.uvsNeedUpdate,
+                        normalsNeedUpdate:       geometry.normalsNeedUpdate,
+                        colorsNeedUpdate:        geometry.colorsNeedUpdate,
+                        lineDistancesNeedUpdate: geometry.lineDistancesNeedUpdate,
+                        groupsNeedUpdate:        geometry.groupsNeedUpdate,
+
+                        // Specific stuff
+
+                    } )
+                )
+
+            }
+                break
+
+            default:
+                onError( `Unmanaged buffer geometry of type: ${geometryType}` )
+                break
 
         }
 
@@ -754,6 +1360,282 @@ class ThreeToMongoDB {
 
     }
 
+    // BufferGeometry
+
+    _checkIfBufferGeometryAlreadyExist ( bufferGeometry ) {
+
+        return this._bufferGeometryCache[ bufferGeometry.uuid ]
+
+    }
+
+    _getBufferGeometryModel ( bufferGeometry, onError, onSuccess ) {
+
+        const bufferGeometryType = bufferGeometry.type
+
+        switch ( bufferGeometryType ) {
+
+            case 'BufferGeometry': {
+
+
+                // Retrieve attributes
+                const geometryAttributes = bufferGeometry.attributes
+                let attributes           = {}
+                if ( geometryAttributes ) {
+                    // TODO: use loop instead
+
+                    const geometryAttributesPosition = geometryAttributes[ 'position' ]
+                    if ( geometryAttributesPosition ) {
+                        attributes[ 'position' ] = {
+                            //                    array:       geometryAttributesPosition.array,
+                            array:       Array.from( geometryAttributesPosition.array ),
+                            count:       geometryAttributesPosition.count,
+                            dynamic:     geometryAttributesPosition.dynamic,
+                            itemSize:    geometryAttributesPosition.itemSize,
+                            name:        geometryAttributesPosition.name,
+                            needsUpdate: geometryAttributesPosition.needsUpdate,
+                            normalized:  geometryAttributesPosition.normalized,
+                            updateRange: geometryAttributesPosition.updateRange,
+                            uuid:        geometryAttributesPosition.uuid,
+                            version:     geometryAttributesPosition.version
+                        }
+                    }
+
+                    const geometryAttributesColor = geometryAttributes[ 'color' ]
+                    if ( geometryAttributesColor ) {
+                        attributes[ 'color' ] = {
+                            //                    array:       geometryAttributesColor.array,
+                            array:       Array.from( geometryAttributesColor.array ),
+                            count:       geometryAttributesColor.count,
+                            dynamic:     geometryAttributesColor.dynamic,
+                            itemSize:    geometryAttributesColor.itemSize,
+                            name:        geometryAttributesColor.name,
+                            needsUpdate: geometryAttributesColor.needsUpdate,
+                            normalized:  geometryAttributesColor.normalized,
+                            updateRange: geometryAttributesColor.updateRange,
+                            uuid:        geometryAttributesColor.uuid,
+                            version:     geometryAttributesColor.version
+                        }
+                    }
+
+                    const geometryAttributesNormal = geometryAttributes[ 'normal' ]
+                    if ( geometryAttributesNormal ) {
+                        attributes[ 'normal' ] = {
+                            //                    array:       geometryAttributesNormal.array,
+                            array:       Array.from( geometryAttributesNormal.array ),
+                            count:       geometryAttributesNormal.count,
+                            dynamic:     geometryAttributesNormal.dynamic,
+                            itemSize:    geometryAttributesNormal.itemSize,
+                            name:        geometryAttributesNormal.name,
+                            needsUpdate: geometryAttributesNormal.needsUpdate,
+                            normalized:  geometryAttributesNormal.normalized,
+                            updateRange: geometryAttributesNormal.updateRange,
+                            uuid:        geometryAttributesNormal.uuid,
+                            version:     geometryAttributesNormal.version
+                        }
+                    }
+
+                    const geometryAttributesUV = geometryAttributes[ 'uv' ]
+                    if ( geometryAttributesUV ) {
+                        attributes[ 'uv' ] = {
+                            //                    array:       geometryAttributesUV.array,
+                            array:       Array.from( geometryAttributesUV.array ),
+                            count:       geometryAttributesUV.count,
+                            dynamic:     geometryAttributesUV.dynamic,
+                            itemSize:    geometryAttributesUV.itemSize,
+                            name:        geometryAttributesUV.name,
+                            needsUpdate: geometryAttributesUV.needsUpdate,
+                            normalized:  geometryAttributesUV.normalized,
+                            updateRange: geometryAttributesUV.updateRange,
+                            uuid:        geometryAttributesUV.uuid,
+                            version:     geometryAttributesUV.version
+                        }
+                    }
+                }
+
+                // Retrieve index
+                const geometryIndexes = bufferGeometry.index
+                let indexes           = {}
+                if ( geometryIndexes ) {
+                    indexes = {
+                        //                array:       geometryIndexes.array,
+                        array:       Array.from( geometryIndexes.array ),
+                        count:       geometryIndexes.count,
+                        dynamic:     geometryIndexes.dynamic,
+                        itemSize:    geometryIndexes.itemSize,
+                        name:        geometryIndexes.name,
+                        needsUpdate: geometryIndexes.needsUpdate,
+                        normalized:  geometryIndexes.normalized,
+                        updateRange: geometryIndexes.updateRange,
+                        uuid:        geometryIndexes.uuid,
+                        version:     geometryIndexes.version
+                    }
+                }
+
+                onSuccess(
+                    BufferGeometryModel( {
+                        attributes:     attributes,
+                        boundingBox:    null,
+                        boundingSphere: null,
+                        drawRange:      bufferGeometry.drawRange,
+                        groups:         bufferGeometry.groups,
+                        index:          indexes,
+                        name:           bufferGeometry.name,
+                        uuid:           bufferGeometry.uuid
+                    } )
+                )
+
+            }
+                break
+
+            case 'BoxBufferGeometry': {
+
+            }
+                break
+
+            case 'CircleBufferGeometry': {
+
+            }
+                break
+
+            case 'CylinderBufferGeometry': {
+
+            }
+                break
+
+            case 'ConeBufferGeometry': {
+
+            }
+                break
+
+            case 'EdgesGeometry': {
+
+            }
+                break
+
+            case 'ExtrudeBufferGeometry': {
+
+            }
+                break
+
+            case 'TextBufferGeometry': {
+
+            }
+                break
+
+            case 'InstancedBufferGeometry': {
+
+            }
+                break
+
+            case 'LatheBufferGeometry': {
+
+            }
+                break
+
+            case 'ParametricBufferGeometry': {
+
+            }
+                break
+
+            case 'PlaneBufferGeometry': {
+
+            }
+                break
+
+            case 'PolyhedronBufferGeometry': {
+
+            }
+                break
+
+            case 'IcosahedronBufferGeometry': {
+
+            }
+                break
+
+            case 'OctahedronBufferGeometry': {
+
+            }
+                break
+
+            case 'TetrahedronBufferGeometry': {
+
+            }
+                break
+
+            case 'RingBufferGeometry': {
+
+            }
+                break
+
+            case 'ShapeBufferGeometry': {
+
+            }
+                break
+
+            case 'SphereBufferGeometry': {
+
+            }
+                break
+
+            case 'TorusBufferGeometry': {
+
+            }
+                break
+
+            case 'TorusKnotBufferGeometry': {
+
+            }
+                break
+
+            case 'TubeBufferGeometry': {
+
+            }
+                break
+
+            case 'WireframeBufferGeometry': {
+
+            }
+                break
+
+            default:
+                onError( `Unmanaged buffer geometry of type: ${bufferGeometryType}` )
+                break
+
+        }
+
+    }
+
+    _saveBufferGeometryInDatabase ( bufferGeometry, onError, onSuccess ) {
+
+        const self             = this
+        const bufferGeometryId = this._checkIfBufferGeometryAlreadyExist( bufferGeometry )
+
+        if ( bufferGeometryId ) {
+
+            onSuccess( bufferGeometryId )
+
+        } else {
+
+            this._getBufferGeometryModel( bufferGeometry, onError, ( bufferGeometryModel ) => {
+
+                bufferGeometryModel.save()
+                                   .then( savedBufferGeometry => {
+
+                                       // Add geometry id to cache
+                                       self._bufferGeometryCache[ savedBufferGeometry.uuid ] = savedBufferGeometry.id
+
+                                       // Return id
+                                       onSuccess( savedBufferGeometry.id )
+
+                                   } )
+                                   .catch( onError )
+
+            } )
+
+        }
+
+    }
+
     // Material
 
     _checkIfMaterialAlreadyExist ( materials ) {
@@ -764,12 +1646,12 @@ class ThreeToMongoDB {
 
     _getMaterialModel ( material, onError, onSuccess ) {
 
-        let materialType = material.type
+        const materialType = material.type
 
-        if ( materialType === "MeshPhongMaterial" ) {
+        switch ( materialType ) {
 
-            onSuccess(
-                MeshPhongMaterialModel( {
+            case 'LineBasicMaterial':
+                onSuccess( LineBasicMaterialModel( {
                     uuid:                material.uuid,
                     name:                material.name,
                     type:                material.type,
@@ -805,6 +1687,384 @@ class ThreeToMongoDB {
                     visible:             material.visible,
                     userData:            this._parseUserData( material.userData ),
                     needsUpdate:         material.needsUpdate,
+                    // LineBasicMaterial
+                    color:               material.color,
+                    light:               material.light,
+                    lineWidth:           material.lineWidth,
+                    linecap:             material.linecap,
+                    linejoin:            material.linejoin
+                } ) )
+                break
+
+            case 'LineDashedMaterial':
+                onSuccess( LineDashedMaterialModel( {
+                    uuid:                material.uuid,
+                    name:                material.name,
+                    type:                material.type,
+                    fog:                 material.fog,
+                    lights:              material.lights,
+                    blending:            material.blending,
+                    side:                material.side,
+                    flatShading:         material.flatShading,
+                    vertexColors:        material.vertexColors,
+                    opacity:             material.opacity,
+                    transparent:         material.transparent,
+                    blendSrc:            material.blendSrc,
+                    blendDst:            material.blendDst,
+                    blendEquation:       material.blendEquation,
+                    blendSrcAlpha:       material.blendSrcAlpha,
+                    blendDstAlpha:       material.blendDstAlpha,
+                    blendEquationAlpha:  material.blendEquationAlpha,
+                    depthFunc:           material.depthFunc,
+                    depthTest:           material.depthTest,
+                    depthWrite:          material.depthWrite,
+                    clippingPlanes:      material.clippingPlanes,
+                    clipIntersection:    material.clipIntersection,
+                    clipShadows:         material.clipShadows,
+                    colorWrite:          material.colorWrite,
+                    precision:           material.precision,
+                    polygonOffset:       material.polygonOffset,
+                    polygonOffsetFactor: material.polygonOffsetFactor,
+                    polygonOffsetUnits:  material.polygonOffsetUnits,
+                    dithering:           material.dithering,
+                    alphaTest:           material.alphaTest,
+                    premultipliedAlpha:  material.premultipliedAlpha,
+                    overdraw:            material.overdraw,
+                    visible:             material.visible,
+                    userData:            this._parseUserData( material.userData ),
+                    needsUpdate:         material.needsUpdate,
+                    // LineBasicMaterial
+                    color:               material.color,
+                    light:               material.light,
+                    lineWidth:           material.lineWidth,
+                    linecap:             material.linecap,
+                    linejoin:            material.linejoin,
+                    // LineDashedMaterial
+                    dashSize:            material.dashSize,
+                    gapSize:             material.gapSize,
+                    scale:               material.scale
+                } ) )
+                break
+
+            case 'MeshBasicMaterial':
+                onSuccess( MeshBasicMaterialModel( {
+                    uuid:                material.uuid,
+                    name:                material.name,
+                    type:                material.type,
+                    fog:                 material.fog,
+                    lights:              material.lights,
+                    blending:            material.blending,
+                    side:                material.side,
+                    flatShading:         material.flatShading,
+                    vertexColors:        material.vertexColors,
+                    opacity:             material.opacity,
+                    transparent:         material.transparent,
+                    blendSrc:            material.blendSrc,
+                    blendDst:            material.blendDst,
+                    blendEquation:       material.blendEquation,
+                    blendSrcAlpha:       material.blendSrcAlpha,
+                    blendDstAlpha:       material.blendDstAlpha,
+                    blendEquationAlpha:  material.blendEquationAlpha,
+                    depthFunc:           material.depthFunc,
+                    depthTest:           material.depthTest,
+                    depthWrite:          material.depthWrite,
+                    clippingPlanes:      material.clippingPlanes,
+                    clipIntersection:    material.clipIntersection,
+                    clipShadows:         material.clipShadows,
+                    colorWrite:          material.colorWrite,
+                    precision:           material.precision,
+                    polygonOffset:       material.polygonOffset,
+                    polygonOffsetFactor: material.polygonOffsetFactor,
+                    polygonOffsetUnits:  material.polygonOffsetUnits,
+                    dithering:           material.dithering,
+                    alphaTest:           material.alphaTest,
+                    premultipliedAlpha:  material.premultipliedAlpha,
+                    overdraw:            material.overdraw,
+                    visible:             material.visible,
+                    userData:            this._parseUserData( material.userData ),
+                    needsUpdate:         material.needsUpdate,
+                    // MeshBasicMaterial
+                    color:               material.color,
+                    map:                 material.map, // Unknown yet
+                    lightMap:            material.lightMap, // Unknown yet
+                    lightMapIntensity:   material.lightMapIntensity,
+                    aoMap:               material.aoMap, // Unknown yet
+                    aoMapIntensity:      material.aoMapIntensity,
+                    specularMap:         material.specularMap, // Unknown yet
+                    alphaMap:            material.alphaMap, // Unknown yet
+                    envMap:              material.envMap, // Unknown yet
+                    combine:             material.combine,
+                    reflectivity:        material.reflectivity,
+                    refractionRatio:     material.refractionRatio,
+                    wireframe:           material.wireframe,
+                    wireframeLinewidth:  material.wireframeLinewidth,
+                    wireframeLinecap:    material.wireframeLinecap,
+                    wireframeLinejoin:   material.wireframeLinejoin,
+                    skinning:            material.skinning,
+                    morphTargets:        material.morphTargets,
+                    light:               material.light
+                } ) )
+                break
+
+            case 'MeshDepthMaterial':
+                onSuccess( MeshDepthMaterialModel( {
+                    uuid:                material.uuid,
+                    name:                material.name,
+                    type:                material.type,
+                    fog:                 material.fog,
+                    lights:              material.lights,
+                    blending:            material.blending,
+                    side:                material.side,
+                    flatShading:         material.flatShading,
+                    vertexColors:        material.vertexColors,
+                    opacity:             material.opacity,
+                    transparent:         material.transparent,
+                    blendSrc:            material.blendSrc,
+                    blendDst:            material.blendDst,
+                    blendEquation:       material.blendEquation,
+                    blendSrcAlpha:       material.blendSrcAlpha,
+                    blendDstAlpha:       material.blendDstAlpha,
+                    blendEquationAlpha:  material.blendEquationAlpha,
+                    depthFunc:           material.depthFunc,
+                    depthTest:           material.depthTest,
+                    depthWrite:          material.depthWrite,
+                    clippingPlanes:      material.clippingPlanes,
+                    clipIntersection:    material.clipIntersection,
+                    clipShadows:         material.clipShadows,
+                    colorWrite:          material.colorWrite,
+                    precision:           material.precision,
+                    polygonOffset:       material.polygonOffset,
+                    polygonOffsetFactor: material.polygonOffsetFactor,
+                    polygonOffsetUnits:  material.polygonOffsetUnits,
+                    dithering:           material.dithering,
+                    alphaTest:           material.alphaTest,
+                    premultipliedAlpha:  material.premultipliedAlpha,
+                    overdraw:            material.overdraw,
+                    visible:             material.visible,
+                    userData:            this._parseUserData( material.userData ),
+                    needsUpdate:         material.needsUpdate,
+                    // MeshDepthMaterial
+                    depthPacking:        material.depthPacking,
+                    skinning:            material.skinning,
+                    morphTargets:        material.morphTargets,
+                    map:                 material.map, // Unknown yet
+                    alphaMap:            material.alphaMap, // Unknown yet
+                    displacementMap:     material.displacementMap, // Unknown yet
+                    displacementScale:   material.displacementScale,
+                    displacementBias:    material.displacementBias,
+                    wireframe:           material.wireframe,
+                    wireframeLinewidth:  material.wireframeLinewidth,
+                    light:               material.light
+                } ) )
+                break
+
+            case 'MeshDistanceMaterial':
+                onSuccess( MeshDistanceMaterialModel( {
+                    uuid:                material.uuid,
+                    name:                material.name,
+                    type:                material.type,
+                    fog:                 material.fog,
+                    lights:              material.lights,
+                    blending:            material.blending,
+                    side:                material.side,
+                    flatShading:         material.flatShading,
+                    vertexColors:        material.vertexColors,
+                    opacity:             material.opacity,
+                    transparent:         material.transparent,
+                    blendSrc:            material.blendSrc,
+                    blendDst:            material.blendDst,
+                    blendEquation:       material.blendEquation,
+                    blendSrcAlpha:       material.blendSrcAlpha,
+                    blendDstAlpha:       material.blendDstAlpha,
+                    blendEquationAlpha:  material.blendEquationAlpha,
+                    depthFunc:           material.depthFunc,
+                    depthTest:           material.depthTest,
+                    depthWrite:          material.depthWrite,
+                    clippingPlanes:      material.clippingPlanes,
+                    clipIntersection:    material.clipIntersection,
+                    clipShadows:         material.clipShadows,
+                    colorWrite:          material.colorWrite,
+                    precision:           material.precision,
+                    polygonOffset:       material.polygonOffset,
+                    polygonOffsetFactor: material.polygonOffsetFactor,
+                    polygonOffsetUnits:  material.polygonOffsetUnits,
+                    dithering:           material.dithering,
+                    alphaTest:           material.alphaTest,
+                    premultipliedAlpha:  material.premultipliedAlpha,
+                    overdraw:            material.overdraw,
+                    visible:             material.visible,
+                    userData:            this._parseUserData( material.userData ),
+                    needsUpdate:         material.needsUpdate,
+                    // MeshDistanceMaterial
+                    referencePosition:   material.referencePosition,
+                    nearDistance:        material.nearDistance,
+                    farDistance:         material.farDistance,
+                    skinning:            material.skinning,
+                    morphTargets:        material.morphTargets,
+                    map:                 material.map, // Unknown yet
+                    alphaMap:            material.alphaMap, // Unknown yet
+                    displacementMap:     material.displacementMap, // Unknown yet
+                    displacementScale:   material.displacementScale,
+                    displacementBias:    material.displacementBias,
+                    light:               material.light,
+                } ) )
+                break
+
+            case 'MeshLambertMaterial':
+                onSuccess( MeshLambertMaterialModel( {
+                    uuid:                material.uuid,
+                    name:                material.name,
+                    type:                material.type,
+                    fog:                 material.fog,
+                    lights:              material.lights,
+                    blending:            material.blending,
+                    side:                material.side,
+                    flatShading:         material.flatShading,
+                    vertexColors:        material.vertexColors,
+                    opacity:             material.opacity,
+                    transparent:         material.transparent,
+                    blendSrc:            material.blendSrc,
+                    blendDst:            material.blendDst,
+                    blendEquation:       material.blendEquation,
+                    blendSrcAlpha:       material.blendSrcAlpha,
+                    blendDstAlpha:       material.blendDstAlpha,
+                    blendEquationAlpha:  material.blendEquationAlpha,
+                    depthFunc:           material.depthFunc,
+                    depthTest:           material.depthTest,
+                    depthWrite:          material.depthWrite,
+                    clippingPlanes:      material.clippingPlanes,
+                    clipIntersection:    material.clipIntersection,
+                    clipShadows:         material.clipShadows,
+                    colorWrite:          material.colorWrite,
+                    precision:           material.precision,
+                    polygonOffset:       material.polygonOffset,
+                    polygonOffsetFactor: material.polygonOffsetFactor,
+                    polygonOffsetUnits:  material.polygonOffsetUnits,
+                    dithering:           material.dithering,
+                    alphaTest:           material.alphaTest,
+                    premultipliedAlpha:  material.premultipliedAlpha,
+                    overdraw:            material.overdraw,
+                    visible:             material.visible,
+                    userData:            this._parseUserData( material.userData ),
+                    needsUpdate:         material.needsUpdate,
+                    // MeshLambertMaterial
+                    color:               material.color,
+                    map:                 material.map, // Unknown yet
+                    lightMap:            material.lightMap, // Unknown yet
+                    lightMapIntensity:   material.lightMapIntensity,
+                    aoMap:               material.aoMap, // Unknown yet
+                    aoMapIntensity:      material.aoMapIntensity,
+                    emissive:            material.emissive,
+                    emissiveIntensity:   material.emissiveIntensity,
+                    emissiveMap:         material.emissiveMap, // Unknown yet
+                    specularMap:         material.specularMap, // Unknown yet
+                    alphaMap:            material.alphaMap, // Unknown yet
+                    envMap:              material.envMap, // Unknown yet
+                    combine:             material.combine,
+                    reflectivity:        material.reflectivity,
+                    refractionRatio:     material.refractionRatio,
+                    wireframe:           material.wireframe,
+                    wireframeLinewidth:  material.wireframeLinewidth,
+                    wireframeLinecap:    material.wireframeLinecap,
+                    wireframeLinejoin:   material.wireframeLinejoin,
+                    skinning:            material.skinning,
+                    morphTargets:        material.morphTargets,
+                    morphNormals:        material.morphNormals,
+                } ) )
+                break
+
+            case 'MeshNormalMaterial':
+                onSuccess( MeshNormalMaterialModel( {
+                    uuid:                material.uuid,
+                    name:                material.name,
+                    type:                material.type,
+                    fog:                 material.fog,
+                    lights:              material.lights,
+                    blending:            material.blending,
+                    side:                material.side,
+                    flatShading:         material.flatShading,
+                    vertexColors:        material.vertexColors,
+                    opacity:             material.opacity,
+                    transparent:         material.transparent,
+                    blendSrc:            material.blendSrc,
+                    blendDst:            material.blendDst,
+                    blendEquation:       material.blendEquation,
+                    blendSrcAlpha:       material.blendSrcAlpha,
+                    blendDstAlpha:       material.blendDstAlpha,
+                    blendEquationAlpha:  material.blendEquationAlpha,
+                    depthFunc:           material.depthFunc,
+                    depthTest:           material.depthTest,
+                    depthWrite:          material.depthWrite,
+                    clippingPlanes:      material.clippingPlanes,
+                    clipIntersection:    material.clipIntersection,
+                    clipShadows:         material.clipShadows,
+                    colorWrite:          material.colorWrite,
+                    precision:           material.precision,
+                    polygonOffset:       material.polygonOffset,
+                    polygonOffsetFactor: material.polygonOffsetFactor,
+                    polygonOffsetUnits:  material.polygonOffsetUnits,
+                    dithering:           material.dithering,
+                    alphaTest:           material.alphaTest,
+                    premultipliedAlpha:  material.premultipliedAlpha,
+                    overdraw:            material.overdraw,
+                    visible:             material.visible,
+                    userData:            this._parseUserData( material.userData ),
+                    needsUpdate:         material.needsUpdate,
+                    // MeshNormalMaterial
+                    bumpMap:             material.bumpMap, // Unknown yet
+                    bumpScale:           material.bumpScale,
+                    normalMap:           material.normalMap, // Unknown yet
+                    normalScale:         material.normalScale,
+                    displacementMap:     material.displacementMap, // Unknown yet
+                    displacementScale:   material.displacementScale,
+                    displacementBias:    material.displacementBias,
+                    wireframe:           material.wireframe,
+                    wireframeLinewidth:  material.wireframeLinewidth,
+                    light:               material.light,
+                    skinning:            material.skinning,
+                    morphTargets:        material.morphTargets,
+                    morphNormals:        material.morphNormals,
+                } ) )
+                break
+
+            case 'MeshPhongMaterial':
+                onSuccess( MeshPhongMaterialModel( {
+                    uuid:                material.uuid,
+                    name:                material.name,
+                    type:                material.type,
+                    fog:                 material.fog,
+                    lights:              material.lights,
+                    blending:            material.blending,
+                    side:                material.side,
+                    flatShading:         material.flatShading,
+                    vertexColors:        material.vertexColors,
+                    opacity:             material.opacity,
+                    transparent:         material.transparent,
+                    blendSrc:            material.blendSrc,
+                    blendDst:            material.blendDst,
+                    blendEquation:       material.blendEquation,
+                    blendSrcAlpha:       material.blendSrcAlpha,
+                    blendDstAlpha:       material.blendDstAlpha,
+                    blendEquationAlpha:  material.blendEquationAlpha,
+                    depthFunc:           material.depthFunc,
+                    depthTest:           material.depthTest,
+                    depthWrite:          material.depthWrite,
+                    clippingPlanes:      material.clippingPlanes,
+                    clipIntersection:    material.clipIntersection,
+                    clipShadows:         material.clipShadows,
+                    colorWrite:          material.colorWrite,
+                    precision:           material.precision,
+                    polygonOffset:       material.polygonOffset,
+                    polygonOffsetFactor: material.polygonOffsetFactor,
+                    polygonOffsetUnits:  material.polygonOffsetUnits,
+                    dithering:           material.dithering,
+                    alphaTest:           material.alphaTest,
+                    premultipliedAlpha:  material.premultipliedAlpha,
+                    overdraw:            material.overdraw,
+                    visible:             material.visible,
+                    userData:            this._parseUserData( material.userData ),
+                    needsUpdate:         material.needsUpdate,
+                    // MeshPhongMaterial
                     color:               material.color,
                     specular:            material.specular,
                     shininess:           material.shininess,
@@ -836,13 +2096,11 @@ class ThreeToMongoDB {
                     skinning:            material.skinning,
                     morphTargets:        material.morphTargets,
                     morphNormals:        material.morphNormals
-                } )
-            )
+                } ) )
+                break
 
-        } else if ( materialType === "LineBasicMaterial" ) {
-
-            onSuccess(
-                LineBasicMaterialModel( {
+            case 'MeshToonMaterial':
+                onSuccess( MeshToonMaterialModel( {
                     uuid:                material.uuid,
                     name:                material.name,
                     type:                material.type,
@@ -878,56 +2136,350 @@ class ThreeToMongoDB {
                     visible:             material.visible,
                     userData:            this._parseUserData( material.userData ),
                     needsUpdate:         material.needsUpdate,
+                    // MeshPhongMaterial
                     color:               material.color,
+                    specular:            material.specular,
+                    shininess:           material.shininess,
+                    map:                 material.map, // Unknown yet
+                    lightMap:            material.lightMap, // Unknown yet
+                    lightMapIntensity:   material.lightMapIntensity,
+                    aoMap:               material.aoMap, // Unknown yet
+                    aoMapIntensity:      material.aoMapIntensity,
+                    emissive:            material.emissive,
+                    emissiveIntensity:   material.emissiveIntensity,
+                    emissiveMap:         material.emissiveMap, // Unknown yet
+                    bumpMap:             material.bumpMap, // Unknown yet
+                    bumpScale:           material.bumpScale,
+                    normalMap:           material.normalMap, // Unknown yet
+                    normalScale:         material.normalScale,
+                    displacementMap:     material.displacementMap, // Unknown yet
+                    displacementScale:   material.displacementScale,
+                    displacementBias:    material.displacementBias,
+                    specularMap:         material.specularMap, // Unknown yet
+                    alphaMap:            material.alphaMap, // Unknown yet
+                    envMap:              material.envMap, // Unknown yet
+                    combine:             material.combine,
+                    reflectivity:        material.reflectivity,
+                    refractionRatio:     material.refractionRatio,
+                    wireframe:           material.wireframe,
+                    wireframeLinewidth:  material.wireframeLinewidth,
+                    wireframeLinecap:    material.wireframeLinecap,
+                    wireframeLinejoin:   material.wireframeLinejoin,
+                    skinning:            material.skinning,
+                    morphTargets:        material.morphTargets,
+                    morphNormals:        material.morphNormals,
+                    // MeshToonMaterial
+                    gradientMap:         material.gradientMap
+                } ) )
+                break
+
+            case 'MeshPhysicalMaterial':
+                onSuccess( MeshPhysicalMaterialModel( {
+                    uuid:                material.uuid,
+                    name:                material.name,
+                    type:                material.type,
+                    fog:                 material.fog,
+                    lights:              material.lights,
+                    blending:            material.blending,
+                    side:                material.side,
+                    flatShading:         material.flatShading,
+                    vertexColors:        material.vertexColors,
+                    opacity:             material.opacity,
+                    transparent:         material.transparent,
+                    blendSrc:            material.blendSrc,
+                    blendDst:            material.blendDst,
+                    blendEquation:       material.blendEquation,
+                    blendSrcAlpha:       material.blendSrcAlpha,
+                    blendDstAlpha:       material.blendDstAlpha,
+                    blendEquationAlpha:  material.blendEquationAlpha,
+                    depthFunc:           material.depthFunc,
+                    depthTest:           material.depthTest,
+                    depthWrite:          material.depthWrite,
+                    clippingPlanes:      material.clippingPlanes,
+                    clipIntersection:    material.clipIntersection,
+                    clipShadows:         material.clipShadows,
+                    colorWrite:          material.colorWrite,
+                    precision:           material.precision,
+                    polygonOffset:       material.polygonOffset,
+                    polygonOffsetFactor: material.polygonOffsetFactor,
+                    polygonOffsetUnits:  material.polygonOffsetUnits,
+                    dithering:           material.dithering,
+                    alphaTest:           material.alphaTest,
+                    premultipliedAlpha:  material.premultipliedAlpha,
+                    overdraw:            material.overdraw,
+                    visible:             material.visible,
+                    userData:            this._parseUserData( material.userData ),
+                    needsUpdate:         material.needsUpdate,
+                    // MeshPhysicalMaterial
+                    reflectivity:        material.reflectivity,
+                    clearCoat:           material.clearCoat,
+                    clearCoatRoughness:  material.clearCoatRoughness
+                } ) )
+                break
+
+            case 'MeshStandardMaterial':
+                onSuccess( MeshStandardMaterialModel( {
+                    uuid:                material.uuid,
+                    name:                material.name,
+                    type:                material.type,
+                    fog:                 material.fog,
+                    lights:              material.lights,
+                    blending:            material.blending,
+                    side:                material.side,
+                    flatShading:         material.flatShading,
+                    vertexColors:        material.vertexColors,
+                    opacity:             material.opacity,
+                    transparent:         material.transparent,
+                    blendSrc:            material.blendSrc,
+                    blendDst:            material.blendDst,
+                    blendEquation:       material.blendEquation,
+                    blendSrcAlpha:       material.blendSrcAlpha,
+                    blendDstAlpha:       material.blendDstAlpha,
+                    blendEquationAlpha:  material.blendEquationAlpha,
+                    depthFunc:           material.depthFunc,
+                    depthTest:           material.depthTest,
+                    depthWrite:          material.depthWrite,
+                    clippingPlanes:      material.clippingPlanes,
+                    clipIntersection:    material.clipIntersection,
+                    clipShadows:         material.clipShadows,
+                    colorWrite:          material.colorWrite,
+                    precision:           material.precision,
+                    polygonOffset:       material.polygonOffset,
+                    polygonOffsetFactor: material.polygonOffsetFactor,
+                    polygonOffsetUnits:  material.polygonOffsetUnits,
+                    dithering:           material.dithering,
+                    alphaTest:           material.alphaTest,
+                    premultipliedAlpha:  material.premultipliedAlpha,
+                    overdraw:            material.overdraw,
+                    visible:             material.visible,
+                    userData:            this._parseUserData( material.userData ),
+                    needsUpdate:         material.needsUpdate,
+                    // MeshStandardMaterial
+                    color:               material.color,
+                    roughness:           material.roughness,
+                    metalness:           material.metalness,
+                    map:                 material.map, // Unknown yet
+                    lightMap:            material.lightMap, // Unknown yet
+                    lightMapIntensity:   material.lightMapIntensity,
+                    aoMap:               material.aoMap, // Unknown yet
+                    aoMapIntensity:      material.aoMapIntensity,
+                    emissive:            material.emissive,
+                    emissiveIntensity:   material.emissiveIntensity,
+                    emissiveMap:         material.emissiveMap, // Unknown yet
+                    bumpMap:             material.bumpMap, // Unknown yet
+                    bumpScale:           material.bumpScale,
+                    normalMap:           material.normalMap, // Unknown yet
+                    normalScale:         material.normalScale,
+                    displacementMap:     material.displacementMap, // Unknown yet
+                    displacementScale:   material.displacementScale,
+                    displacementBias:    material.displacementBias,
+                    roughnessMap:        material.roughnessMap, // Unknown yet
+                    metalnessMap:        material.metalnessMap, // Unknown yet
+                    alphaMap:            material.alphaMap, // Unknown yet
+                    envMap:              material.envMap, // Unknown yet
+                    envMapIntensity:     material.envMapIntensity,
+                    refractionRatio:     material.refractionRatio,
+                    wireframe:           material.wireframe,
+                    wireframeLinewidth:  material.wireframeLinewidth,
+                    wireframeLinecap:    material.wireframeLinecap,
+                    wireframeLinejoin:   material.wireframeLinejoin,
+                    skinning:            material.skinning,
+                    morphTargets:        material.morphTargets,
+                    morphNormals:        material.morphNormals
+                } ) )
+                break
+
+            case 'PointsMaterial':
+                onSuccess( PointsMaterialModel( {
+                    uuid:                material.uuid,
+                    name:                material.name,
+                    type:                material.type,
+                    fog:                 material.fog,
+                    lights:              material.lights,
+                    blending:            material.blending,
+                    side:                material.side,
+                    flatShading:         material.flatShading,
+                    vertexColors:        material.vertexColors,
+                    opacity:             material.opacity,
+                    transparent:         material.transparent,
+                    blendSrc:            material.blendSrc,
+                    blendDst:            material.blendDst,
+                    blendEquation:       material.blendEquation,
+                    blendSrcAlpha:       material.blendSrcAlpha,
+                    blendDstAlpha:       material.blendDstAlpha,
+                    blendEquationAlpha:  material.blendEquationAlpha,
+                    depthFunc:           material.depthFunc,
+                    depthTest:           material.depthTest,
+                    depthWrite:          material.depthWrite,
+                    clippingPlanes:      material.clippingPlanes,
+                    clipIntersection:    material.clipIntersection,
+                    clipShadows:         material.clipShadows,
+                    colorWrite:          material.colorWrite,
+                    precision:           material.precision,
+                    polygonOffset:       material.polygonOffset,
+                    polygonOffsetFactor: material.polygonOffsetFactor,
+                    polygonOffsetUnits:  material.polygonOffsetUnits,
+                    dithering:           material.dithering,
+                    alphaTest:           material.alphaTest,
+                    premultipliedAlpha:  material.premultipliedAlpha,
+                    overdraw:            material.overdraw,
+                    visible:             material.visible,
+                    userData:            this._parseUserData( material.userData ),
+                    needsUpdate:         material.needsUpdate,
+                    // PointsMaterial
+                    color:               material.color,
+                    map:                 material.map, // Unknown yet
+                    size:                material.size,
+                    sizeAttenuation:     material.sizeAttenuation
+                } ) )
+                break
+
+            case 'ShaderMaterial':
+                onSuccess( ShaderMaterialModel( {
+                    uuid:                material.uuid,
+                    name:                material.name,
+                    type:                material.type,
+                    fog:                 material.fog,
+                    lights:              material.lights,
+                    blending:            material.blending,
+                    side:                material.side,
+                    flatShading:         material.flatShading,
+                    vertexColors:        material.vertexColors,
+                    opacity:             material.opacity,
+                    transparent:         material.transparent,
+                    blendSrc:            material.blendSrc,
+                    blendDst:            material.blendDst,
+                    blendEquation:       material.blendEquation,
+                    blendSrcAlpha:       material.blendSrcAlpha,
+                    blendDstAlpha:       material.blendDstAlpha,
+                    blendEquationAlpha:  material.blendEquationAlpha,
+                    depthFunc:           material.depthFunc,
+                    depthTest:           material.depthTest,
+                    depthWrite:          material.depthWrite,
+                    clippingPlanes:      material.clippingPlanes,
+                    clipIntersection:    material.clipIntersection,
+                    clipShadows:         material.clipShadows,
+                    colorWrite:          material.colorWrite,
+                    precision:           material.precision,
+                    polygonOffset:       material.polygonOffset,
+                    polygonOffsetFactor: material.polygonOffsetFactor,
+                    polygonOffsetUnits:  material.polygonOffsetUnits,
+                    dithering:           material.dithering,
+                    alphaTest:           material.alphaTest,
+                    premultipliedAlpha:  material.premultipliedAlpha,
+                    overdraw:            material.overdraw,
+                    visible:             material.visible,
+                    userData:            this._parseUserData( material.userData ),
+                    needsUpdate:         material.needsUpdate,
+                    // ShaderMaterial
+                    defines:             material.defines, // Unknown yet
+                    uniforms:            material.uniforms, // Unknown yet
+                    vertexShader:        material.vertexShader,
+                    fragmentShader:      material.fragmentShader,
+                    linewidth:           material.linewidth,
+                    wireframe:           material.wireframe,
+                    wireframeLinewidth:  material.wireframeLinewidth,
                     light:               material.light,
-                    lineWidth:           material.lineWidth,
-                    linecap:             material.linecap,
-                    linejoin:            material.linejoin
+                    clipping:            material.clipping,
+                    skinning:            material.skinning,
+                    morphTargets:        material.morphTargets,
+                    morphNormals:        material.morphNormals,
+                    derivatives:         material.derivatives,
+                    fragDepth:           material.fragDepth,
+                    drawBuffers:         material.drawBuffers,
+                    shaderTextureLOD:    material.shaderTextureLOD
+                } ) )
+                break
 
-                } )
-            )
+            case 'ShadowMaterial':
+                onSuccess( ShadowMaterialModel( {
+                    uuid:                material.uuid,
+                    name:                material.name,
+                    type:                material.type,
+                    fog:                 material.fog,
+                    lights:              material.lights,
+                    blending:            material.blending,
+                    side:                material.side,
+                    flatShading:         material.flatShading,
+                    vertexColors:        material.vertexColors,
+                    opacity:             material.opacity,
+                    transparent:         material.transparent,
+                    blendSrc:            material.blendSrc,
+                    blendDst:            material.blendDst,
+                    blendEquation:       material.blendEquation,
+                    blendSrcAlpha:       material.blendSrcAlpha,
+                    blendDstAlpha:       material.blendDstAlpha,
+                    blendEquationAlpha:  material.blendEquationAlpha,
+                    depthFunc:           material.depthFunc,
+                    depthTest:           material.depthTest,
+                    depthWrite:          material.depthWrite,
+                    clippingPlanes:      material.clippingPlanes,
+                    clipIntersection:    material.clipIntersection,
+                    clipShadows:         material.clipShadows,
+                    colorWrite:          material.colorWrite,
+                    precision:           material.precision,
+                    polygonOffset:       material.polygonOffset,
+                    polygonOffsetFactor: material.polygonOffsetFactor,
+                    polygonOffsetUnits:  material.polygonOffsetUnits,
+                    dithering:           material.dithering,
+                    alphaTest:           material.alphaTest,
+                    premultipliedAlpha:  material.premultipliedAlpha,
+                    overdraw:            material.overdraw,
+                    visible:             material.visible,
+                    userData:            this._parseUserData( material.userData ),
+                    needsUpdate:         material.needsUpdate,
+                    // ShadowMaterial
+                    color:               material.color
+                } ) )
+                break
 
-        } else {
+            case 'SpriteMaterial':
+                onSuccess( SpriteMaterialModel( {
+                    uuid:                material.uuid,
+                    name:                material.name,
+                    type:                material.type,
+                    fog:                 material.fog,
+                    lights:              material.lights,
+                    blending:            material.blending,
+                    side:                material.side,
+                    flatShading:         material.flatShading,
+                    vertexColors:        material.vertexColors,
+                    opacity:             material.opacity,
+                    transparent:         material.transparent,
+                    blendSrc:            material.blendSrc,
+                    blendDst:            material.blendDst,
+                    blendEquation:       material.blendEquation,
+                    blendSrcAlpha:       material.blendSrcAlpha,
+                    blendDstAlpha:       material.blendDstAlpha,
+                    blendEquationAlpha:  material.blendEquationAlpha,
+                    depthFunc:           material.depthFunc,
+                    depthTest:           material.depthTest,
+                    depthWrite:          material.depthWrite,
+                    clippingPlanes:      material.clippingPlanes,
+                    clipIntersection:    material.clipIntersection,
+                    clipShadows:         material.clipShadows,
+                    colorWrite:          material.colorWrite,
+                    precision:           material.precision,
+                    polygonOffset:       material.polygonOffset,
+                    polygonOffsetFactor: material.polygonOffsetFactor,
+                    polygonOffsetUnits:  material.polygonOffsetUnits,
+                    dithering:           material.dithering,
+                    alphaTest:           material.alphaTest,
+                    premultipliedAlpha:  material.premultipliedAlpha,
+                    overdraw:            material.overdraw,
+                    visible:             material.visible,
+                    userData:            this._parseUserData( material.userData ),
+                    needsUpdate:         material.needsUpdate,
+                    // SpriteMaterial
+                    color:               material.color,
+                    map:                 material.map, // Unknown yet
+                    rotation:            material.rotation
+                } ) )
+                break
 
-            onError( `Invalid material type: ${materialType}` )
-
-            //            materialModel = MaterialModel( {
-            //                uuid:                material.uuid,
-            //                name:                material.name,
-            //                type:                material.type,
-            //                fog:                 material.fog,
-            //                lights:              material.lights,
-            //                blending:            material.blending,
-            //                side:                material.side,
-            //                flatShading:         material.flatShading,
-            //                vertexColors:        material.vertexColors,
-            //                opacity:             material.opacity,
-            //                transparent:         material.transparent,
-            //                blendSrc:            material.blendSrc,
-            //                blendDst:            material.blendDst,
-            //                blendEquation:       material.blendEquation,
-            //                blendSrcAlpha:       material.blendSrcAlpha,
-            //                blendDstAlpha:       material.blendDstAlpha,
-            //                blendEquationAlpha:  material.blendEquationAlpha,
-            //                depthFunc:           material.depthFunc,
-            //                depthTest:           material.depthTest,
-            //                depthWrite:          material.depthWrite,
-            //                clippingPlanes:      material.clippingPlanes,
-            //                clipIntersection:    material.clipIntersection,
-            //                clipShadows:         material.clipShadows,
-            //                colorWrite:          material.colorWrite,
-            //                precision:           material.precision,
-            //                polygonOffset:       material.polygonOffset,
-            //                polygonOffsetFactor: material.polygonOffsetFactor,
-            //                polygonOffsetUnits:  material.polygonOffsetUnits,
-            //                dithering:           material.dithering,
-            //                alphaTest:           material.alphaTest,
-            //                premultipliedAlpha:  material.premultipliedAlpha,
-            //                overdraw:            material.overdraw,
-            //                visible:             material.visible,
-            //                userData:            this._parseUserData( material.userData ),
-            //                needsUpdate:         material.needsUpdate
-            //            } )
+            default:
+                onError( `Unmanaged material of type: ${materialType}` )
+                break
 
         }
 
@@ -1021,6 +2573,8 @@ class ThreeToMongoDB {
         }
 
     }
+
+    // Texture
 
 }
 
