@@ -12,9 +12,6 @@ const path  = require( 'path' )
 const THREE = require( 'three' )
 
 const AscFile     = require( './AscFile' )
-const JsonFile    = require( './JsonFile' )
-const RzmlFile    = require( './RzmlFile' )
-const SectionFile = require( './SectionFile' )
 
 const JsonToThree  = require( '../converters/JsonToThree' )
 const ShpToThree  = require( '../converters/ShpToThree' )
