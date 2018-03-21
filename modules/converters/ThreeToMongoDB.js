@@ -414,9 +414,10 @@ class ThreeToMongoDB {
             return
         }
 
-        if ( childrenIds.length === 0 ) {
+        if ( geometry.isGeometry ) {
 
-            if ( geometry.isGeometry && (!geometry.vertices || geometry.vertices.length === 0) ) {
+            // A final geometry (mesh withour children) should contain vertices
+            if ( childrenIds.length === 0 && (!geometry.vertices || geometry.vertices.length === 0) ) {
 
                 console.error( `Mesh ${mesh.name} geometry doesn't contain vertices ! Skip it.` )
                 onSuccess( null )
@@ -424,7 +425,19 @@ class ThreeToMongoDB {
 
             }
 
-            if ( geometry.isBufferGeometry && (!geometry.attributes[ 'position' ] || geometry.attributes[ 'position' ].count === 0 ) ) {
+            self._saveGeometryInDatabase( geometry, onError, ( geometryId ) => {
+
+                self._saveMaterialInDatabase( materials, onError, ( materialIds ) => {
+
+                    self._saveMeshInDatabase( mesh, childrenIds, geometryId, materialIds, onError, onSuccess )
+
+                } )
+
+            } )
+
+        } else if ( geometry.isBufferGeometry ) {
+
+            if ( childrenIds.length === 0 && (!geometry.attributes[ 'position' ] || geometry.attributes[ 'position' ].count === 0 ) ) {
 
                 console.error( `Mesh ${mesh.name} buffer geometry doesn't contain position attributes ! Skip it.` )
                 onSuccess( null )
@@ -432,17 +445,23 @@ class ThreeToMongoDB {
 
             }
 
-        }
+            self._saveBufferGeometryInDatabase( geometry, onError, ( geometryId ) => {
 
-        self._saveGeometryInDatabase( geometry, onError, ( geometryId ) => {
+                self._saveMaterialInDatabase( materials, onError, ( materialIds ) => {
 
-            self._saveMaterialInDatabase( materials, onError, ( materialIds ) => {
+                    self._saveMeshInDatabase( mesh, childrenIds, geometryId, materialIds, onError, onSuccess )
 
-                self._saveMeshInDatabase( mesh, childrenIds, geometryId, materialIds, onError, onSuccess )
+                } )
 
             } )
 
-        } )
+        } else {
+
+            console.error( `Mesh ${mesh.name} contain an unknown/unmanaged geometry of type ${geometry.type} ! Skip it.` )
+            onSuccess( null )
+            return
+
+        }
 
     }
 
