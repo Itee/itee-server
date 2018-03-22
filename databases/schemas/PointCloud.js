@@ -24,7 +24,6 @@
  */
 
 /**
- * This module add the PointCloud schema to the database.
  * @param mongoose - The mongoose driver database to extend
  * @returns {*} - The extended mongoose driver
  */
