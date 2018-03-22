@@ -91,7 +91,7 @@ function _createModel ( Mongoose ) {
 
     _model = Mongoose.model( 'Object3D', getSchemaFrom( Mongoose ) )
 
-    _inherit ( Mongoose )
+    _inherit( Mongoose )
 
 }
 
@@ -258,16 +258,11 @@ function _inherit ( Mongoose ) {
     } ) )
     _model.discriminator( 'SpotLightHelper', new Schema( {} ) )
 
-
-
-
     // Should be elsewhere
     _model.discriminator( 'Skeleton', new Schema( {
         bones:        [ Types.ObjectId ],
         boneMatrices: [ Number ] // Float32Array( this.bones.length * 16 )
     } ) )
-
-
 
 }
 
