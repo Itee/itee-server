@@ -60,11 +60,11 @@ console.time( 'Server launch time' )
 var os = require( 'os' )
 
 console.log( 'GLOBAL CONST :' )
-console.log( '\t__dirname : ' + __dirname )             // eslint-disable-line
-console.log( '\t__filename : ' + __filename )           // eslint-disable-line
-console.log( '\tNumber of CPUs : ' + os.cpus().length ) // eslint-disable-line
-console.log( '\tTotal memory : ' + os.totalmem() )      // eslint-disable-line
-console.log( '\tFree memory : ' + os.freemem() )        // eslint-disable-line
+console.log( `\t__dirname : ${__dirname}` )             // eslint-disable-line
+console.log( `\t__filename : ${__filename}` )           // eslint-disable-line
+console.log( `\tNumber of CPUs : ${os.cpus().length}` ) // eslint-disable-line
+console.log( `\tTotal memory : ${os.totalmem()}` )      // eslint-disable-line
+console.log( `\tFree memory : ${os.freemem()}` )        // eslint-disable-line
 console.log( '\tMemory usage : ' )                      // eslint-disable-line
 console.log( process.memoryUsage() )                    // eslint-disable-line
 console.log( '\n' )
