@@ -3003,6 +3003,52 @@ class ThreeToMongoDB {
                                // Return id
                                onSuccess( objectId )
 
+                               // Update Parent with this id ( only if parentId is provided
+                               //                  updateBuilding( onError, updateChildren.bind( this, onError, onSuccess ) )
+                               //
+                               //                  function updateBuilding ( onError, onSuccess ) {
+                               //
+                               //                      BuildingModel.findOneAndUpdate( { _id: _buildingId }, { $push: { scenes: sceneId } }, ( error ) => {
+                               //
+                               //                          if ( error ) {
+                               //                              onError( error )
+                               //                          } else {
+                               //                              onSuccess()
+                               //                          }
+                               //
+                               //                      } )
+                               //
+                               //                  }
+
+                               // Update Children with parent id
+                               //                               function updateChildren ( onError, onSuccess ) {
+                               //
+                               //                                   const savedChildrenIds = savedScene._doc.children
+                               //                                   const numberOfChildren = savedChildrenIds.length
+                               //
+                               //                                   let endUpdates = 0
+                               //                                   let childIndex
+                               //                                   let childId
+                               //
+                               //                                   for ( childIndex = 0 ; childIndex < numberOfChildren ; childIndex++ ) {
+                               //
+                               //                                       childId = savedChildrenIds[ childIndex ]
+                               //
+                               //                                       MeshModel.update( { _id: childId }, { $set: { parent: sceneId } }, () => {
+                               //
+                               //                                           endUpdates++
+                               //                                           if ( endUpdates < numberOfChildren ) {
+                               //                                               return
+                               //                                           }
+                               //
+                               //                                           onSuccess( sceneId )
+                               //
+                               //                                       } );
+                               //
+                               //                                   }
+                               //
+                               //                               }
+                               //
                            } )
                            .catch( onError )
 
