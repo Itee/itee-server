@@ -9,11 +9,12 @@
  * local schema and finally apply the ReconnectDatabase module.
  *
  */
-const fs             = require( 'fs' )
-const path           = require( 'path' )
-const mongooseDouble = require( 'mongoose-double' )
-const autoReconnect  = require( './TAutoReconnect' )
-let mongoose         = require( 'mongoose' )
+const fs                       = require( 'fs' )
+const path                     = require( 'path' )
+const mongooseDouble           = require( 'mongoose-double' )
+const autoReconnect            = require( './TAutoReconnect' )
+const { isFunction, isObject } = require( './validators/Validator' )
+let mongoose                   = require( 'mongoose' )
 
 /**
  * Just an override of 'fs.existsSync' with more explicit name
@@ -25,6 +26,16 @@ function _fileExistForPath ( filePath ) {
 
     return fs.existsSync( filePath )
 
+}
+
+function _fileIsEmpty( filePath, limit ) {
+    'use strict'
+    
+    const _limit = limit || 0
+    const fileSize = fs.statSync( filePath ).size
+    
+    return ( fileSize > _limit )
+    
 }
 
 /**
@@ -109,14 +120,71 @@ module.exports = function SchemaRegister ( config ) {
     mongooseDouble( mongoose )
 
     /*
-     * REGISTER DATABASE SCHEMAS
+     * REGISTER ITEE DATABASE SCHEMAS
      */
-    const coreSchemaPath = path.join( __dirname, 'schemas' )
-    const coreFilesPaths = _getFilesPathsUnder( coreSchemaPath )
-    for ( let schemaIndex = 0, numberOfSchemas = coreFilesPaths.length ; schemaIndex < numberOfSchemas ; schemaIndex++ ) {
-        let coreFilePath = coreFilesPaths[ schemaIndex ]
-        console.log( 'Register database schema: ' + coreFilePath )
-        mongoose = require( coreFilePath )( mongoose )
+    const coreSchemasBasePath   = path.join( __dirname, '_schemas' )
+    const coreSchemasFilesPaths = _getFilesPathsUnder( coreSchemasBasePath )
+    let coreSchemaFilePath      = ''
+    let coreSchemaFile          = undefined
+    for ( let schemaIndex = 0, numberOfSchemas = coreSchemasFilesPaths.length ; schemaIndex < numberOfSchemas ; schemaIndex++ ) {
+
+        coreSchemaFilePath = coreSchemasFilesPaths[ schemaIndex ]
+
+        if ( _fileIsEmpty( coreSchemaFilePath, 200 ) ) {
+
+            coreSchemaFile = require( coreSchemaFilePath )
+
+            if ( isFunction( coreSchemaFile.registerModelTo ) ) {
+
+                console.log( `Register core database schema: ${coreSchemaFilePath}` )
+                mongoose = coreSchemaFile.registerModelTo( mongoose )
+
+            } else {
+
+                console.error( `Unable to register core database schema: ${coreSchemaFilePath}` )
+
+            }
+
+        } else {
+
+            console.warn( `Skip empty core database schema: ${coreSchemaFilePath}` )
+
+        }
+
+    }
+
+    /*
+     * REGISTER LOCAL DATABASE SCHEMAS
+     */
+    const localSchemasBasePath   = path.join( __dirname, 'schemas' )
+    const localSchemasFilesPaths = _getFilesPathsUnder( localSchemasBasePath )
+    let localSchemaFilePath      = ''
+    let localSchemaFile          = undefined
+    for ( let schemaIndex = 0, numberOfSchemas = localSchemasFilesPaths.length ; schemaIndex < numberOfSchemas ; schemaIndex++ ) {
+
+        localSchemaFilePath = localSchemasFilesPaths[ schemaIndex ]
+
+        if ( _fileIsEmpty( localSchemaFilePath ) ) {
+
+            localSchemaFile = require( localSchemaFilePath )
+
+            if ( isFunction( localSchemaFile.registerModelTo ) ) {
+
+                console.log( `Register local database schema: ${localSchemaFilePath}` )
+                mongoose = localSchemaFile.registerModelTo( mongoose )
+
+            } else {
+
+                console.error( `Unable to register local database schema: ${localSchemaFilePath}` )
+
+            }
+
+        } else {
+
+            console.warn( `Skip empty local database schema: ${localSchemaFilePath}` )
+
+        }
+
     }
 
     /*
