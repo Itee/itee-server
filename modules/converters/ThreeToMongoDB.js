@@ -235,40 +235,3007 @@ class ThreeToMongoDB {
     _saveInDataBase ( object, parentId, childrenArrayIds, onError, onSuccess ) {
 
         // Remove null ids that could come from invalid objects
+        const self        = this
         const childrenIds = childrenArrayIds.filter( ( item ) => {
             return item
         } )
 
+        // Preprocess objects here to save geometry, materials and related before to save the object itself
         const objectType = object.type
+        const geometry   = object.geometry
+        const materials  = object.material
 
-        if ( objectType === 'Mesh' ) {
+        if ( geometry && material ) {
 
-            this._saveMesh( object, childrenIds, onError, onSuccess )
+            if ( geometry.isGeometry ) {
 
-        } else if ( objectType === 'LineSegments' ) {
+                // If it is a terminal object ( No children ) with an empty geometry
+                if ( childrenIds.length === 0 && (!geometry.vertices || geometry.vertices.length === 0) ) {
 
-            this._saveLineSegment( object, childrenIds, onError, onSuccess )
+                    console.error( `Mesh ${mesh.name} geometry doesn't contain vertices ! Skip it.` )
+                    onSuccess( null )
+                    return
 
-        } else if ( objectType === 'Group' || objectType === 'Object3D' ) {
+                }
 
-            this._saveObject3D( object, childrenIds, onError, onSuccess )
+                if ( objectType === 'Line' || objectType === 'LineLoop' || objectType === 'LineSegments' ) {
 
-        } else if ( objectType === 'Scene' ) {
+                    // if material != LineBasicMaterial or LineDashedMaterial... ERROR
+                    if ( Array.isArray( materials ) ) {
 
-            this._saveScene( object, childrenIds, onError, onSuccess )
+                        let materialOnError = false
+                        let material        = undefined
+                        let materialType    = undefined
+                        for ( let materialIndex = 0, numberOfMaterials = materials.length ; materialIndex < numberOfMaterials ; materialIndex++ ) {
+
+                            material     = materials[ materialIndex ]
+                            materialType = material.type
+                            if ( materialType !== 'LineBasicMaterial' && materialType !== 'LineDashedMaterial' ) {
+                                materialOnError = true
+                                break
+                            }
+
+                        }
+
+                        if ( materialOnError ) {
+
+                            console.error( `Object ${object.name} of type ${objectType}, contain an invalid material of type ${materialType} ! Skip it.` )
+                            onSuccess( null )
+                            return
+
+                        }
+
+                    } else if ( materials.type !== 'LineBasicMaterial' && materials.type !== 'LineDashedMaterial' ) {
+
+                        console.error( `Object ${object.name} of type ${objectType}, contain an invalid material of type ${materials.type} ! Skip it.` )
+                        onSuccess( null )
+                        return
+
+                    } else {
+
+                        // Materials are ok for this type of object
+
+                    }
+
+                } else if ( objectType === 'Points' ) {
+
+                    // if material != PointsMaterial... ERROR
+
+                    if ( Array.isArray( materials ) ) {
+
+                        let materialOnError = false
+                        let material        = undefined
+                        let materialType    = undefined
+                        for ( let materialIndex = 0, numberOfMaterials = materials.length ; materialIndex < numberOfMaterials ; materialIndex++ ) {
+
+                            material     = materials[ materialIndex ]
+                            materialType = material.type
+                            if ( materialType !== 'PointsMaterial' ) {
+                                materialOnError = true
+                                break
+                            }
+
+                        }
+
+                        if ( materialOnError ) {
+
+                            console.error( `Object ${object.name} of type ${objectType}, contain an invalid material of type ${materialType} ! Skip it.` )
+                            onSuccess( null )
+                            return
+
+                        }
+
+                    } else if ( materials.type !== 'PointsMaterial' ) {
+
+                        console.error( `Object ${object.name} of type ${objectType}, contain an invalid material of type ${materials.type} ! Skip it.` )
+                        onSuccess( null )
+                        return
+
+                    } else {
+
+                        // Materials are ok for this type of object
+
+                    }
+
+                } else {
+
+                    // Regular object
+
+                }
+
+                self._saveGeometryInDatabase( geometry, onError, ( geometryId ) => {
+
+                    self._saveMaterialInDatabase( materials, onError, ( materialIds ) => {
+
+                        self._saveObject3DInDatabase( object, parentId, childrenIds, geometryId, materialIds, onError, onSuccess )
+
+                    } )
+
+                } )
+
+            } else if ( geometry.isBufferGeometry ) {
+
+                // If it is a terminal object ( No children ) with an empty geometry
+                if ( childrenIds.length === 0 && (!geometry.attributes[ 'position' ] || geometry.attributes[ 'position' ].count === 0 ) ) {
+
+                    console.error( `Mesh ${mesh.name} buffer geometry doesn't contain position attributes ! Skip it.` )
+                    onSuccess( null )
+                    return
+
+                }
+
+                if ( objectType === 'Line' || objectType === 'LineLoop' || objectType === 'LineSegments' ) {
+
+                    // if material != LineBasicMaterial or LineDashedMaterial... ERROR
+                    if ( Array.isArray( materials ) ) {
+
+                        let materialOnError = false
+                        let material        = undefined
+                        let materialType    = undefined
+                        for ( let materialIndex = 0, numberOfMaterials = materials.length ; materialIndex < numberOfMaterials ; materialIndex++ ) {
+
+                            material     = materials[ materialIndex ]
+                            materialType = material.type
+                            if ( materialType !== 'LineBasicMaterial' && materialType !== 'LineDashedMaterial' ) {
+                                materialOnError = true
+                                break
+                            }
+
+                        }
+
+                        if ( materialOnError ) {
+
+                            console.error( `Object ${object.name} of type ${objectType}, contain an invalid material of type ${materialType} ! Skip it.` )
+                            onSuccess( null )
+                            return
+
+                        }
+
+                    } else if ( materials.type !== 'LineBasicMaterial' && materials.type !== 'LineDashedMaterial' ) {
+
+                        console.error( `Object ${object.name} of type ${objectType}, contain an invalid material of type ${materials.type} ! Skip it.` )
+                        onSuccess( null )
+                        return
+
+                    } else {
+
+                        // Materials are ok for this type of object
+
+                    }
+
+                } else if ( objectType === 'Points' ) {
+
+                    // if material != PointsMaterial... ERROR
+
+                    if ( Array.isArray( materials ) ) {
+
+                        let materialOnError = false
+                        let material        = undefined
+                        let materialType    = undefined
+                        for ( let materialIndex = 0, numberOfMaterials = materials.length ; materialIndex < numberOfMaterials ; materialIndex++ ) {
+
+                            material     = materials[ materialIndex ]
+                            materialType = material.type
+                            if ( materialType !== 'PointsMaterial' ) {
+                                materialOnError = true
+                                break
+                            }
+
+                        }
+
+                        if ( materialOnError ) {
+
+                            console.error( `Object ${object.name} of type ${objectType}, contain an invalid material of type ${materialType} ! Skip it.` )
+                            onSuccess( null )
+                            return
+
+                        }
+
+                    } else if ( materials.type !== 'PointsMaterial' ) {
+
+                        console.error( `Object ${object.name} of type ${objectType}, contain an invalid material of type ${materials.type} ! Skip it.` )
+                        onSuccess( null )
+                        return
+
+                    } else {
+
+                        // Materials are ok for this type of object
+
+                    }
+
+                } else {
+
+                    // Regular object
+
+                }
+
+                self._saveBufferGeometryInDatabase( geometry, onError, ( geometryId ) => {
+
+                    self._saveMaterialInDatabase( materials, onError, ( materialIds ) => {
+
+                        self._saveObject3DInDatabase( object, parentId, childrenIds, geometryId, materialIds, onError, onSuccess )
+
+                    } )
+
+                } )
+
+            } else {
+
+                console.error( `Object ${object.name} contain an unknown/unmanaged geometry of type ${geometry.type} ! Skip it.` )
+                onSuccess( null )
+                return
+
+            }
+
+        } else if ( geometry && !material ) {
+
+            // Is this right ??? Object can have geometry without material ???
+
+            if ( geometry.isGeometry ) {
+
+                // If it is a terminal object ( No children ) with an empty geometry
+                if ( childrenIds.length === 0 && (!geometry.vertices || geometry.vertices.length === 0) ) {
+
+                    console.error( `Mesh ${mesh.name} geometry doesn't contain vertices ! Skip it.` )
+                    onSuccess( null )
+                    return
+
+                }
+
+                self._saveGeometryInDatabase( geometry, onError, ( geometryId ) => {
+
+                    self._saveObject3DInDatabase( object, parentId, childrenIds, geometryId, [], onError, onSuccess )
+
+                } )
+
+            } else if ( geometry.isBufferGeometry ) {
+
+                // If it is a terminal object ( No children ) with an empty geometry
+                if ( childrenIds.length === 0 && (!geometry.attributes[ 'position' ] || geometry.attributes[ 'position' ].count === 0 ) ) {
+
+                    console.error( `Mesh ${mesh.name} buffer geometry doesn't contain position attributes ! Skip it.` )
+                    onSuccess( null )
+                    return
+
+                }
+
+                self._saveBufferGeometryInDatabase( geometry, onError, ( geometryId ) => {
+
+                    self._saveObject3DInDatabase( object, parentId, childrenIds, geometryId, null, onError, onSuccess )
+
+                } )
+
+            } else {
+
+                console.error( `Object ${object.name} contain an unknown/unmanaged geometry of type ${geometry.type} ! Skip it.` )
+                onSuccess( null )
+                return
+
+            }
+
+        } else if ( !geometry && material ) {
+
+            if ( objectType === 'Sprite' ) {
+
+                // if material != SpriteMaterial... ERROR
+                if ( Array.isArray( materials ) ) {
+
+                    let materialOnError = false
+                    let material        = undefined
+                    let materialType    = undefined
+                    for ( let materialIndex = 0, numberOfMaterials = materials.length ; materialIndex < numberOfMaterials ; materialIndex++ ) {
+
+                        material     = materials[ materialIndex ]
+                        materialType = material.type
+                        if ( materialType !== 'SpriteMaterial' ) {
+                            materialOnError = true
+                            break
+                        }
+
+                    }
+
+                    if ( materialOnError ) {
+
+                        console.error( `Object ${object.name} of type ${objectType}, contain an invalid material of type ${materialType} ! Skip it.` )
+                        onSuccess( null )
+                        return
+
+                    }
+
+                } else if ( materials.type !== 'SpriteMaterial' ) {
+
+                    console.error( `Object ${object.name} of type ${objectType}, contain an invalid material of type ${materials.type} ! Skip it.` )
+                    onSuccess( null )
+                    return
+
+                } else {
+
+                    // Materials are ok for this type of object
+
+                }
+
+            } else {
+
+                console.error( `Missing geometry for object ${object.name} of type ${objectType}. Only Sprite can contains material without geometry ! Skip it.` )
+                onSuccess( null )
+                return
+
+            }
+
+            self._saveMaterialInDatabase( materials, onError, ( materialIds ) => {
+
+                self._saveObject3DInDatabase( object, parentId, childrenIds, null, materialIds, onError, onSuccess )
+
+            } )
 
         } else {
 
-            console.error( `Unknown object type: ${objectType}` )
-
-            // In view to allow checkNextChild without break we return a null id and clear it before save in db
-            onSuccess( null )
+            self._saveObject3DInDatabase( object, parentId, childrenIds, null, null, onError, onSuccess )
 
         }
 
     }
 
-    // Scene
+    // Object3D
+    _checkIfObject3DAlreadyExist ( object ) {
+
+        return this._objectCache[ object.uuid ]
+
+    }
+
+    _getObject3DModel ( object, parentId, childrenIds, geometryId, materialsIds, onError, onSuccess ) {
+
+        const objectType = object.type
+
+        switch ( objectType ) {
+
+            case 'Object3D':
+                onSuccess( Object3DModel( {
+                    uuid:                   object.uuid,
+                    name:                   object.name,
+                    type:                   object.type,
+                    parent:                 parentId,
+                    children:               childrenIds,
+                    up:                     {
+                        x: object.up.x,
+                        y: object.up.y,
+                        z: object.up.z
+                    },
+                    position:               {
+                        x: object.position.x,
+                        y: object.position.y,
+                        z: object.position.z
+                    },
+                    rotation:               {
+                        x:     object.rotation.x,
+                        y:     object.rotation.y,
+                        z:     object.rotation.z,
+                        order: object.rotation.order
+                    },
+                    quaternion:             {
+                        x: object.quaternion.x,
+                        y: object.quaternion.y,
+                        z: object.quaternion.z,
+                        w: object.quaternion.w
+                    },
+                    scale:                  {
+                        x: object.scale.x,
+                        y: object.scale.y,
+                        z: object.scale.z
+                    },
+                    modelViewMatrix:        object.modelViewMatrix.toArray(),
+                    normalMatrix:           object.normalMatrix.toArray(),
+                    matrix:                 object.matrix.toArray(),
+                    matrixWorld:            object.matrixWorld.toArray(),
+                    matrixAutoUpdate:       object.matrixAutoUpdate,
+                    matrixWorldNeedsUpdate: object.matrixWorldNeedsUpdate,
+                    layers:                 object.layers.mask,
+                    visible:                object.visible,
+                    castShadow:             object.castShadow,
+                    receiveShadow:          object.receiveShadow,
+                    frustumCulled:          object.frustumCulled,
+                    renderOrder:            object.renderOrder,
+                    userData:               this._parseUserData( object.userData )
+                } ) )
+                break
+
+            case 'Audio':
+                onSuccess( AudioModel( {
+                    uuid:                   object.uuid,
+                    name:                   object.name,
+                    type:                   object.type,
+                    parent:                 parentId,
+                    children:               childrenIds,
+                    up:                     {
+                        x: object.up.x,
+                        y: object.up.y,
+                        z: object.up.z
+                    },
+                    position:               {
+                        x: object.position.x,
+                        y: object.position.y,
+                        z: object.position.z
+                    },
+                    rotation:               {
+                        x:     object.rotation.x,
+                        y:     object.rotation.y,
+                        z:     object.rotation.z,
+                        order: object.rotation.order
+                    },
+                    quaternion:             {
+                        x: object.quaternion.x,
+                        y: object.quaternion.y,
+                        z: object.quaternion.z,
+                        w: object.quaternion.w
+                    },
+                    scale:                  {
+                        x: object.scale.x,
+                        y: object.scale.y,
+                        z: object.scale.z
+                    },
+                    modelViewMatrix:        object.modelViewMatrix.toArray(),
+                    normalMatrix:           object.normalMatrix.toArray(),
+                    matrix:                 object.matrix.toArray(),
+                    matrixWorld:            object.matrixWorld.toArray(),
+                    matrixAutoUpdate:       object.matrixAutoUpdate,
+                    matrixWorldNeedsUpdate: object.matrixWorldNeedsUpdate,
+                    layers:                 object.layers.mask,
+                    visible:                object.visible,
+                    castShadow:             object.castShadow,
+                    receiveShadow:          object.receiveShadow,
+                    frustumCulled:          object.frustumCulled,
+                    renderOrder:            object.renderOrder,
+                    userData:               this._parseUserData( object.userData )
+                    // Audio
+                } ) )
+                break
+
+            case 'PositionalAudio':
+                onSuccess( PositionalAudioModel( {
+                    uuid:                   object.uuid,
+                    name:                   object.name,
+                    type:                   object.type,
+                    parent:                 parentId,
+                    children:               childrenIds,
+                    up:                     {
+                        x: object.up.x,
+                        y: object.up.y,
+                        z: object.up.z
+                    },
+                    position:               {
+                        x: object.position.x,
+                        y: object.position.y,
+                        z: object.position.z
+                    },
+                    rotation:               {
+                        x:     object.rotation.x,
+                        y:     object.rotation.y,
+                        z:     object.rotation.z,
+                        order: object.rotation.order
+                    },
+                    quaternion:             {
+                        x: object.quaternion.x,
+                        y: object.quaternion.y,
+                        z: object.quaternion.z,
+                        w: object.quaternion.w
+                    },
+                    scale:                  {
+                        x: object.scale.x,
+                        y: object.scale.y,
+                        z: object.scale.z
+                    },
+                    modelViewMatrix:        object.modelViewMatrix.toArray(),
+                    normalMatrix:           object.normalMatrix.toArray(),
+                    matrix:                 object.matrix.toArray(),
+                    matrixWorld:            object.matrixWorld.toArray(),
+                    matrixAutoUpdate:       object.matrixAutoUpdate,
+                    matrixWorldNeedsUpdate: object.matrixWorldNeedsUpdate,
+                    layers:                 object.layers.mask,
+                    visible:                object.visible,
+                    castShadow:             object.castShadow,
+                    receiveShadow:          object.receiveShadow,
+                    frustumCulled:          object.frustumCulled,
+                    renderOrder:            object.renderOrder,
+                    userData:               this._parseUserData( object.userData )
+                    // PositionalAudio
+
+                } ) )
+                break
+
+            case 'AudioListener':
+                onSuccess( AudioListenerModel( {
+                    uuid:                   object.uuid,
+                    name:                   object.name,
+                    type:                   object.type,
+                    parent:                 parentId,
+                    children:               childrenIds,
+                    up:                     {
+                        x: object.up.x,
+                        y: object.up.y,
+                        z: object.up.z
+                    },
+                    position:               {
+                        x: object.position.x,
+                        y: object.position.y,
+                        z: object.position.z
+                    },
+                    rotation:               {
+                        x:     object.rotation.x,
+                        y:     object.rotation.y,
+                        z:     object.rotation.z,
+                        order: object.rotation.order
+                    },
+                    quaternion:             {
+                        x: object.quaternion.x,
+                        y: object.quaternion.y,
+                        z: object.quaternion.z,
+                        w: object.quaternion.w
+                    },
+                    scale:                  {
+                        x: object.scale.x,
+                        y: object.scale.y,
+                        z: object.scale.z
+                    },
+                    modelViewMatrix:        object.modelViewMatrix.toArray(),
+                    normalMatrix:           object.normalMatrix.toArray(),
+                    matrix:                 object.matrix.toArray(),
+                    matrixWorld:            object.matrixWorld.toArray(),
+                    matrixAutoUpdate:       object.matrixAutoUpdate,
+                    matrixWorldNeedsUpdate: object.matrixWorldNeedsUpdate,
+                    layers:                 object.layers.mask,
+                    visible:                object.visible,
+                    castShadow:             object.castShadow,
+                    receiveShadow:          object.receiveShadow,
+                    frustumCulled:          object.frustumCulled,
+                    renderOrder:            object.renderOrder,
+                    userData:               this._parseUserData( object.userData )
+                    // AudioListener
+
+                } ) )
+                break
+
+            case 'ArrowHelper':
+                onSuccess( ArrowHelperModel( {
+                    uuid:                   object.uuid,
+                    name:                   object.name,
+                    type:                   object.type,
+                    parent:                 parentId,
+                    children:               childrenIds,
+                    up:                     {
+                        x: object.up.x,
+                        y: object.up.y,
+                        z: object.up.z
+                    },
+                    position:               {
+                        x: object.position.x,
+                        y: object.position.y,
+                        z: object.position.z
+                    },
+                    rotation:               {
+                        x:     object.rotation.x,
+                        y:     object.rotation.y,
+                        z:     object.rotation.z,
+                        order: object.rotation.order
+                    },
+                    quaternion:             {
+                        x: object.quaternion.x,
+                        y: object.quaternion.y,
+                        z: object.quaternion.z,
+                        w: object.quaternion.w
+                    },
+                    scale:                  {
+                        x: object.scale.x,
+                        y: object.scale.y,
+                        z: object.scale.z
+                    },
+                    modelViewMatrix:        object.modelViewMatrix.toArray(),
+                    normalMatrix:           object.normalMatrix.toArray(),
+                    matrix:                 object.matrix.toArray(),
+                    matrixWorld:            object.matrixWorld.toArray(),
+                    matrixAutoUpdate:       object.matrixAutoUpdate,
+                    matrixWorldNeedsUpdate: object.matrixWorldNeedsUpdate,
+                    layers:                 object.layers.mask,
+                    visible:                object.visible,
+                    castShadow:             object.castShadow,
+                    receiveShadow:          object.receiveShadow,
+                    frustumCulled:          object.frustumCulled,
+                    renderOrder:            object.renderOrder,
+                    userData:               this._parseUserData( object.userData )
+                    // ArrowHelper
+
+                } ) )
+                break
+
+            case 'Bone':
+                onSuccess( BoneModel( {
+                    uuid:                   object.uuid,
+                    name:                   object.name,
+                    type:                   object.type,
+                    parent:                 parentId,
+                    children:               childrenIds,
+                    up:                     {
+                        x: object.up.x,
+                        y: object.up.y,
+                        z: object.up.z
+                    },
+                    position:               {
+                        x: object.position.x,
+                        y: object.position.y,
+                        z: object.position.z
+                    },
+                    rotation:               {
+                        x:     object.rotation.x,
+                        y:     object.rotation.y,
+                        z:     object.rotation.z,
+                        order: object.rotation.order
+                    },
+                    quaternion:             {
+                        x: object.quaternion.x,
+                        y: object.quaternion.y,
+                        z: object.quaternion.z,
+                        w: object.quaternion.w
+                    },
+                    scale:                  {
+                        x: object.scale.x,
+                        y: object.scale.y,
+                        z: object.scale.z
+                    },
+                    modelViewMatrix:        object.modelViewMatrix.toArray(),
+                    normalMatrix:           object.normalMatrix.toArray(),
+                    matrix:                 object.matrix.toArray(),
+                    matrixWorld:            object.matrixWorld.toArray(),
+                    matrixAutoUpdate:       object.matrixAutoUpdate,
+                    matrixWorldNeedsUpdate: object.matrixWorldNeedsUpdate,
+                    layers:                 object.layers.mask,
+                    visible:                object.visible,
+                    castShadow:             object.castShadow,
+                    receiveShadow:          object.receiveShadow,
+                    frustumCulled:          object.frustumCulled,
+                    renderOrder:            object.renderOrder,
+                    userData:               this._parseUserData( object.userData )
+                    // Bone
+
+                } ) )
+                break
+
+            case 'CameraScene':
+                onSuccess( CameraModel( {
+                    uuid:                   object.uuid,
+                    name:                   object.name,
+                    type:                   object.type,
+                    parent:                 parentId,
+                    children:               childrenIds,
+                    up:                     {
+                        x: object.up.x,
+                        y: object.up.y,
+                        z: object.up.z
+                    },
+                    position:               {
+                        x: object.position.x,
+                        y: object.position.y,
+                        z: object.position.z
+                    },
+                    rotation:               {
+                        x:     object.rotation.x,
+                        y:     object.rotation.y,
+                        z:     object.rotation.z,
+                        order: object.rotation.order
+                    },
+                    quaternion:             {
+                        x: object.quaternion.x,
+                        y: object.quaternion.y,
+                        z: object.quaternion.z,
+                        w: object.quaternion.w
+                    },
+                    scale:                  {
+                        x: object.scale.x,
+                        y: object.scale.y,
+                        z: object.scale.z
+                    },
+                    modelViewMatrix:        object.modelViewMatrix.toArray(),
+                    normalMatrix:           object.normalMatrix.toArray(),
+                    matrix:                 object.matrix.toArray(),
+                    matrixWorld:            object.matrixWorld.toArray(),
+                    matrixAutoUpdate:       object.matrixAutoUpdate,
+                    matrixWorldNeedsUpdate: object.matrixWorldNeedsUpdate,
+                    layers:                 object.layers.mask,
+                    visible:                object.visible,
+                    castShadow:             object.castShadow,
+                    receiveShadow:          object.receiveShadow,
+                    frustumCulled:          object.frustumCulled,
+                    renderOrder:            object.renderOrder,
+                    userData:               this._parseUserData( object.userData )
+                    // CameraScene
+
+                } ) )
+                break
+
+            case 'PerspectiveCamera':
+                onSuccess( PerspectiveCameraModel( {
+                    uuid:                   object.uuid,
+                    name:                   object.name,
+                    type:                   object.type,
+                    parent:                 parentId,
+                    children:               childrenIds,
+                    up:                     {
+                        x: object.up.x,
+                        y: object.up.y,
+                        z: object.up.z
+                    },
+                    position:               {
+                        x: object.position.x,
+                        y: object.position.y,
+                        z: object.position.z
+                    },
+                    rotation:               {
+                        x:     object.rotation.x,
+                        y:     object.rotation.y,
+                        z:     object.rotation.z,
+                        order: object.rotation.order
+                    },
+                    quaternion:             {
+                        x: object.quaternion.x,
+                        y: object.quaternion.y,
+                        z: object.quaternion.z,
+                        w: object.quaternion.w
+                    },
+                    scale:                  {
+                        x: object.scale.x,
+                        y: object.scale.y,
+                        z: object.scale.z
+                    },
+                    modelViewMatrix:        object.modelViewMatrix.toArray(),
+                    normalMatrix:           object.normalMatrix.toArray(),
+                    matrix:                 object.matrix.toArray(),
+                    matrixWorld:            object.matrixWorld.toArray(),
+                    matrixAutoUpdate:       object.matrixAutoUpdate,
+                    matrixWorldNeedsUpdate: object.matrixWorldNeedsUpdate,
+                    layers:                 object.layers.mask,
+                    visible:                object.visible,
+                    castShadow:             object.castShadow,
+                    receiveShadow:          object.receiveShadow,
+                    frustumCulled:          object.frustumCulled,
+                    renderOrder:            object.renderOrder,
+                    userData:               this._parseUserData( object.userData )
+                    // PerspectiveCamera
+
+                } ) )
+                break
+
+            case 'ArrayCamera':
+                onSuccess( ArrayCameraModel( {
+                    uuid:                   object.uuid,
+                    name:                   object.name,
+                    type:                   object.type,
+                    parent:                 parentId,
+                    children:               childrenIds,
+                    up:                     {
+                        x: object.up.x,
+                        y: object.up.y,
+                        z: object.up.z
+                    },
+                    position:               {
+                        x: object.position.x,
+                        y: object.position.y,
+                        z: object.position.z
+                    },
+                    rotation:               {
+                        x:     object.rotation.x,
+                        y:     object.rotation.y,
+                        z:     object.rotation.z,
+                        order: object.rotation.order
+                    },
+                    quaternion:             {
+                        x: object.quaternion.x,
+                        y: object.quaternion.y,
+                        z: object.quaternion.z,
+                        w: object.quaternion.w
+                    },
+                    scale:                  {
+                        x: object.scale.x,
+                        y: object.scale.y,
+                        z: object.scale.z
+                    },
+                    modelViewMatrix:        object.modelViewMatrix.toArray(),
+                    normalMatrix:           object.normalMatrix.toArray(),
+                    matrix:                 object.matrix.toArray(),
+                    matrixWorld:            object.matrixWorld.toArray(),
+                    matrixAutoUpdate:       object.matrixAutoUpdate,
+                    matrixWorldNeedsUpdate: object.matrixWorldNeedsUpdate,
+                    layers:                 object.layers.mask,
+                    visible:                object.visible,
+                    castShadow:             object.castShadow,
+                    receiveShadow:          object.receiveShadow,
+                    frustumCulled:          object.frustumCulled,
+                    renderOrder:            object.renderOrder,
+                    userData:               this._parseUserData( object.userData )
+                    // ArrayCamera
+
+                } ) )
+                break
+
+            case 'OrthographicCamera':
+                onSuccess( OrthographicCameraModel( {
+                    uuid:                   object.uuid,
+                    name:                   object.name,
+                    type:                   object.type,
+                    parent:                 parentId,
+                    children:               childrenIds,
+                    up:                     {
+                        x: object.up.x,
+                        y: object.up.y,
+                        z: object.up.z
+                    },
+                    position:               {
+                        x: object.position.x,
+                        y: object.position.y,
+                        z: object.position.z
+                    },
+                    rotation:               {
+                        x:     object.rotation.x,
+                        y:     object.rotation.y,
+                        z:     object.rotation.z,
+                        order: object.rotation.order
+                    },
+                    quaternion:             {
+                        x: object.quaternion.x,
+                        y: object.quaternion.y,
+                        z: object.quaternion.z,
+                        w: object.quaternion.w
+                    },
+                    scale:                  {
+                        x: object.scale.x,
+                        y: object.scale.y,
+                        z: object.scale.z
+                    },
+                    modelViewMatrix:        object.modelViewMatrix.toArray(),
+                    normalMatrix:           object.normalMatrix.toArray(),
+                    matrix:                 object.matrix.toArray(),
+                    matrixWorld:            object.matrixWorld.toArray(),
+                    matrixAutoUpdate:       object.matrixAutoUpdate,
+                    matrixWorldNeedsUpdate: object.matrixWorldNeedsUpdate,
+                    layers:                 object.layers.mask,
+                    visible:                object.visible,
+                    castShadow:             object.castShadow,
+                    receiveShadow:          object.receiveShadow,
+                    frustumCulled:          object.frustumCulled,
+                    renderOrder:            object.renderOrder,
+                    userData:               this._parseUserData( object.userData )
+                    // OrthographicCamera
+
+                } ) )
+                break
+
+            case 'CubeCamera':
+                onSuccess( CubeCameraModel( {
+                    uuid:                   object.uuid,
+                    name:                   object.name,
+                    type:                   object.type,
+                    parent:                 parentId,
+                    children:               childrenIds,
+                    up:                     {
+                        x: object.up.x,
+                        y: object.up.y,
+                        z: object.up.z
+                    },
+                    position:               {
+                        x: object.position.x,
+                        y: object.position.y,
+                        z: object.position.z
+                    },
+                    rotation:               {
+                        x:     object.rotation.x,
+                        y:     object.rotation.y,
+                        z:     object.rotation.z,
+                        order: object.rotation.order
+                    },
+                    quaternion:             {
+                        x: object.quaternion.x,
+                        y: object.quaternion.y,
+                        z: object.quaternion.z,
+                        w: object.quaternion.w
+                    },
+                    scale:                  {
+                        x: object.scale.x,
+                        y: object.scale.y,
+                        z: object.scale.z
+                    },
+                    modelViewMatrix:        object.modelViewMatrix.toArray(),
+                    normalMatrix:           object.normalMatrix.toArray(),
+                    matrix:                 object.matrix.toArray(),
+                    matrixWorld:            object.matrixWorld.toArray(),
+                    matrixAutoUpdate:       object.matrixAutoUpdate,
+                    matrixWorldNeedsUpdate: object.matrixWorldNeedsUpdate,
+                    layers:                 object.layers.mask,
+                    visible:                object.visible,
+                    castShadow:             object.castShadow,
+                    receiveShadow:          object.receiveShadow,
+                    frustumCulled:          object.frustumCulled,
+                    renderOrder:            object.renderOrder,
+                    userData:               this._parseUserData( object.userData )
+                    // CubeCamera
+
+                } ) )
+                break
+
+            case 'DirectionalLightHelper':
+                onSuccess( DirectionalLightHelperModel( {
+                    uuid:                   object.uuid,
+                    name:                   object.name,
+                    type:                   object.type,
+                    parent:                 parentId,
+                    children:               childrenIds,
+                    up:                     {
+                        x: object.up.x,
+                        y: object.up.y,
+                        z: object.up.z
+                    },
+                    position:               {
+                        x: object.position.x,
+                        y: object.position.y,
+                        z: object.position.z
+                    },
+                    rotation:               {
+                        x:     object.rotation.x,
+                        y:     object.rotation.y,
+                        z:     object.rotation.z,
+                        order: object.rotation.order
+                    },
+                    quaternion:             {
+                        x: object.quaternion.x,
+                        y: object.quaternion.y,
+                        z: object.quaternion.z,
+                        w: object.quaternion.w
+                    },
+                    scale:                  {
+                        x: object.scale.x,
+                        y: object.scale.y,
+                        z: object.scale.z
+                    },
+                    modelViewMatrix:        object.modelViewMatrix.toArray(),
+                    normalMatrix:           object.normalMatrix.toArray(),
+                    matrix:                 object.matrix.toArray(),
+                    matrixWorld:            object.matrixWorld.toArray(),
+                    matrixAutoUpdate:       object.matrixAutoUpdate,
+                    matrixWorldNeedsUpdate: object.matrixWorldNeedsUpdate,
+                    layers:                 object.layers.mask,
+                    visible:                object.visible,
+                    castShadow:             object.castShadow,
+                    receiveShadow:          object.receiveShadow,
+                    frustumCulled:          object.frustumCulled,
+                    renderOrder:            object.renderOrder,
+                    userData:               this._parseUserData( object.userData )
+                    // DirectionalLightHelper
+
+                } ) )
+                break
+
+            case 'HemisphereLightHelper':
+                onSuccess( HemisphereLightHelperModel( {
+                    uuid:                   object.uuid,
+                    name:                   object.name,
+                    type:                   object.type,
+                    parent:                 parentId,
+                    children:               childrenIds,
+                    up:                     {
+                        x: object.up.x,
+                        y: object.up.y,
+                        z: object.up.z
+                    },
+                    position:               {
+                        x: object.position.x,
+                        y: object.position.y,
+                        z: object.position.z
+                    },
+                    rotation:               {
+                        x:     object.rotation.x,
+                        y:     object.rotation.y,
+                        z:     object.rotation.z,
+                        order: object.rotation.order
+                    },
+                    quaternion:             {
+                        x: object.quaternion.x,
+                        y: object.quaternion.y,
+                        z: object.quaternion.z,
+                        w: object.quaternion.w
+                    },
+                    scale:                  {
+                        x: object.scale.x,
+                        y: object.scale.y,
+                        z: object.scale.z
+                    },
+                    modelViewMatrix:        object.modelViewMatrix.toArray(),
+                    normalMatrix:           object.normalMatrix.toArray(),
+                    matrix:                 object.matrix.toArray(),
+                    matrixWorld:            object.matrixWorld.toArray(),
+                    matrixAutoUpdate:       object.matrixAutoUpdate,
+                    matrixWorldNeedsUpdate: object.matrixWorldNeedsUpdate,
+                    layers:                 object.layers.mask,
+                    visible:                object.visible,
+                    castShadow:             object.castShadow,
+                    receiveShadow:          object.receiveShadow,
+                    frustumCulled:          object.frustumCulled,
+                    renderOrder:            object.renderOrder,
+                    userData:               this._parseUserData( object.userData )
+                    // HemisphereLightHelper
+
+                } ) )
+                break
+
+            case 'ImmediateRenderObject':
+                onSuccess( ImmediateRenderObjectModel( {
+                    uuid:                   object.uuid,
+                    name:                   object.name,
+                    type:                   object.type,
+                    parent:                 parentId,
+                    children:               childrenIds,
+                    up:                     {
+                        x: object.up.x,
+                        y: object.up.y,
+                        z: object.up.z
+                    },
+                    position:               {
+                        x: object.position.x,
+                        y: object.position.y,
+                        z: object.position.z
+                    },
+                    rotation:               {
+                        x:     object.rotation.x,
+                        y:     object.rotation.y,
+                        z:     object.rotation.z,
+                        order: object.rotation.order
+                    },
+                    quaternion:             {
+                        x: object.quaternion.x,
+                        y: object.quaternion.y,
+                        z: object.quaternion.z,
+                        w: object.quaternion.w
+                    },
+                    scale:                  {
+                        x: object.scale.x,
+                        y: object.scale.y,
+                        z: object.scale.z
+                    },
+                    modelViewMatrix:        object.modelViewMatrix.toArray(),
+                    normalMatrix:           object.normalMatrix.toArray(),
+                    matrix:                 object.matrix.toArray(),
+                    matrixWorld:            object.matrixWorld.toArray(),
+                    matrixAutoUpdate:       object.matrixAutoUpdate,
+                    matrixWorldNeedsUpdate: object.matrixWorldNeedsUpdate,
+                    layers:                 object.layers.mask,
+                    visible:                object.visible,
+                    castShadow:             object.castShadow,
+                    receiveShadow:          object.receiveShadow,
+                    frustumCulled:          object.frustumCulled,
+                    renderOrder:            object.renderOrder,
+                    userData:               this._parseUserData( object.userData )
+                    // ImmediateRenderObject
+
+                } ) )
+                break
+
+            case 'LensFlare':
+                onSuccess( LensFlareModel( {
+                    uuid:                   object.uuid,
+                    name:                   object.name,
+                    type:                   object.type,
+                    parent:                 parentId,
+                    children:               childrenIds,
+                    up:                     {
+                        x: object.up.x,
+                        y: object.up.y,
+                        z: object.up.z
+                    },
+                    position:               {
+                        x: object.position.x,
+                        y: object.position.y,
+                        z: object.position.z
+                    },
+                    rotation:               {
+                        x:     object.rotation.x,
+                        y:     object.rotation.y,
+                        z:     object.rotation.z,
+                        order: object.rotation.order
+                    },
+                    quaternion:             {
+                        x: object.quaternion.x,
+                        y: object.quaternion.y,
+                        z: object.quaternion.z,
+                        w: object.quaternion.w
+                    },
+                    scale:                  {
+                        x: object.scale.x,
+                        y: object.scale.y,
+                        z: object.scale.z
+                    },
+                    modelViewMatrix:        object.modelViewMatrix.toArray(),
+                    normalMatrix:           object.normalMatrix.toArray(),
+                    matrix:                 object.matrix.toArray(),
+                    matrixWorld:            object.matrixWorld.toArray(),
+                    matrixAutoUpdate:       object.matrixAutoUpdate,
+                    matrixWorldNeedsUpdate: object.matrixWorldNeedsUpdate,
+                    layers:                 object.layers.mask,
+                    visible:                object.visible,
+                    castShadow:             object.castShadow,
+                    receiveShadow:          object.receiveShadow,
+                    frustumCulled:          object.frustumCulled,
+                    renderOrder:            object.renderOrder,
+                    userData:               this._parseUserData( object.userData ),
+                    // LensFlare
+                    lensFlares:             [ // This is an array need mapping
+                        {
+                            texture:  null, // todo save texture before
+                            size:     object.lensFlares.size,
+                            distance: object.lensFlares.distance,
+                            x:        object.lensFlares.distance,
+                            y:        object.lensFlares.distance,
+                            z:        object.lensFlares.distance,
+                            scale:    object.lensFlares.distance,
+                            rotation: object.lensFlares.distance,
+                            opacity:  object.lensFlares.distance,
+                            color:    {
+                                r: object.lensFlares.distance.r,
+                                g: object.lensFlares.distance.g,
+                                b: object.lensFlares.distance.b
+                            },
+                            blending: object.lensFlares.distance
+                        }
+                    ],
+                    positionScreen:         {
+                        x: object.positionScreen.x,
+                        y: object.positionScreen.y,
+                        z: object.positionScreen.z
+                    }
+                } ) )
+                break
+
+            case 'Light':
+                onSuccess( LightModel( {
+                    uuid:                   object.uuid,
+                    name:                   object.name,
+                    type:                   object.type,
+                    parent:                 parentId,
+                    children:               childrenIds,
+                    up:                     {
+                        x: object.up.x,
+                        y: object.up.y,
+                        z: object.up.z
+                    },
+                    position:               {
+                        x: object.position.x,
+                        y: object.position.y,
+                        z: object.position.z
+                    },
+                    rotation:               {
+                        x:     object.rotation.x,
+                        y:     object.rotation.y,
+                        z:     object.rotation.z,
+                        order: object.rotation.order
+                    },
+                    quaternion:             {
+                        x: object.quaternion.x,
+                        y: object.quaternion.y,
+                        z: object.quaternion.z,
+                        w: object.quaternion.w
+                    },
+                    scale:                  {
+                        x: object.scale.x,
+                        y: object.scale.y,
+                        z: object.scale.z
+                    },
+                    modelViewMatrix:        object.modelViewMatrix.toArray(),
+                    normalMatrix:           object.normalMatrix.toArray(),
+                    matrix:                 object.matrix.toArray(),
+                    matrixWorld:            object.matrixWorld.toArray(),
+                    matrixAutoUpdate:       object.matrixAutoUpdate,
+                    matrixWorldNeedsUpdate: object.matrixWorldNeedsUpdate,
+                    layers:                 object.layers.mask,
+                    visible:                object.visible,
+                    castShadow:             object.castShadow,
+                    receiveShadow:          object.receiveShadow,
+                    frustumCulled:          object.frustumCulled,
+                    renderOrder:            object.renderOrder,
+                    userData:               this._parseUserData( object.userData )
+                    // Light
+
+                } ) )
+                break
+
+            case 'AmbientLight':
+                onSuccess( AmbientLightModel( {
+                    uuid:                   object.uuid,
+                    name:                   object.name,
+                    type:                   object.type,
+                    parent:                 parentId,
+                    children:               childrenIds,
+                    up:                     {
+                        x: object.up.x,
+                        y: object.up.y,
+                        z: object.up.z
+                    },
+                    position:               {
+                        x: object.position.x,
+                        y: object.position.y,
+                        z: object.position.z
+                    },
+                    rotation:               {
+                        x:     object.rotation.x,
+                        y:     object.rotation.y,
+                        z:     object.rotation.z,
+                        order: object.rotation.order
+                    },
+                    quaternion:             {
+                        x: object.quaternion.x,
+                        y: object.quaternion.y,
+                        z: object.quaternion.z,
+                        w: object.quaternion.w
+                    },
+                    scale:                  {
+                        x: object.scale.x,
+                        y: object.scale.y,
+                        z: object.scale.z
+                    },
+                    modelViewMatrix:        object.modelViewMatrix.toArray(),
+                    normalMatrix:           object.normalMatrix.toArray(),
+                    matrix:                 object.matrix.toArray(),
+                    matrixWorld:            object.matrixWorld.toArray(),
+                    matrixAutoUpdate:       object.matrixAutoUpdate,
+                    matrixWorldNeedsUpdate: object.matrixWorldNeedsUpdate,
+                    layers:                 object.layers.mask,
+                    visible:                object.visible,
+                    castShadow:             object.castShadow,
+                    receiveShadow:          object.receiveShadow,
+                    frustumCulled:          object.frustumCulled,
+                    renderOrder:            object.renderOrder,
+                    userData:               this._parseUserData( object.userData )
+                    // AmbientLight
+
+                } ) )
+                break
+
+            case 'DirectionalLight':
+                onSuccess( DirectionalLightModel( {
+                    uuid:                   object.uuid,
+                    name:                   object.name,
+                    type:                   object.type,
+                    parent:                 parentId,
+                    children:               childrenIds,
+                    up:                     {
+                        x: object.up.x,
+                        y: object.up.y,
+                        z: object.up.z
+                    },
+                    position:               {
+                        x: object.position.x,
+                        y: object.position.y,
+                        z: object.position.z
+                    },
+                    rotation:               {
+                        x:     object.rotation.x,
+                        y:     object.rotation.y,
+                        z:     object.rotation.z,
+                        order: object.rotation.order
+                    },
+                    quaternion:             {
+                        x: object.quaternion.x,
+                        y: object.quaternion.y,
+                        z: object.quaternion.z,
+                        w: object.quaternion.w
+                    },
+                    scale:                  {
+                        x: object.scale.x,
+                        y: object.scale.y,
+                        z: object.scale.z
+                    },
+                    modelViewMatrix:        object.modelViewMatrix.toArray(),
+                    normalMatrix:           object.normalMatrix.toArray(),
+                    matrix:                 object.matrix.toArray(),
+                    matrixWorld:            object.matrixWorld.toArray(),
+                    matrixAutoUpdate:       object.matrixAutoUpdate,
+                    matrixWorldNeedsUpdate: object.matrixWorldNeedsUpdate,
+                    layers:                 object.layers.mask,
+                    visible:                object.visible,
+                    castShadow:             object.castShadow,
+                    receiveShadow:          object.receiveShadow,
+                    frustumCulled:          object.frustumCulled,
+                    renderOrder:            object.renderOrder,
+                    userData:               this._parseUserData( object.userData )
+                    // DirectionalLight
+
+                } ) )
+                break
+
+            case 'HemisphereLight':
+                onSuccess( HemisphereLightModel( {
+                    uuid:                   object.uuid,
+                    name:                   object.name,
+                    type:                   object.type,
+                    parent:                 parentId,
+                    children:               childrenIds,
+                    up:                     {
+                        x: object.up.x,
+                        y: object.up.y,
+                        z: object.up.z
+                    },
+                    position:               {
+                        x: object.position.x,
+                        y: object.position.y,
+                        z: object.position.z
+                    },
+                    rotation:               {
+                        x:     object.rotation.x,
+                        y:     object.rotation.y,
+                        z:     object.rotation.z,
+                        order: object.rotation.order
+                    },
+                    quaternion:             {
+                        x: object.quaternion.x,
+                        y: object.quaternion.y,
+                        z: object.quaternion.z,
+                        w: object.quaternion.w
+                    },
+                    scale:                  {
+                        x: object.scale.x,
+                        y: object.scale.y,
+                        z: object.scale.z
+                    },
+                    modelViewMatrix:        object.modelViewMatrix.toArray(),
+                    normalMatrix:           object.normalMatrix.toArray(),
+                    matrix:                 object.matrix.toArray(),
+                    matrixWorld:            object.matrixWorld.toArray(),
+                    matrixAutoUpdate:       object.matrixAutoUpdate,
+                    matrixWorldNeedsUpdate: object.matrixWorldNeedsUpdate,
+                    layers:                 object.layers.mask,
+                    visible:                object.visible,
+                    castShadow:             object.castShadow,
+                    receiveShadow:          object.receiveShadow,
+                    frustumCulled:          object.frustumCulled,
+                    renderOrder:            object.renderOrder,
+                    userData:               this._parseUserData( object.userData )
+                    // HemisphereLight
+
+                } ) )
+                break
+
+            case 'PointLight':
+                onSuccess( PointLightModel( {
+                    uuid:                   object.uuid,
+                    name:                   object.name,
+                    type:                   object.type,
+                    parent:                 parentId,
+                    children:               childrenIds,
+                    up:                     {
+                        x: object.up.x,
+                        y: object.up.y,
+                        z: object.up.z
+                    },
+                    position:               {
+                        x: object.position.x,
+                        y: object.position.y,
+                        z: object.position.z
+                    },
+                    rotation:               {
+                        x:     object.rotation.x,
+                        y:     object.rotation.y,
+                        z:     object.rotation.z,
+                        order: object.rotation.order
+                    },
+                    quaternion:             {
+                        x: object.quaternion.x,
+                        y: object.quaternion.y,
+                        z: object.quaternion.z,
+                        w: object.quaternion.w
+                    },
+                    scale:                  {
+                        x: object.scale.x,
+                        y: object.scale.y,
+                        z: object.scale.z
+                    },
+                    modelViewMatrix:        object.modelViewMatrix.toArray(),
+                    normalMatrix:           object.normalMatrix.toArray(),
+                    matrix:                 object.matrix.toArray(),
+                    matrixWorld:            object.matrixWorld.toArray(),
+                    matrixAutoUpdate:       object.matrixAutoUpdate,
+                    matrixWorldNeedsUpdate: object.matrixWorldNeedsUpdate,
+                    layers:                 object.layers.mask,
+                    visible:                object.visible,
+                    castShadow:             object.castShadow,
+                    receiveShadow:          object.receiveShadow,
+                    frustumCulled:          object.frustumCulled,
+                    renderOrder:            object.renderOrder,
+                    userData:               this._parseUserData( object.userData )
+                    // PointLight
+
+                } ) )
+                break
+
+            case 'RectAreaLight':
+                onSuccess( RectAreaLightModel( {
+                    uuid:                   object.uuid,
+                    name:                   object.name,
+                    type:                   object.type,
+                    parent:                 parentId,
+                    children:               childrenIds,
+                    up:                     {
+                        x: object.up.x,
+                        y: object.up.y,
+                        z: object.up.z
+                    },
+                    position:               {
+                        x: object.position.x,
+                        y: object.position.y,
+                        z: object.position.z
+                    },
+                    rotation:               {
+                        x:     object.rotation.x,
+                        y:     object.rotation.y,
+                        z:     object.rotation.z,
+                        order: object.rotation.order
+                    },
+                    quaternion:             {
+                        x: object.quaternion.x,
+                        y: object.quaternion.y,
+                        z: object.quaternion.z,
+                        w: object.quaternion.w
+                    },
+                    scale:                  {
+                        x: object.scale.x,
+                        y: object.scale.y,
+                        z: object.scale.z
+                    },
+                    modelViewMatrix:        object.modelViewMatrix.toArray(),
+                    normalMatrix:           object.normalMatrix.toArray(),
+                    matrix:                 object.matrix.toArray(),
+                    matrixWorld:            object.matrixWorld.toArray(),
+                    matrixAutoUpdate:       object.matrixAutoUpdate,
+                    matrixWorldNeedsUpdate: object.matrixWorldNeedsUpdate,
+                    layers:                 object.layers.mask,
+                    visible:                object.visible,
+                    castShadow:             object.castShadow,
+                    receiveShadow:          object.receiveShadow,
+                    frustumCulled:          object.frustumCulled,
+                    renderOrder:            object.renderOrder,
+                    userData:               this._parseUserData( object.userData )
+                    // RectAreaLight
+
+                } ) )
+                break
+
+            case 'SpotLight':
+                onSuccess( SpotLightModel( {
+                    uuid:                   object.uuid,
+                    name:                   object.name,
+                    type:                   object.type,
+                    parent:                 parentId,
+                    children:               childrenIds,
+                    up:                     {
+                        x: object.up.x,
+                        y: object.up.y,
+                        z: object.up.z
+                    },
+                    position:               {
+                        x: object.position.x,
+                        y: object.position.y,
+                        z: object.position.z
+                    },
+                    rotation:               {
+                        x:     object.rotation.x,
+                        y:     object.rotation.y,
+                        z:     object.rotation.z,
+                        order: object.rotation.order
+                    },
+                    quaternion:             {
+                        x: object.quaternion.x,
+                        y: object.quaternion.y,
+                        z: object.quaternion.z,
+                        w: object.quaternion.w
+                    },
+                    scale:                  {
+                        x: object.scale.x,
+                        y: object.scale.y,
+                        z: object.scale.z
+                    },
+                    modelViewMatrix:        object.modelViewMatrix.toArray(),
+                    normalMatrix:           object.normalMatrix.toArray(),
+                    matrix:                 object.matrix.toArray(),
+                    matrixWorld:            object.matrixWorld.toArray(),
+                    matrixAutoUpdate:       object.matrixAutoUpdate,
+                    matrixWorldNeedsUpdate: object.matrixWorldNeedsUpdate,
+                    layers:                 object.layers.mask,
+                    visible:                object.visible,
+                    castShadow:             object.castShadow,
+                    receiveShadow:          object.receiveShadow,
+                    frustumCulled:          object.frustumCulled,
+                    renderOrder:            object.renderOrder,
+                    userData:               this._parseUserData( object.userData )
+                    // SpotLight
+
+                } ) )
+                break
+
+            case 'Line':
+                onSuccess( LineModel( {
+                    uuid:                   object.uuid,
+                    name:                   object.name,
+                    type:                   object.type,
+                    parent:                 parentId,
+                    children:               childrenIds,
+                    up:                     {
+                        x: object.up.x,
+                        y: object.up.y,
+                        z: object.up.z
+                    },
+                    position:               {
+                        x: object.position.x,
+                        y: object.position.y,
+                        z: object.position.z
+                    },
+                    rotation:               {
+                        x:     object.rotation.x,
+                        y:     object.rotation.y,
+                        z:     object.rotation.z,
+                        order: object.rotation.order
+                    },
+                    quaternion:             {
+                        x: object.quaternion.x,
+                        y: object.quaternion.y,
+                        z: object.quaternion.z,
+                        w: object.quaternion.w
+                    },
+                    scale:                  {
+                        x: object.scale.x,
+                        y: object.scale.y,
+                        z: object.scale.z
+                    },
+                    modelViewMatrix:        object.modelViewMatrix.toArray(),
+                    normalMatrix:           object.normalMatrix.toArray(),
+                    matrix:                 object.matrix.toArray(),
+                    matrixWorld:            object.matrixWorld.toArray(),
+                    matrixAutoUpdate:       object.matrixAutoUpdate,
+                    matrixWorldNeedsUpdate: object.matrixWorldNeedsUpdate,
+                    layers:                 object.layers.mask,
+                    visible:                object.visible,
+                    castShadow:             object.castShadow,
+                    receiveShadow:          object.receiveShadow,
+                    frustumCulled:          object.frustumCulled,
+                    renderOrder:            object.renderOrder,
+                    userData:               this._parseUserData( object.userData ),
+                    // Line
+                    geometry:               geometryId,
+                    material:               materialsIds,
+                    drawMode:               object.drawMode
+                } ) )
+                break
+
+            case 'LineLoop':
+                onSuccess( LineLoopModel( {
+                    uuid:                   object.uuid,
+                    name:                   object.name,
+                    type:                   object.type,
+                    parent:                 parentId,
+                    children:               childrenIds,
+                    up:                     {
+                        x: object.up.x,
+                        y: object.up.y,
+                        z: object.up.z
+                    },
+                    position:               {
+                        x: object.position.x,
+                        y: object.position.y,
+                        z: object.position.z
+                    },
+                    rotation:               {
+                        x:     object.rotation.x,
+                        y:     object.rotation.y,
+                        z:     object.rotation.z,
+                        order: object.rotation.order
+                    },
+                    quaternion:             {
+                        x: object.quaternion.x,
+                        y: object.quaternion.y,
+                        z: object.quaternion.z,
+                        w: object.quaternion.w
+                    },
+                    scale:                  {
+                        x: object.scale.x,
+                        y: object.scale.y,
+                        z: object.scale.z
+                    },
+                    modelViewMatrix:        object.modelViewMatrix.toArray(),
+                    normalMatrix:           object.normalMatrix.toArray(),
+                    matrix:                 object.matrix.toArray(),
+                    matrixWorld:            object.matrixWorld.toArray(),
+                    matrixAutoUpdate:       object.matrixAutoUpdate,
+                    matrixWorldNeedsUpdate: object.matrixWorldNeedsUpdate,
+                    layers:                 object.layers.mask,
+                    visible:                object.visible,
+                    castShadow:             object.castShadow,
+                    receiveShadow:          object.receiveShadow,
+                    frustumCulled:          object.frustumCulled,
+                    renderOrder:            object.renderOrder,
+                    userData:               this._parseUserData( object.userData ),
+                    // LineLoop
+                    geometry:               geometryId,
+                    material:               materialsIds,
+                    drawMode:               object.drawMode
+                } ) )
+                break
+
+            case 'LineSegments':
+                onSuccess( LineSegmentsModel( {
+                    uuid:                   object.uuid,
+                    name:                   object.name,
+                    type:                   object.type,
+                    parent:                 parentId,
+                    children:               childrenIds,
+                    up:                     {
+                        x: object.up.x,
+                        y: object.up.y,
+                        z: object.up.z
+                    },
+                    position:               {
+                        x: object.position.x,
+                        y: object.position.y,
+                        z: object.position.z
+                    },
+                    rotation:               {
+                        x:     object.rotation.x,
+                        y:     object.rotation.y,
+                        z:     object.rotation.z,
+                        order: object.rotation.order
+                    },
+                    quaternion:             {
+                        x: object.quaternion.x,
+                        y: object.quaternion.y,
+                        z: object.quaternion.z,
+                        w: object.quaternion.w
+                    },
+                    scale:                  {
+                        x: object.scale.x,
+                        y: object.scale.y,
+                        z: object.scale.z
+                    },
+                    modelViewMatrix:        object.modelViewMatrix.toArray(),
+                    normalMatrix:           object.normalMatrix.toArray(),
+                    matrix:                 object.matrix.toArray(),
+                    matrixWorld:            object.matrixWorld.toArray(),
+                    matrixAutoUpdate:       object.matrixAutoUpdate,
+                    matrixWorldNeedsUpdate: object.matrixWorldNeedsUpdate,
+                    layers:                 object.layers.mask,
+                    visible:                object.visible,
+                    castShadow:             object.castShadow,
+                    receiveShadow:          object.receiveShadow,
+                    frustumCulled:          object.frustumCulled,
+                    renderOrder:            object.renderOrder,
+                    userData:               this._parseUserData( object.userData ),
+                    // LineSegments
+                    geometry:               geometryId,
+                    material:               materialsIds,
+                    drawMode:               object.drawMode
+                } ) )
+                break
+
+            case 'AxesHelper':
+                onSuccess( AxesHelperModel( {
+                    uuid:                   object.uuid,
+                    name:                   object.name,
+                    type:                   object.type,
+                    parent:                 parentId,
+                    children:               childrenIds,
+                    up:                     {
+                        x: object.up.x,
+                        y: object.up.y,
+                        z: object.up.z
+                    },
+                    position:               {
+                        x: object.position.x,
+                        y: object.position.y,
+                        z: object.position.z
+                    },
+                    rotation:               {
+                        x:     object.rotation.x,
+                        y:     object.rotation.y,
+                        z:     object.rotation.z,
+                        order: object.rotation.order
+                    },
+                    quaternion:             {
+                        x: object.quaternion.x,
+                        y: object.quaternion.y,
+                        z: object.quaternion.z,
+                        w: object.quaternion.w
+                    },
+                    scale:                  {
+                        x: object.scale.x,
+                        y: object.scale.y,
+                        z: object.scale.z
+                    },
+                    modelViewMatrix:        object.modelViewMatrix.toArray(),
+                    normalMatrix:           object.normalMatrix.toArray(),
+                    matrix:                 object.matrix.toArray(),
+                    matrixWorld:            object.matrixWorld.toArray(),
+                    matrixAutoUpdate:       object.matrixAutoUpdate,
+                    matrixWorldNeedsUpdate: object.matrixWorldNeedsUpdate,
+                    layers:                 object.layers.mask,
+                    visible:                object.visible,
+                    castShadow:             object.castShadow,
+                    receiveShadow:          object.receiveShadow,
+                    frustumCulled:          object.frustumCulled,
+                    renderOrder:            object.renderOrder,
+                    userData:               this._parseUserData( object.userData )
+                    // AxesHelper
+
+                } ) )
+                break
+
+            case 'BoxHelper':
+                onSuccess( BoxHelperModel( {
+                    uuid:                   object.uuid,
+                    name:                   object.name,
+                    type:                   object.type,
+                    parent:                 parentId,
+                    children:               childrenIds,
+                    up:                     {
+                        x: object.up.x,
+                        y: object.up.y,
+                        z: object.up.z
+                    },
+                    position:               {
+                        x: object.position.x,
+                        y: object.position.y,
+                        z: object.position.z
+                    },
+                    rotation:               {
+                        x:     object.rotation.x,
+                        y:     object.rotation.y,
+                        z:     object.rotation.z,
+                        order: object.rotation.order
+                    },
+                    quaternion:             {
+                        x: object.quaternion.x,
+                        y: object.quaternion.y,
+                        z: object.quaternion.z,
+                        w: object.quaternion.w
+                    },
+                    scale:                  {
+                        x: object.scale.x,
+                        y: object.scale.y,
+                        z: object.scale.z
+                    },
+                    modelViewMatrix:        object.modelViewMatrix.toArray(),
+                    normalMatrix:           object.normalMatrix.toArray(),
+                    matrix:                 object.matrix.toArray(),
+                    matrixWorld:            object.matrixWorld.toArray(),
+                    matrixAutoUpdate:       object.matrixAutoUpdate,
+                    matrixWorldNeedsUpdate: object.matrixWorldNeedsUpdate,
+                    layers:                 object.layers.mask,
+                    visible:                object.visible,
+                    castShadow:             object.castShadow,
+                    receiveShadow:          object.receiveShadow,
+                    frustumCulled:          object.frustumCulled,
+                    renderOrder:            object.renderOrder,
+                    userData:               this._parseUserData( object.userData )
+                    // BoxHelper
+
+                } ) )
+                break
+
+            case 'Box3Helper':
+                onSuccess( Box3HelperModel( {
+                    uuid:                   object.uuid,
+                    name:                   object.name,
+                    type:                   object.type,
+                    parent:                 parentId,
+                    children:               childrenIds,
+                    up:                     {
+                        x: object.up.x,
+                        y: object.up.y,
+                        z: object.up.z
+                    },
+                    position:               {
+                        x: object.position.x,
+                        y: object.position.y,
+                        z: object.position.z
+                    },
+                    rotation:               {
+                        x:     object.rotation.x,
+                        y:     object.rotation.y,
+                        z:     object.rotation.z,
+                        order: object.rotation.order
+                    },
+                    quaternion:             {
+                        x: object.quaternion.x,
+                        y: object.quaternion.y,
+                        z: object.quaternion.z,
+                        w: object.quaternion.w
+                    },
+                    scale:                  {
+                        x: object.scale.x,
+                        y: object.scale.y,
+                        z: object.scale.z
+                    },
+                    modelViewMatrix:        object.modelViewMatrix.toArray(),
+                    normalMatrix:           object.normalMatrix.toArray(),
+                    matrix:                 object.matrix.toArray(),
+                    matrixWorld:            object.matrixWorld.toArray(),
+                    matrixAutoUpdate:       object.matrixAutoUpdate,
+                    matrixWorldNeedsUpdate: object.matrixWorldNeedsUpdate,
+                    layers:                 object.layers.mask,
+                    visible:                object.visible,
+                    castShadow:             object.castShadow,
+                    receiveShadow:          object.receiveShadow,
+                    frustumCulled:          object.frustumCulled,
+                    renderOrder:            object.renderOrder,
+                    userData:               this._parseUserData( object.userData )
+                    // Box3Helper
+
+                } ) )
+                break
+
+            case 'CameraHelper':
+                onSuccess( CameraHelperModel( {
+                    uuid:                   object.uuid,
+                    name:                   object.name,
+                    type:                   object.type,
+                    parent:                 parentId,
+                    children:               childrenIds,
+                    up:                     {
+                        x: object.up.x,
+                        y: object.up.y,
+                        z: object.up.z
+                    },
+                    position:               {
+                        x: object.position.x,
+                        y: object.position.y,
+                        z: object.position.z
+                    },
+                    rotation:               {
+                        x:     object.rotation.x,
+                        y:     object.rotation.y,
+                        z:     object.rotation.z,
+                        order: object.rotation.order
+                    },
+                    quaternion:             {
+                        x: object.quaternion.x,
+                        y: object.quaternion.y,
+                        z: object.quaternion.z,
+                        w: object.quaternion.w
+                    },
+                    scale:                  {
+                        x: object.scale.x,
+                        y: object.scale.y,
+                        z: object.scale.z
+                    },
+                    modelViewMatrix:        object.modelViewMatrix.toArray(),
+                    normalMatrix:           object.normalMatrix.toArray(),
+                    matrix:                 object.matrix.toArray(),
+                    matrixWorld:            object.matrixWorld.toArray(),
+                    matrixAutoUpdate:       object.matrixAutoUpdate,
+                    matrixWorldNeedsUpdate: object.matrixWorldNeedsUpdate,
+                    layers:                 object.layers.mask,
+                    visible:                object.visible,
+                    castShadow:             object.castShadow,
+                    receiveShadow:          object.receiveShadow,
+                    frustumCulled:          object.frustumCulled,
+                    renderOrder:            object.renderOrder,
+                    userData:               this._parseUserData( object.userData )
+                    // CameraHelper
+
+                } ) )
+                break
+
+            case 'FaceNormalsHelper':
+                onSuccess( FaceNormalsHelperModel( {
+                    uuid:                   object.uuid,
+                    name:                   object.name,
+                    type:                   object.type,
+                    parent:                 parentId,
+                    children:               childrenIds,
+                    up:                     {
+                        x: object.up.x,
+                        y: object.up.y,
+                        z: object.up.z
+                    },
+                    position:               {
+                        x: object.position.x,
+                        y: object.position.y,
+                        z: object.position.z
+                    },
+                    rotation:               {
+                        x:     object.rotation.x,
+                        y:     object.rotation.y,
+                        z:     object.rotation.z,
+                        order: object.rotation.order
+                    },
+                    quaternion:             {
+                        x: object.quaternion.x,
+                        y: object.quaternion.y,
+                        z: object.quaternion.z,
+                        w: object.quaternion.w
+                    },
+                    scale:                  {
+                        x: object.scale.x,
+                        y: object.scale.y,
+                        z: object.scale.z
+                    },
+                    modelViewMatrix:        object.modelViewMatrix.toArray(),
+                    normalMatrix:           object.normalMatrix.toArray(),
+                    matrix:                 object.matrix.toArray(),
+                    matrixWorld:            object.matrixWorld.toArray(),
+                    matrixAutoUpdate:       object.matrixAutoUpdate,
+                    matrixWorldNeedsUpdate: object.matrixWorldNeedsUpdate,
+                    layers:                 object.layers.mask,
+                    visible:                object.visible,
+                    castShadow:             object.castShadow,
+                    receiveShadow:          object.receiveShadow,
+                    frustumCulled:          object.frustumCulled,
+                    renderOrder:            object.renderOrder,
+                    userData:               this._parseUserData( object.userData )
+                    // FaceNormalsHelper
+
+                } ) )
+                break
+
+            case 'GridHelper':
+                onSuccess( GridHelperModel( {
+                    uuid:                   object.uuid,
+                    name:                   object.name,
+                    type:                   object.type,
+                    parent:                 parentId,
+                    children:               childrenIds,
+                    up:                     {
+                        x: object.up.x,
+                        y: object.up.y,
+                        z: object.up.z
+                    },
+                    position:               {
+                        x: object.position.x,
+                        y: object.position.y,
+                        z: object.position.z
+                    },
+                    rotation:               {
+                        x:     object.rotation.x,
+                        y:     object.rotation.y,
+                        z:     object.rotation.z,
+                        order: object.rotation.order
+                    },
+                    quaternion:             {
+                        x: object.quaternion.x,
+                        y: object.quaternion.y,
+                        z: object.quaternion.z,
+                        w: object.quaternion.w
+                    },
+                    scale:                  {
+                        x: object.scale.x,
+                        y: object.scale.y,
+                        z: object.scale.z
+                    },
+                    modelViewMatrix:        object.modelViewMatrix.toArray(),
+                    normalMatrix:           object.normalMatrix.toArray(),
+                    matrix:                 object.matrix.toArray(),
+                    matrixWorld:            object.matrixWorld.toArray(),
+                    matrixAutoUpdate:       object.matrixAutoUpdate,
+                    matrixWorldNeedsUpdate: object.matrixWorldNeedsUpdate,
+                    layers:                 object.layers.mask,
+                    visible:                object.visible,
+                    castShadow:             object.castShadow,
+                    receiveShadow:          object.receiveShadow,
+                    frustumCulled:          object.frustumCulled,
+                    renderOrder:            object.renderOrder,
+                    userData:               this._parseUserData( object.userData )
+                    // GridHelper
+
+                } ) )
+                break
+
+            case 'PolarGridHelper':
+                onSuccess( PolarGridHelperModel( {
+                    uuid:                   object.uuid,
+                    name:                   object.name,
+                    type:                   object.type,
+                    parent:                 parentId,
+                    children:               childrenIds,
+                    up:                     {
+                        x: object.up.x,
+                        y: object.up.y,
+                        z: object.up.z
+                    },
+                    position:               {
+                        x: object.position.x,
+                        y: object.position.y,
+                        z: object.position.z
+                    },
+                    rotation:               {
+                        x:     object.rotation.x,
+                        y:     object.rotation.y,
+                        z:     object.rotation.z,
+                        order: object.rotation.order
+                    },
+                    quaternion:             {
+                        x: object.quaternion.x,
+                        y: object.quaternion.y,
+                        z: object.quaternion.z,
+                        w: object.quaternion.w
+                    },
+                    scale:                  {
+                        x: object.scale.x,
+                        y: object.scale.y,
+                        z: object.scale.z
+                    },
+                    modelViewMatrix:        object.modelViewMatrix.toArray(),
+                    normalMatrix:           object.normalMatrix.toArray(),
+                    matrix:                 object.matrix.toArray(),
+                    matrixWorld:            object.matrixWorld.toArray(),
+                    matrixAutoUpdate:       object.matrixAutoUpdate,
+                    matrixWorldNeedsUpdate: object.matrixWorldNeedsUpdate,
+                    layers:                 object.layers.mask,
+                    visible:                object.visible,
+                    castShadow:             object.castShadow,
+                    receiveShadow:          object.receiveShadow,
+                    frustumCulled:          object.frustumCulled,
+                    renderOrder:            object.renderOrder,
+                    userData:               this._parseUserData( object.userData )
+                    // PolarGridHelper
+
+                } ) )
+                break
+
+            case 'SkeletonHelper':
+                onSuccess( SkeletonHelperModel( {
+                    uuid:                   object.uuid,
+                    name:                   object.name,
+                    type:                   object.type,
+                    parent:                 parentId,
+                    children:               childrenIds,
+                    up:                     {
+                        x: object.up.x,
+                        y: object.up.y,
+                        z: object.up.z
+                    },
+                    position:               {
+                        x: object.position.x,
+                        y: object.position.y,
+                        z: object.position.z
+                    },
+                    rotation:               {
+                        x:     object.rotation.x,
+                        y:     object.rotation.y,
+                        z:     object.rotation.z,
+                        order: object.rotation.order
+                    },
+                    quaternion:             {
+                        x: object.quaternion.x,
+                        y: object.quaternion.y,
+                        z: object.quaternion.z,
+                        w: object.quaternion.w
+                    },
+                    scale:                  {
+                        x: object.scale.x,
+                        y: object.scale.y,
+                        z: object.scale.z
+                    },
+                    modelViewMatrix:        object.modelViewMatrix.toArray(),
+                    normalMatrix:           object.normalMatrix.toArray(),
+                    matrix:                 object.matrix.toArray(),
+                    matrixWorld:            object.matrixWorld.toArray(),
+                    matrixAutoUpdate:       object.matrixAutoUpdate,
+                    matrixWorldNeedsUpdate: object.matrixWorldNeedsUpdate,
+                    layers:                 object.layers.mask,
+                    visible:                object.visible,
+                    castShadow:             object.castShadow,
+                    receiveShadow:          object.receiveShadow,
+                    frustumCulled:          object.frustumCulled,
+                    renderOrder:            object.renderOrder,
+                    userData:               this._parseUserData( object.userData )
+                    // SkeletonHelper
+
+                } ) )
+                break
+
+            case 'VertexNormalHelper':
+                onSuccess( VertexNormalHelperModel( {
+                    uuid:                   object.uuid,
+                    name:                   object.name,
+                    type:                   object.type,
+                    parent:                 parentId,
+                    children:               childrenIds,
+                    up:                     {
+                        x: object.up.x,
+                        y: object.up.y,
+                        z: object.up.z
+                    },
+                    position:               {
+                        x: object.position.x,
+                        y: object.position.y,
+                        z: object.position.z
+                    },
+                    rotation:               {
+                        x:     object.rotation.x,
+                        y:     object.rotation.y,
+                        z:     object.rotation.z,
+                        order: object.rotation.order
+                    },
+                    quaternion:             {
+                        x: object.quaternion.x,
+                        y: object.quaternion.y,
+                        z: object.quaternion.z,
+                        w: object.quaternion.w
+                    },
+                    scale:                  {
+                        x: object.scale.x,
+                        y: object.scale.y,
+                        z: object.scale.z
+                    },
+                    modelViewMatrix:        object.modelViewMatrix.toArray(),
+                    normalMatrix:           object.normalMatrix.toArray(),
+                    matrix:                 object.matrix.toArray(),
+                    matrixWorld:            object.matrixWorld.toArray(),
+                    matrixAutoUpdate:       object.matrixAutoUpdate,
+                    matrixWorldNeedsUpdate: object.matrixWorldNeedsUpdate,
+                    layers:                 object.layers.mask,
+                    visible:                object.visible,
+                    castShadow:             object.castShadow,
+                    receiveShadow:          object.receiveShadow,
+                    frustumCulled:          object.frustumCulled,
+                    renderOrder:            object.renderOrder,
+                    userData:               this._parseUserData( object.userData )
+                    // VertexNormalHelper
+
+                } ) )
+                break
+
+            case 'PlaneHelper':
+                onSuccess( PlaneHelperModel( {
+                    uuid:                   object.uuid,
+                    name:                   object.name,
+                    type:                   object.type,
+                    parent:                 parentId,
+                    children:               childrenIds,
+                    up:                     {
+                        x: object.up.x,
+                        y: object.up.y,
+                        z: object.up.z
+                    },
+                    position:               {
+                        x: object.position.x,
+                        y: object.position.y,
+                        z: object.position.z
+                    },
+                    rotation:               {
+                        x:     object.rotation.x,
+                        y:     object.rotation.y,
+                        z:     object.rotation.z,
+                        order: object.rotation.order
+                    },
+                    quaternion:             {
+                        x: object.quaternion.x,
+                        y: object.quaternion.y,
+                        z: object.quaternion.z,
+                        w: object.quaternion.w
+                    },
+                    scale:                  {
+                        x: object.scale.x,
+                        y: object.scale.y,
+                        z: object.scale.z
+                    },
+                    modelViewMatrix:        object.modelViewMatrix.toArray(),
+                    normalMatrix:           object.normalMatrix.toArray(),
+                    matrix:                 object.matrix.toArray(),
+                    matrixWorld:            object.matrixWorld.toArray(),
+                    matrixAutoUpdate:       object.matrixAutoUpdate,
+                    matrixWorldNeedsUpdate: object.matrixWorldNeedsUpdate,
+                    layers:                 object.layers.mask,
+                    visible:                object.visible,
+                    castShadow:             object.castShadow,
+                    receiveShadow:          object.receiveShadow,
+                    frustumCulled:          object.frustumCulled,
+                    renderOrder:            object.renderOrder,
+                    userData:               this._parseUserData( object.userData )
+                    // PlaneHelper
+
+                } ) )
+                break
+
+            case 'LOD':
+                onSuccess( LODModel( {
+                    uuid:                   object.uuid,
+                    name:                   object.name,
+                    type:                   object.type,
+                    parent:                 parentId,
+                    children:               childrenIds,
+                    up:                     {
+                        x: object.up.x,
+                        y: object.up.y,
+                        z: object.up.z
+                    },
+                    position:               {
+                        x: object.position.x,
+                        y: object.position.y,
+                        z: object.position.z
+                    },
+                    rotation:               {
+                        x:     object.rotation.x,
+                        y:     object.rotation.y,
+                        z:     object.rotation.z,
+                        order: object.rotation.order
+                    },
+                    quaternion:             {
+                        x: object.quaternion.x,
+                        y: object.quaternion.y,
+                        z: object.quaternion.z,
+                        w: object.quaternion.w
+                    },
+                    scale:                  {
+                        x: object.scale.x,
+                        y: object.scale.y,
+                        z: object.scale.z
+                    },
+                    modelViewMatrix:        object.modelViewMatrix.toArray(),
+                    normalMatrix:           object.normalMatrix.toArray(),
+                    matrix:                 object.matrix.toArray(),
+                    matrixWorld:            object.matrixWorld.toArray(),
+                    matrixAutoUpdate:       object.matrixAutoUpdate,
+                    matrixWorldNeedsUpdate: object.matrixWorldNeedsUpdate,
+                    layers:                 object.layers.mask,
+                    visible:                object.visible,
+                    castShadow:             object.castShadow,
+                    receiveShadow:          object.receiveShadow,
+                    frustumCulled:          object.frustumCulled,
+                    renderOrder:            object.renderOrder,
+                    userData:               this._parseUserData( object.userData ),
+                    // LOD
+                    levels:                 object.levels
+                } ) )
+                break
+
+            case 'Mesh':
+                onSuccess( MeshModel( {
+                    uuid:                   object.uuid,
+                    name:                   object.name,
+                    type:                   object.type,
+                    parent:                 parentId,
+                    children:               childrenIds,
+                    up:                     {
+                        x: object.up.x,
+                        y: object.up.y,
+                        z: object.up.z
+                    },
+                    position:               {
+                        x: object.position.x,
+                        y: object.position.y,
+                        z: object.position.z
+                    },
+                    rotation:               {
+                        x:     object.rotation.x,
+                        y:     object.rotation.y,
+                        z:     object.rotation.z,
+                        order: object.rotation.order
+                    },
+                    quaternion:             {
+                        x: object.quaternion.x,
+                        y: object.quaternion.y,
+                        z: object.quaternion.z,
+                        w: object.quaternion.w
+                    },
+                    scale:                  {
+                        x: object.scale.x,
+                        y: object.scale.y,
+                        z: object.scale.z
+                    },
+                    modelViewMatrix:        object.modelViewMatrix.toArray(),
+                    normalMatrix:           object.normalMatrix.toArray(),
+                    matrix:                 object.matrix.toArray(),
+                    matrixWorld:            object.matrixWorld.toArray(),
+                    matrixAutoUpdate:       object.matrixAutoUpdate,
+                    matrixWorldNeedsUpdate: object.matrixWorldNeedsUpdate,
+                    layers:                 object.layers.mask,
+                    visible:                object.visible,
+                    castShadow:             object.castShadow,
+                    receiveShadow:          object.receiveShadow,
+                    frustumCulled:          object.frustumCulled,
+                    renderOrder:            object.renderOrder,
+                    userData:               this._parseUserData( object.userData ),
+                    // Mesh
+                    geometry:               geometryId,
+                    material:               materialsIds,
+                    drawMode:               object.drawMode
+                } ) )
+                break
+
+            case 'PointLightHelper':
+                onSuccess( PointLightHelperModel( {
+                    uuid:                   object.uuid,
+                    name:                   object.name,
+                    type:                   object.type,
+                    parent:                 parentId,
+                    children:               childrenIds,
+                    up:                     {
+                        x: object.up.x,
+                        y: object.up.y,
+                        z: object.up.z
+                    },
+                    position:               {
+                        x: object.position.x,
+                        y: object.position.y,
+                        z: object.position.z
+                    },
+                    rotation:               {
+                        x:     object.rotation.x,
+                        y:     object.rotation.y,
+                        z:     object.rotation.z,
+                        order: object.rotation.order
+                    },
+                    quaternion:             {
+                        x: object.quaternion.x,
+                        y: object.quaternion.y,
+                        z: object.quaternion.z,
+                        w: object.quaternion.w
+                    },
+                    scale:                  {
+                        x: object.scale.x,
+                        y: object.scale.y,
+                        z: object.scale.z
+                    },
+                    modelViewMatrix:        object.modelViewMatrix.toArray(),
+                    normalMatrix:           object.normalMatrix.toArray(),
+                    matrix:                 object.matrix.toArray(),
+                    matrixWorld:            object.matrixWorld.toArray(),
+                    matrixAutoUpdate:       object.matrixAutoUpdate,
+                    matrixWorldNeedsUpdate: object.matrixWorldNeedsUpdate,
+                    layers:                 object.layers.mask,
+                    visible:                object.visible,
+                    castShadow:             object.castShadow,
+                    receiveShadow:          object.receiveShadow,
+                    frustumCulled:          object.frustumCulled,
+                    renderOrder:            object.renderOrder,
+                    userData:               this._parseUserData( object.userData )
+                    // PointLightHelper
+
+                } ) )
+                break
+
+            case 'SkinnedMesh':
+                onSuccess( SkinnedMeshModel( {
+                    uuid:                   object.uuid,
+                    name:                   object.name,
+                    type:                   object.type,
+                    parent:                 parentId,
+                    children:               childrenIds,
+                    up:                     {
+                        x: object.up.x,
+                        y: object.up.y,
+                        z: object.up.z
+                    },
+                    position:               {
+                        x: object.position.x,
+                        y: object.position.y,
+                        z: object.position.z
+                    },
+                    rotation:               {
+                        x:     object.rotation.x,
+                        y:     object.rotation.y,
+                        z:     object.rotation.z,
+                        order: object.rotation.order
+                    },
+                    quaternion:             {
+                        x: object.quaternion.x,
+                        y: object.quaternion.y,
+                        z: object.quaternion.z,
+                        w: object.quaternion.w
+                    },
+                    scale:                  {
+                        x: object.scale.x,
+                        y: object.scale.y,
+                        z: object.scale.z
+                    },
+                    modelViewMatrix:        object.modelViewMatrix.toArray(),
+                    normalMatrix:           object.normalMatrix.toArray(),
+                    matrix:                 object.matrix.toArray(),
+                    matrixWorld:            object.matrixWorld.toArray(),
+                    matrixAutoUpdate:       object.matrixAutoUpdate,
+                    matrixWorldNeedsUpdate: object.matrixWorldNeedsUpdate,
+                    layers:                 object.layers.mask,
+                    visible:                object.visible,
+                    castShadow:             object.castShadow,
+                    receiveShadow:          object.receiveShadow,
+                    frustumCulled:          object.frustumCulled,
+                    renderOrder:            object.renderOrder,
+                    userData:               this._parseUserData( object.userData ),
+                    // Mesh
+                    geometry:               geometryId,
+                    material:               materialsIds,
+                    drawMode:               object.drawMode,
+                    // SkinnedMesh
+                    bindMode:               object.bindMode,
+                    bindMatrix:             object.bindMatrix,
+                    bindMatrixInverse:      object.bindMatrixInverse
+                } ) )
+                break
+
+            case 'Group':
+                onSuccess( GroupModel( {
+                    uuid:                   object.uuid,
+                    name:                   object.name,
+                    type:                   object.type,
+                    parent:                 parentId,
+                    children:               childrenIds,
+                    up:                     {
+                        x: object.up.x,
+                        y: object.up.y,
+                        z: object.up.z
+                    },
+                    position:               {
+                        x: object.position.x,
+                        y: object.position.y,
+                        z: object.position.z
+                    },
+                    rotation:               {
+                        x:     object.rotation.x,
+                        y:     object.rotation.y,
+                        z:     object.rotation.z,
+                        order: object.rotation.order
+                    },
+                    quaternion:             {
+                        x: object.quaternion.x,
+                        y: object.quaternion.y,
+                        z: object.quaternion.z,
+                        w: object.quaternion.w
+                    },
+                    scale:                  {
+                        x: object.scale.x,
+                        y: object.scale.y,
+                        z: object.scale.z
+                    },
+                    modelViewMatrix:        object.modelViewMatrix.toArray(),
+                    normalMatrix:           object.normalMatrix.toArray(),
+                    matrix:                 object.matrix.toArray(),
+                    matrixWorld:            object.matrixWorld.toArray(),
+                    matrixAutoUpdate:       object.matrixAutoUpdate,
+                    matrixWorldNeedsUpdate: object.matrixWorldNeedsUpdate,
+                    layers:                 object.layers.mask,
+                    visible:                object.visible,
+                    castShadow:             object.castShadow,
+                    receiveShadow:          object.receiveShadow,
+                    frustumCulled:          object.frustumCulled,
+                    renderOrder:            object.renderOrder,
+                    userData:               this._parseUserData( object.userData )
+                    // Group
+
+                } ) )
+                break
+
+            case 'Points':
+                onSuccess( PointsModel( {
+                    uuid:                   object.uuid,
+                    name:                   object.name,
+                    type:                   object.type,
+                    parent:                 parentId,
+                    children:               childrenIds,
+                    up:                     {
+                        x: object.up.x,
+                        y: object.up.y,
+                        z: object.up.z
+                    },
+                    position:               {
+                        x: object.position.x,
+                        y: object.position.y,
+                        z: object.position.z
+                    },
+                    rotation:               {
+                        x:     object.rotation.x,
+                        y:     object.rotation.y,
+                        z:     object.rotation.z,
+                        order: object.rotation.order
+                    },
+                    quaternion:             {
+                        x: object.quaternion.x,
+                        y: object.quaternion.y,
+                        z: object.quaternion.z,
+                        w: object.quaternion.w
+                    },
+                    scale:                  {
+                        x: object.scale.x,
+                        y: object.scale.y,
+                        z: object.scale.z
+                    },
+                    modelViewMatrix:        object.modelViewMatrix.toArray(),
+                    normalMatrix:           object.normalMatrix.toArray(),
+                    matrix:                 object.matrix.toArray(),
+                    matrixWorld:            object.matrixWorld.toArray(),
+                    matrixAutoUpdate:       object.matrixAutoUpdate,
+                    matrixWorldNeedsUpdate: object.matrixWorldNeedsUpdate,
+                    layers:                 object.layers.mask,
+                    visible:                object.visible,
+                    castShadow:             object.castShadow,
+                    receiveShadow:          object.receiveShadow,
+                    frustumCulled:          object.frustumCulled,
+                    renderOrder:            object.renderOrder,
+                    userData:               this._parseUserData( object.userData ),
+                    // Points
+                    geometry:               geometryId,
+                    material:               materialsIds,
+                    drawMode:               object.drawMode
+                } ) )
+                break
+
+            case 'RectAreaLightHelper':
+                onSuccess( RectAreaLightHelperModel( {
+                    uuid:                   object.uuid,
+                    name:                   object.name,
+                    type:                   object.type,
+                    parent:                 parentId,
+                    children:               childrenIds,
+                    up:                     {
+                        x: object.up.x,
+                        y: object.up.y,
+                        z: object.up.z
+                    },
+                    position:               {
+                        x: object.position.x,
+                        y: object.position.y,
+                        z: object.position.z
+                    },
+                    rotation:               {
+                        x:     object.rotation.x,
+                        y:     object.rotation.y,
+                        z:     object.rotation.z,
+                        order: object.rotation.order
+                    },
+                    quaternion:             {
+                        x: object.quaternion.x,
+                        y: object.quaternion.y,
+                        z: object.quaternion.z,
+                        w: object.quaternion.w
+                    },
+                    scale:                  {
+                        x: object.scale.x,
+                        y: object.scale.y,
+                        z: object.scale.z
+                    },
+                    modelViewMatrix:        object.modelViewMatrix.toArray(),
+                    normalMatrix:           object.normalMatrix.toArray(),
+                    matrix:                 object.matrix.toArray(),
+                    matrixWorld:            object.matrixWorld.toArray(),
+                    matrixAutoUpdate:       object.matrixAutoUpdate,
+                    matrixWorldNeedsUpdate: object.matrixWorldNeedsUpdate,
+                    layers:                 object.layers.mask,
+                    visible:                object.visible,
+                    castShadow:             object.castShadow,
+                    receiveShadow:          object.receiveShadow,
+                    frustumCulled:          object.frustumCulled,
+                    renderOrder:            object.renderOrder,
+                    userData:               this._parseUserData( object.userData )
+                    // RectAreaLightHelper
+
+                } ) )
+                break
+
+            case 'Scene':
+                onSuccess( SceneModel( {
+                    uuid:                   object.uuid,
+                    name:                   object.name,
+                    type:                   object.type,
+                    parent:                 parentId,
+                    children:               childrenIds,
+                    up:                     {
+                        x: object.up.x,
+                        y: object.up.y,
+                        z: object.up.z
+                    },
+                    position:               {
+                        x: object.position.x,
+                        y: object.position.y,
+                        z: object.position.z
+                    },
+                    rotation:               {
+                        x:     object.rotation.x,
+                        y:     object.rotation.y,
+                        z:     object.rotation.z,
+                        order: object.rotation.order
+                    },
+                    quaternion:             {
+                        x: object.quaternion.x,
+                        y: object.quaternion.y,
+                        z: object.quaternion.z,
+                        w: object.quaternion.w
+                    },
+                    scale:                  {
+                        x: object.scale.x,
+                        y: object.scale.y,
+                        z: object.scale.z
+                    },
+                    modelViewMatrix:        object.modelViewMatrix.toArray(),
+                    normalMatrix:           object.normalMatrix.toArray(),
+                    matrix:                 object.matrix.toArray(),
+                    matrixWorld:            object.matrixWorld.toArray(),
+                    matrixAutoUpdate:       object.matrixAutoUpdate,
+                    matrixWorldNeedsUpdate: object.matrixWorldNeedsUpdate,
+                    layers:                 object.layers.mask,
+                    visible:                object.visible,
+                    castShadow:             object.castShadow,
+                    receiveShadow:          object.receiveShadow,
+                    frustumCulled:          object.frustumCulled,
+                    renderOrder:            object.renderOrder,
+                    userData:               this._parseUserData( object.userData ),
+                    // Scene
+                    background:             object.background,
+                    fog:                    null, // Todo - This is an edge case, we need to link to fog model (saved before here)
+                    overrideMaterial:       object.overrideMaterial,
+                    autoUpdate:             object.autoUpdate
+                } ) )
+                break
+
+            case 'Sprite':
+                onSuccess( SpriteModel( {
+                    uuid:                   object.uuid,
+                    name:                   object.name,
+                    type:                   object.type,
+                    parent:                 parentId,
+                    children:               childrenIds,
+                    up:                     {
+                        x: object.up.x,
+                        y: object.up.y,
+                        z: object.up.z
+                    },
+                    position:               {
+                        x: object.position.x,
+                        y: object.position.y,
+                        z: object.position.z
+                    },
+                    rotation:               {
+                        x:     object.rotation.x,
+                        y:     object.rotation.y,
+                        z:     object.rotation.z,
+                        order: object.rotation.order
+                    },
+                    quaternion:             {
+                        x: object.quaternion.x,
+                        y: object.quaternion.y,
+                        z: object.quaternion.z,
+                        w: object.quaternion.w
+                    },
+                    scale:                  {
+                        x: object.scale.x,
+                        y: object.scale.y,
+                        z: object.scale.z
+                    },
+                    modelViewMatrix:        object.modelViewMatrix.toArray(),
+                    normalMatrix:           object.normalMatrix.toArray(),
+                    matrix:                 object.matrix.toArray(),
+                    matrixWorld:            object.matrixWorld.toArray(),
+                    matrixAutoUpdate:       object.matrixAutoUpdate,
+                    matrixWorldNeedsUpdate: object.matrixWorldNeedsUpdate,
+                    layers:                 object.layers.mask,
+                    visible:                object.visible,
+                    castShadow:             object.castShadow,
+                    receiveShadow:          object.receiveShadow,
+                    frustumCulled:          object.frustumCulled,
+                    renderOrder:            object.renderOrder,
+                    userData:               this._parseUserData( object.userData ),
+                    // Sprite
+                    material:               materialsIds
+                } ) )
+                break
+
+            case 'SpotLightHelper':
+                onSuccess( SpotLightHelperModel( {
+                    uuid:                   object.uuid,
+                    name:                   object.name,
+                    type:                   object.type,
+                    parent:                 parentId,
+                    children:               childrenIds,
+                    up:                     {
+                        x: object.up.x,
+                        y: object.up.y,
+                        z: object.up.z
+                    },
+                    position:               {
+                        x: object.position.x,
+                        y: object.position.y,
+                        z: object.position.z
+                    },
+                    rotation:               {
+                        x:     object.rotation.x,
+                        y:     object.rotation.y,
+                        z:     object.rotation.z,
+                        order: object.rotation.order
+                    },
+                    quaternion:             {
+                        x: object.quaternion.x,
+                        y: object.quaternion.y,
+                        z: object.quaternion.z,
+                        w: object.quaternion.w
+                    },
+                    scale:                  {
+                        x: object.scale.x,
+                        y: object.scale.y,
+                        z: object.scale.z
+                    },
+                    modelViewMatrix:        object.modelViewMatrix.toArray(),
+                    normalMatrix:           object.normalMatrix.toArray(),
+                    matrix:                 object.matrix.toArray(),
+                    matrixWorld:            object.matrixWorld.toArray(),
+                    matrixAutoUpdate:       object.matrixAutoUpdate,
+                    matrixWorldNeedsUpdate: object.matrixWorldNeedsUpdate,
+                    layers:                 object.layers.mask,
+                    visible:                object.visible,
+                    castShadow:             object.castShadow,
+                    receiveShadow:          object.receiveShadow,
+                    frustumCulled:          object.frustumCulled,
+                    renderOrder:            object.renderOrder,
+                    userData:               this._parseUserData( object.userData )
+                    // SpotLightHelper
+
+                } ) )
+                break
+
+            default:
+                onError( `Unmanaged object3d of type: ${objectType}` )
+                break
+
+        }
+
+    }
+
+    _saveObject3DInDatabase ( object, parentId, childrenIds, geometryId, materialsIds, onError, onSuccess ) {
+
+        const self     = this
+        const objectId = this._checkIfObject3DAlreadyExist( object )
+
+        if ( objectId ) {
+
+            onSuccess( objectId )
+
+        } else {
+
+            this._getObject3DModel( object, parentId, childrenIds, geometryId, materialsIds, onError, ( objectModel ) => {
+
+                objectModel.save()
+                           .then( savedObject => {
+
+                               const objectId = savedObject.id
+
+                               // Add geometry id to cache
+                               self._objectCache[ savedObject.uuid ] = objectId
+
+                               // Return id
+                               onSuccess( objectId )
+
+                           } )
+                           .catch( onError )
+
+            } )
+
+        }
+
+    }
+
+    //    // Mesh
+    //
+    //    _getMeshModel ( mesh, childrenIds, geometryId, materialIds ) {
+    //
+    //        return MeshModel( {
+    //            uuid:                   mesh.uuid,
+    //            name:                   mesh.name,
+    //            type:                   mesh.type,
+    //            children:               childrenIds,
+    //            up:                     {
+    //                x: mesh.up.x,
+    //                y: mesh.up.y,
+    //                z: mesh.up.z
+    //            },
+    //            position:               {
+    //                x: mesh.position.x,
+    //                y: mesh.position.y,
+    //                z: mesh.position.z
+    //            },
+    //            rotation:               {
+    //                x:     mesh.rotation.x,
+    //                y:     mesh.rotation.y,
+    //                z:     mesh.rotation.z,
+    //                order: mesh.rotation.order
+    //            },
+    //            quaternion:             {
+    //                x: mesh.quaternion.x,
+    //                y: mesh.quaternion.y,
+    //                z: mesh.quaternion.z,
+    //                w: mesh.quaternion.w
+    //            },
+    //            scale:                  {
+    //                x: mesh.scale.x,
+    //                y: mesh.scale.y,
+    //                z: mesh.scale.z
+    //            },
+    //            modelViewMatrix:        mesh.modelViewMatrix.toArray(),
+    //            normalMatrix:           mesh.normalMatrix.toArray(),
+    //            matrix:                 mesh.matrix.toArray(),
+    //            matrixWorld:            mesh.matrixWorld.toArray(),
+    //            matrixAutoUpdate:       mesh.matrixAutoUpdate,
+    //            matrixWorldNeedsUpdate: mesh.matrixWorldNeedsUpdate,
+    //            layers:                 mesh.layers.mask,
+    //            visible:                mesh.visible,
+    //            castShadow:             mesh.castShadow,
+    //            receiveShadow:          mesh.receiveShadow,
+    //            frustumCulled:          mesh.frustumCulled,
+    //            renderOrder:            mesh.renderOrder,
+    //            userData:               this._parseUserData( mesh.userData ),
+    //            // Specific
+    //            geometry:               geometryId,
+    //            material:               materialIds,
+    //            drawMode:               mesh.drawMode
+    //        } )
+    //
+    //    }
+    //
+    //    _saveMesh ( mesh, childrenIds, onError, onSuccess ) {
+    //
+    //        const self      = this
+    //        const geometry  = mesh.geometry
+    //        const materials = mesh.material
+    //
+    //        if ( !geometry ) {
+    //            onError( `Mesh doesn't contain geometry !!!` )
+    //            return
+    //        }
+    //
+    //        if ( !materials ) {
+    //            onError( `Mesh doesn't contain materials !!!` )
+    //            return
+    //        }
+    //
+    //        if ( geometry.isGeometry ) {
+    //
+    //            // If it is a terminal object ( No children ) with an empty geometry
+    //            if ( childrenIds.length === 0 && (!geometry.vertices || geometry.vertices.length === 0) ) {
+    //
+    //                console.error( `Mesh ${mesh.name} geometry doesn't contain vertices ! Skip it.` )
+    //                onSuccess( null )
+    //                return
+    //
+    //            }
+    //
+    //            self._saveGeometryInDatabase( geometry, onError, ( geometryId ) => {
+    //
+    //                self._saveMaterialInDatabase( materials, onError, ( materialIds ) => {
+    //
+    //                    self._saveMeshInDatabase( mesh, childrenIds, geometryId, materialIds, onError, onSuccess )
+    //
+    //                } )
+    //
+    //            } )
+    //
+    //        } else if ( geometry.isBufferGeometry ) {
+    //
+    //            // If it is a terminal object ( No children ) with an empty geometry
+    //            if ( childrenIds.length === 0 && (!geometry.attributes[ 'position' ] || geometry.attributes[ 'position' ].count === 0 ) ) {
+    //
+    //                console.error( `Mesh ${mesh.name} buffer geometry doesn't contain position attributes ! Skip it.` )
+    //                onSuccess( null )
+    //                return
+    //
+    //            }
+    //
+    //            self._saveBufferGeometryInDatabase( geometry, onError, ( geometryId ) => {
+    //
+    //                self._saveMaterialInDatabase( materials, onError, ( materialIds ) => {
+    //
+    //                    self._saveMeshInDatabase( mesh, childrenIds, geometryId, materialIds, onError, onSuccess )
+    //
+    //                } )
+    //
+    //            } )
+    //
+    //        } else {
+    //
+    //            console.error( `Mesh ${mesh.name} contain an unknown/unmanaged geometry of type ${geometry.type} ! Skip it.` )
+    //            onSuccess( null )
+    //            return
+    //
+    //        }
+    //
+    //    }
+    //
+    //    _saveMeshInDatabase ( object, childrenIds, geometryId, materialId, onError, onSuccess ) {
+    //
+    //        this._getMeshModel( object, childrenIds, geometryId, materialId )
+    //            .save()
+    //            .then( savedMesh => {
+    //
+    //                onSuccess( savedMesh.id )
+    //
+    //            } )
+    //            .catch( onError )
+    //
+    //    }
+    //
+    //    // LineSegment
+    //
+    //    _saveLineSegment ( lineSegment, childrenIds, onError, onSuccess ) {
+    //
+    //        const self      = this
+    //        const geometry  = lineSegment.geometry
+    //        const materials = lineSegment.material
+    //
+    //        self._saveGeometryInDatabase( geometry, onError, ( geometryId ) => {
+    //
+    //            self._saveMaterialInDatabase( materials, onError, ( materialIds ) => {
+    //
+    //                self._saveLineSegmentInDatabase( lineSegment, childrenIds, geometryId, materialIds, onError, onSuccess )
+    //
+    //            } )
+    //
+    //        } )
+    //
+    //    }
+    //
+    //    _getLineSegmentModel ( lineSegment, childrenIds, geometryId, materialIds ) {
+    //
+    //        return LineSegmentsModel( {
+    //            uuid:                   lineSegment.uuid,
+    //            name:                   lineSegment.name,
+    //            type:                   lineSegment.type,
+    //            children:               childrenIds,
+    //            up:                     {
+    //                x: lineSegment.up.x,
+    //                y: lineSegment.up.y,
+    //                z: lineSegment.up.z
+    //            },
+    //            position:               {
+    //                x: lineSegment.position.x,
+    //                y: lineSegment.position.y,
+    //                z: lineSegment.position.z
+    //            },
+    //            rotation:               {
+    //                x:     lineSegment.rotation.x,
+    //                y:     lineSegment.rotation.y,
+    //                z:     lineSegment.rotation.z,
+    //                order: lineSegment.rotation.order
+    //            },
+    //            quaternion:             {
+    //                x: lineSegment.quaternion.x,
+    //                y: lineSegment.quaternion.y,
+    //                z: lineSegment.quaternion.z,
+    //                w: lineSegment.quaternion.w
+    //            },
+    //            scale:                  {
+    //                x: lineSegment.scale.x,
+    //                y: lineSegment.scale.y,
+    //                z: lineSegment.scale.z
+    //            },
+    //            modelViewMatrix:        lineSegment.modelViewMatrix.toArray(),
+    //            normalMatrix:           lineSegment.normalMatrix.toArray(),
+    //            matrix:                 lineSegment.matrix.toArray(),
+    //            matrixWorld:            lineSegment.matrixWorld.toArray(),
+    //            matrixAutoUpdate:       lineSegment.matrixAutoUpdate,
+    //            matrixWorldNeedsUpdate: lineSegment.matrixWorldNeedsUpdate,
+    //            layers:                 lineSegment.layers.mask,
+    //            visible:                lineSegment.visible,
+    //            castShadow:             lineSegment.castShadow,
+    //            receiveShadow:          lineSegment.receiveShadow,
+    //            frustumCulled:          lineSegment.frustumCulled,
+    //            renderOrder:            lineSegment.renderOrder,
+    //            userData:               this._parseUserData( lineSegment.userData ),
+    //            // Specific
+    //            geometry:               geometryId,
+    //            material:               materialIds,
+    //            drawMode:               lineSegment.drawMode
+    //        } )
+    //
+    //    }
+    //
+    //    _saveLineSegmentInDatabase ( lineSegment, childrenIds, geometryId, materialIds, onError, onSuccess ) {
+    //
+    //        this._getLineSegmentModel( lineSegment, childrenIds, geometryId, materialIds )
+    //            .save()
+    //            .then( savedLineSegment => {
+    //
+    //                onSuccess( savedLineSegment.id )
+    //
+    //            } )
+    //            .catch( onError )
+    //
+    //    }
+    //
+    //    // Scene
 
     _getSceneModel ( scene, childrenIds ) {
 
@@ -380,297 +3347,6 @@ class ThreeToMongoDB {
                     }
 
                 }
-
-            } )
-            .catch( onError )
-
-    }
-
-    // Object3D
-
-    _getObject3DModel ( object, childrenIds ) {
-
-        return Object3DModel( {
-            uuid:                   object.uuid,
-            name:                   object.name,
-            type:                   object.type,
-            children:               childrenIds,
-            up:                     {
-                x: object.up.x,
-                y: object.up.y,
-                z: object.up.z
-            },
-            position:               {
-                x: object.position.x,
-                y: object.position.y,
-                z: object.position.z
-            },
-            rotation:               {
-                x:     object.rotation.x,
-                y:     object.rotation.y,
-                z:     object.rotation.z,
-                order: object.rotation.order
-            },
-            quaternion:             {
-                x: object.quaternion.x,
-                y: object.quaternion.y,
-                z: object.quaternion.z,
-                w: object.quaternion.w
-            },
-            scale:                  {
-                x: object.scale.x,
-                y: object.scale.y,
-                z: object.scale.z
-            },
-            modelViewMatrix:        object.modelViewMatrix.toArray(),
-            normalMatrix:           object.normalMatrix.toArray(),
-            matrix:                 object.matrix.toArray(),
-            matrixWorld:            object.matrixWorld.toArray(),
-            matrixAutoUpdate:       object.matrixAutoUpdate,
-            matrixWorldNeedsUpdate: object.matrixWorldNeedsUpdate,
-            layers:                 object.layers.mask,
-            visible:                object.visible,
-            castShadow:             object.castShadow,
-            receiveShadow:          object.receiveShadow,
-            frustumCulled:          object.frustumCulled,
-            renderOrder:            object.renderOrder,
-            userData:               this._parseUserData( object.userData )
-        } )
-
-    }
-
-    _saveObject3D ( object, childrenIds, onError, onSuccess ) {
-
-        this._getObject3DModel( object, childrenIds )
-            .save()
-            .then( savedObject => {
-
-                onSuccess( savedObject.id )
-
-            } )
-            .catch( onError )
-
-    }
-
-    // Mesh
-
-    _getMeshModel ( mesh, childrenIds, geometryId, materialIds ) {
-
-        return MeshModel( {
-            uuid:                   mesh.uuid,
-            name:                   mesh.name,
-            type:                   mesh.type,
-            children:               childrenIds,
-            up:                     {
-                x: mesh.up.x,
-                y: mesh.up.y,
-                z: mesh.up.z
-            },
-            position:               {
-                x: mesh.position.x,
-                y: mesh.position.y,
-                z: mesh.position.z
-            },
-            rotation:               {
-                x:     mesh.rotation.x,
-                y:     mesh.rotation.y,
-                z:     mesh.rotation.z,
-                order: mesh.rotation.order
-            },
-            quaternion:             {
-                x: mesh.quaternion.x,
-                y: mesh.quaternion.y,
-                z: mesh.quaternion.z,
-                w: mesh.quaternion.w
-            },
-            scale:                  {
-                x: mesh.scale.x,
-                y: mesh.scale.y,
-                z: mesh.scale.z
-            },
-            modelViewMatrix:        mesh.modelViewMatrix.toArray(),
-            normalMatrix:           mesh.normalMatrix.toArray(),
-            matrix:                 mesh.matrix.toArray(),
-            matrixWorld:            mesh.matrixWorld.toArray(),
-            matrixAutoUpdate:       mesh.matrixAutoUpdate,
-            matrixWorldNeedsUpdate: mesh.matrixWorldNeedsUpdate,
-            layers:                 mesh.layers.mask,
-            visible:                mesh.visible,
-            castShadow:             mesh.castShadow,
-            receiveShadow:          mesh.receiveShadow,
-            frustumCulled:          mesh.frustumCulled,
-            renderOrder:            mesh.renderOrder,
-            userData:               this._parseUserData( mesh.userData ),
-            // Specific
-            geometry:               geometryId,
-            material:               materialIds,
-            drawMode:               mesh.drawMode
-        } )
-
-    }
-
-    _saveMesh ( mesh, childrenIds, onError, onSuccess ) {
-
-        const self      = this
-        const geometry  = mesh.geometry
-        const materials = mesh.material
-
-        if ( !geometry ) {
-            onError( `Mesh doesn't contain geometry !!!` )
-            return
-        }
-
-        if ( !materials ) {
-            onError( `Mesh doesn't contain materials !!!` )
-            return
-        }
-
-        if ( geometry.isGeometry ) {
-
-            // A final geometry (mesh withour children) should contain vertices
-            if ( childrenIds.length === 0 && (!geometry.vertices || geometry.vertices.length === 0) ) {
-
-                console.error( `Mesh ${mesh.name} geometry doesn't contain vertices ! Skip it.` )
-                onSuccess( null )
-                return
-
-            }
-
-            self._saveGeometryInDatabase( geometry, onError, ( geometryId ) => {
-
-                self._saveMaterialInDatabase( materials, onError, ( materialIds ) => {
-
-                    self._saveMeshInDatabase( mesh, childrenIds, geometryId, materialIds, onError, onSuccess )
-
-                } )
-
-            } )
-
-        } else if ( geometry.isBufferGeometry ) {
-
-            if ( childrenIds.length === 0 && (!geometry.attributes[ 'position' ] || geometry.attributes[ 'position' ].count === 0 ) ) {
-
-                console.error( `Mesh ${mesh.name} buffer geometry doesn't contain position attributes ! Skip it.` )
-                onSuccess( null )
-                return
-
-            }
-
-            self._saveBufferGeometryInDatabase( geometry, onError, ( geometryId ) => {
-
-                self._saveMaterialInDatabase( materials, onError, ( materialIds ) => {
-
-                    self._saveMeshInDatabase( mesh, childrenIds, geometryId, materialIds, onError, onSuccess )
-
-                } )
-
-            } )
-
-        } else {
-
-            console.error( `Mesh ${mesh.name} contain an unknown/unmanaged geometry of type ${geometry.type} ! Skip it.` )
-            onSuccess( null )
-            return
-
-        }
-
-    }
-
-    _saveMeshInDatabase ( object, childrenIds, geometryId, materialId, onError, onSuccess ) {
-
-        this._getMeshModel( object, childrenIds, geometryId, materialId )
-            .save()
-            .then( savedMesh => {
-
-                onSuccess( savedMesh.id )
-
-            } )
-            .catch( onError )
-
-    }
-
-    // LineSegment
-
-    _saveLineSegment ( lineSegment, childrenIds, onError, onSuccess ) {
-
-        const self      = this
-        const geometry  = lineSegment.geometry
-        const materials = lineSegment.material
-
-        self._saveGeometryInDatabase( geometry, onError, ( geometryId ) => {
-
-            self._saveMaterialInDatabase( materials, onError, ( materialIds ) => {
-
-                self._saveLineSegmentInDatabase( lineSegment, childrenIds, geometryId, materialIds, onError, onSuccess )
-
-            } )
-
-        } )
-
-    }
-
-    _getLineSegmentModel ( lineSegment, childrenIds, geometryId, materialIds ) {
-
-        return LineSegmentModel( {
-            uuid:                   lineSegment.uuid,
-            name:                   lineSegment.name,
-            type:                   lineSegment.type,
-            children:               childrenIds,
-            up:                     {
-                x: lineSegment.up.x,
-                y: lineSegment.up.y,
-                z: lineSegment.up.z
-            },
-            position:               {
-                x: lineSegment.position.x,
-                y: lineSegment.position.y,
-                z: lineSegment.position.z
-            },
-            rotation:               {
-                x:     lineSegment.rotation.x,
-                y:     lineSegment.rotation.y,
-                z:     lineSegment.rotation.z,
-                order: lineSegment.rotation.order
-            },
-            quaternion:             {
-                x: lineSegment.quaternion.x,
-                y: lineSegment.quaternion.y,
-                z: lineSegment.quaternion.z,
-                w: lineSegment.quaternion.w
-            },
-            scale:                  {
-                x: lineSegment.scale.x,
-                y: lineSegment.scale.y,
-                z: lineSegment.scale.z
-            },
-            modelViewMatrix:        lineSegment.modelViewMatrix.toArray(),
-            normalMatrix:           lineSegment.normalMatrix.toArray(),
-            matrix:                 lineSegment.matrix.toArray(),
-            matrixWorld:            lineSegment.matrixWorld.toArray(),
-            matrixAutoUpdate:       lineSegment.matrixAutoUpdate,
-            matrixWorldNeedsUpdate: lineSegment.matrixWorldNeedsUpdate,
-            layers:                 lineSegment.layers.mask,
-            visible:                lineSegment.visible,
-            castShadow:             lineSegment.castShadow,
-            receiveShadow:          lineSegment.receiveShadow,
-            frustumCulled:          lineSegment.frustumCulled,
-            renderOrder:            lineSegment.renderOrder,
-            userData:               this._parseUserData( lineSegment.userData ),
-            // Specific
-            geometry:               geometryId,
-            material:               materialIds,
-            drawMode:               lineSegment.drawMode
-        } )
-
-    }
-
-    _saveLineSegmentInDatabase ( lineSegment, childrenIds, geometryId, materialIds, onError, onSuccess ) {
-
-        this._getLineSegmentModel( lineSegment, childrenIds, geometryId, materialIds )
-            .save()
-            .then( savedLineSegment => {
-
-                onSuccess( savedLineSegment.id )
 
             } )
             .catch( onError )
