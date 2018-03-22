@@ -164,7 +164,7 @@ class ThreeToMongoDB {
     }
 
     // Private
-    _parse ( object, onSuccess, onProgress, onError ) {
+    _parse ( object, parentId, onSuccess, onProgress, onError ) {
 
         const self             = this
         const numberOfChildren = object.children.length
@@ -195,7 +195,7 @@ class ThreeToMongoDB {
                             return
                         }
 
-                        self._saveInDataBase( object, childrenIds, onError, onSuccess )
+                        self._saveInDataBase( object, parentId, childrenIds, onError, onSuccess )
 
                     },
                     onProgress,
@@ -206,7 +206,7 @@ class ThreeToMongoDB {
 
         } else {
 
-            self._saveInDataBase( object, [], onError, onSuccess )
+            self._saveInDataBase( object, parentId, [], onError, onSuccess )
 
         }
 
@@ -226,7 +226,7 @@ class ThreeToMongoDB {
 
     }
 
-    _saveInDataBase ( object, childrenArrayIds, onError, onSuccess ) {
+    _saveInDataBase ( object, parentId, childrenArrayIds, onError, onSuccess ) {
 
         // Remove null ids that could come from invalid objects
         const childrenIds = childrenArrayIds.filter( ( item ) => {
