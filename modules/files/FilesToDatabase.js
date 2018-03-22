@@ -118,8 +118,8 @@ class FilesToDatabase {
         }
 
         this._threeToMongo.save(
-            this._parentId,
             data,
+            this._parentId,
             ( success ) => {
                 this._numberOfFileToProcess--
                 this._checkEndOfReturns( response, [{title: 'Succées', message: `Sauvegarder avec l'identifiant: ${success}`}] )
