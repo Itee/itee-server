@@ -134,7 +134,12 @@ module.exports = function SchemaRegister ( config ) {
 
             coreSchemaFile = require( coreSchemaFilePath )
 
-            if ( isFunction( coreSchemaFile.registerModelTo ) ) {
+            if ( isFunction( coreSchemaFile ) ) {
+
+                console.log( `Direct register local database schema: ${coreSchemaFilePath}` )
+                mongoose = coreSchemaFile( mongoose )
+
+            } else if ( isFunction( coreSchemaFile.registerModelTo ) ) {
 
                 console.log( `Register core database schema: ${coreSchemaFilePath}` )
                 mongoose = coreSchemaFile.registerModelTo( mongoose )
@@ -168,7 +173,12 @@ module.exports = function SchemaRegister ( config ) {
 
             localSchemaFile = require( localSchemaFilePath )
 
-            if ( isFunction( localSchemaFile.registerModelTo ) ) {
+            if ( isFunction( localSchemaFile ) ) {
+
+                console.log( `Direct register local database schema: ${localSchemaFilePath}` )
+                mongoose = localSchemaFile( mongoose )
+
+            } else if ( isFunction( localSchemaFile.registerModelTo ) ) {
 
                 console.log( `Register local database schema: ${localSchemaFilePath}` )
                 mongoose = localSchemaFile.registerModelTo( mongoose )
