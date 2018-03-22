@@ -8,6 +8,10 @@
  *
  */
 
+    // Todo: We should implement two save mode in db.
+    // One that allow to decouple children from parent ( one mesh for differents parent )
+    // Or bind children to parent
+
 const mongoose = require( 'mongoose' )
 
 // Geometry
@@ -120,6 +124,8 @@ const RectAreaLightHelperModel    = mongoose.model( 'RectAreaLightHelper' )
 const SceneModel                  = mongoose.model( 'Scene' )
 const SpriteModel                 = mongoose.model( 'Sprite' )
 const SpotLightHelperModel        = mongoose.model( 'SpotLightHelper' )
+
+// Texture
 
 class ThreeToMongoDB {
 
