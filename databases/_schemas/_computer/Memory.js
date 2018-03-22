@@ -18,7 +18,6 @@ function getSchemaFrom ( Mongoose ) {
 function _createSchema ( Mongoose ) {
     'use strict'
 
-    const CoreSchema = Core.getSchemaFrom( Mongoose )
     const Schema     = Mongoose.Schema
 
     _schema = new Schema( {
