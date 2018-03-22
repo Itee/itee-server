@@ -142,6 +142,13 @@ const ShadowMaterialModel       = mongoose.model( 'ShadowMaterial' )
 const SpriteMaterialModel       = mongoose.model( 'SpriteMaterial' )
 
 // Texture
+const TextureModel           = mongoose.model( 'Texture' )
+const CanvasTextureModel     = mongoose.model( 'CanvasTexture' )
+const CompressedTextureModel = mongoose.model( 'CompressedTexture' )
+const CubeTextureModel       = mongoose.model( 'CubeTexture' )
+const DataTextureModel       = mongoose.model( 'DataTexture' )
+const DepthTextureModel      = mongoose.model( 'DepthTexture' )
+const VideoTextureModel      = mongoose.model( 'VideoTexture' )
 
 class ThreeToMongoDB {
 
@@ -262,7 +269,7 @@ class ThreeToMongoDB {
         const geometry   = object.geometry
         const materials  = object.material
 
-        if(
+        if (
             objectType === 'Curve' ||
             objectType === 'ArcCurve' ||
             objectType === 'CatmullRomCurve3' ||
@@ -613,6 +620,7 @@ class ThreeToMongoDB {
     }
 
     // Object3D
+
     _checkIfObject3DAlreadyExist ( object ) {
 
         return this._objectCache[ object.uuid ]
@@ -5252,6 +5260,262 @@ class ThreeToMongoDB {
     }
 
     // Texture
+
+    _checkIfTextureAlreadyExist ( texture ) {
+
+        return this._textureCache[ texture.uuid ]
+
+    }
+
+    _getTextureModel ( texture, onError, onSuccess ) {
+
+        const textureType = texture.type
+
+        switch ( textureType ) {
+
+            case 'Texture':
+                onSuccess( TextureModel( {
+                    uuid:             texture.uuid,
+                    name:             texture.name,
+                    image:            texture.image,
+                    mipmaps:          texture.mipmaps,
+                    mapping:          texture.mapping,
+                    wrapS:            texture.wrapS,
+                    wrapT:            texture.wrapT,
+                    magFilter:        texture.magFilter,
+                    minFilter:        texture.minFilter,
+                    anisotropy:       texture.anisotropy,
+                    format:           texture.format,
+                    type:             texture.type,
+                    offset:           texture.offset,
+                    repeat:           texture.repeat,
+                    center:           texture.center,
+                    rotation:         texture.rotation,
+                    matrixAutoUpdate: texture.matrixAutoUpdate,
+                    matrix:           texture.matrix,
+                    generateMipmaps:  texture.generateMipmaps,
+                    premultiplyAlpha: texture.premultiplyAlpha,
+                    flipY:            texture.flipY,
+                    unpackAlignment:  texture.unpackAlignment,
+                    encoding:         texture.encoding,
+                    version:          texture.version,
+                } ) )
+                break
+
+            case 'CanvasTexture':
+                onSuccess( CanvasTextureModel( {
+                    uuid:             texture.uuid,
+                    name:             texture.name,
+                    image:            texture.image,
+                    mipmaps:          texture.mipmaps,
+                    mapping:          texture.mapping,
+                    wrapS:            texture.wrapS,
+                    wrapT:            texture.wrapT,
+                    magFilter:        texture.magFilter,
+                    minFilter:        texture.minFilter,
+                    anisotropy:       texture.anisotropy,
+                    format:           texture.format,
+                    type:             texture.type,
+                    offset:           texture.offset,
+                    repeat:           texture.repeat,
+                    center:           texture.center,
+                    rotation:         texture.rotation,
+                    matrixAutoUpdate: texture.matrixAutoUpdate,
+                    matrix:           texture.matrix,
+                    generateMipmaps:  texture.generateMipmaps,
+                    premultiplyAlpha: texture.premultiplyAlpha,
+                    flipY:            texture.flipY,
+                    unpackAlignment:  texture.unpackAlignment,
+                    encoding:         texture.encoding,
+                    version:          texture.version,
+                    // CanvasTextureModel
+                    needsUpdate:      texture.needsUpdate,
+                } ) )
+                break
+
+            case 'CompressedTexture':
+                onSuccess( CompressedTextureModel( {
+                    uuid:             texture.uuid,
+                    name:             texture.name,
+                    image:            texture.image,
+                    mipmaps:          texture.mipmaps,
+                    mapping:          texture.mapping,
+                    wrapS:            texture.wrapS,
+                    wrapT:            texture.wrapT,
+                    magFilter:        texture.magFilter,
+                    minFilter:        texture.minFilter,
+                    anisotropy:       texture.anisotropy,
+                    format:           texture.format,
+                    type:             texture.type,
+                    offset:           texture.offset,
+                    repeat:           texture.repeat,
+                    center:           texture.center,
+                    rotation:         texture.rotation,
+                    matrixAutoUpdate: texture.matrixAutoUpdate,
+                    matrix:           texture.matrix,
+                    generateMipmaps:  texture.generateMipmaps,
+                    premultiplyAlpha: texture.premultiplyAlpha,
+                    flipY:            texture.flipY,
+                    unpackAlignment:  texture.unpackAlignment,
+                    encoding:         texture.encoding,
+                    version:          texture.version,                    // CompressedTextureModel
+                } ) )
+                break
+
+            case 'CubeTexture':
+                onSuccess( CubeTextureModel( {
+                    uuid:             texture.uuid,
+                    name:             texture.name,
+                    image:            texture.image,
+                    mipmaps:          texture.mipmaps,
+                    mapping:          texture.mapping,
+                    wrapS:            texture.wrapS,
+                    wrapT:            texture.wrapT,
+                    magFilter:        texture.magFilter,
+                    minFilter:        texture.minFilter,
+                    anisotropy:       texture.anisotropy,
+                    format:           texture.format,
+                    type:             texture.type,
+                    offset:           texture.offset,
+                    repeat:           texture.repeat,
+                    center:           texture.center,
+                    rotation:         texture.rotation,
+                    matrixAutoUpdate: texture.matrixAutoUpdate,
+                    matrix:           texture.matrix,
+                    generateMipmaps:  texture.generateMipmaps,
+                    premultiplyAlpha: texture.premultiplyAlpha,
+                    flipY:            texture.flipY,
+                    unpackAlignment:  texture.unpackAlignment,
+                    encoding:         texture.encoding,
+                    version:          texture.version,                    // CubeTextureModel
+                } ) )
+                break
+
+            case 'DataTexture':
+                onSuccess( DataTextureModel( {
+                    uuid:             texture.uuid,
+                    name:             texture.name,
+                    image:            texture.image,
+                    mipmaps:          texture.mipmaps,
+                    mapping:          texture.mapping,
+                    wrapS:            texture.wrapS,
+                    wrapT:            texture.wrapT,
+                    magFilter:        texture.magFilter,
+                    minFilter:        texture.minFilter,
+                    anisotropy:       texture.anisotropy,
+                    format:           texture.format,
+                    type:             texture.type,
+                    offset:           texture.offset,
+                    repeat:           texture.repeat,
+                    center:           texture.center,
+                    rotation:         texture.rotation,
+                    matrixAutoUpdate: texture.matrixAutoUpdate,
+                    matrix:           texture.matrix,
+                    generateMipmaps:  texture.generateMipmaps,
+                    premultiplyAlpha: texture.premultiplyAlpha,
+                    flipY:            texture.flipY,
+                    unpackAlignment:  texture.unpackAlignment,
+                    encoding:         texture.encoding,
+                    version:          texture.version,                    // DataTextureModel
+                } ) )
+                break
+
+            case 'DepthTexture':
+                onSuccess( DepthTextureModel( {
+                    uuid:             texture.uuid,
+                    name:             texture.name,
+                    image:            texture.image,
+                    mipmaps:          texture.mipmaps,
+                    mapping:          texture.mapping,
+                    wrapS:            texture.wrapS,
+                    wrapT:            texture.wrapT,
+                    magFilter:        texture.magFilter,
+                    minFilter:        texture.minFilter,
+                    anisotropy:       texture.anisotropy,
+                    format:           texture.format,
+                    type:             texture.type,
+                    offset:           texture.offset,
+                    repeat:           texture.repeat,
+                    center:           texture.center,
+                    rotation:         texture.rotation,
+                    matrixAutoUpdate: texture.matrixAutoUpdate,
+                    matrix:           texture.matrix,
+                    generateMipmaps:  texture.generateMipmaps,
+                    premultiplyAlpha: texture.premultiplyAlpha,
+                    flipY:            texture.flipY,
+                    unpackAlignment:  texture.unpackAlignment,
+                    encoding:         texture.encoding,
+                    version:          texture.version,                    // DepthTextureModel
+                } ) )
+                break
+
+            case 'VideoTexture':
+                onSuccess( VideoTextureModel( {
+                    uuid:             texture.uuid,
+                    name:             texture.name,
+                    image:            texture.image,
+                    mipmaps:          texture.mipmaps,
+                    mapping:          texture.mapping,
+                    wrapS:            texture.wrapS,
+                    wrapT:            texture.wrapT,
+                    magFilter:        texture.magFilter,
+                    minFilter:        texture.minFilter,
+                    anisotropy:       texture.anisotropy,
+                    format:           texture.format,
+                    type:             texture.type,
+                    offset:           texture.offset,
+                    repeat:           texture.repeat,
+                    center:           texture.center,
+                    rotation:         texture.rotation,
+                    matrixAutoUpdate: texture.matrixAutoUpdate,
+                    matrix:           texture.matrix,
+                    generateMipmaps:  texture.generateMipmaps,
+                    premultiplyAlpha: texture.premultiplyAlpha,
+                    flipY:            texture.flipY,
+                    unpackAlignment:  texture.unpackAlignment,
+                    encoding:         texture.encoding,
+                    version:          texture.version,                    // VideoTextureModel
+                } ) )
+                break
+
+            default:
+                onError( `Unmanaged texture of type: ${textureType}` )
+                break
+
+        }
+
+    }
+
+    _saveTextureInDatabase ( texture, onError, onSuccess ) {
+
+        const self      = this
+        const textureId = this._checkIfTextureAlreadyExist( texture )
+
+        if ( textureId ) {
+
+            onSuccess( textureId )
+
+        } else {
+
+            this._getTextureModel( texture, onError, ( textureModel ) => {
+
+                textureModel.save()
+                            .then( savedTexture => {
+
+                                // Add geometry id to cache
+                                self._textureCache[ savedTexture.uuid ] = savedTexture.id
+
+                                // Return id
+                                onSuccess( savedTexture.id )
+
+                            } )
+                            .catch( onError )
+
+            } )
+
+        }
+
+    }
 
 }
 
