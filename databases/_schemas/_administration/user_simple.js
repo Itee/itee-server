@@ -8,7 +8,7 @@ module.exports = function( mongoose ) {
         first_name: String,
         last_name:  String
     });
-    mongoose.model('User', UserSchema);
+    mongoose.model('User_Simple', UserSchema);
 
     return mongoose;
 
