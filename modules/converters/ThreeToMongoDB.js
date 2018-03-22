@@ -62,7 +62,20 @@ const SpriteModel                 = mongoose.model( 'Sprite' )
 const SpotLightHelperModel        = mongoose.model( 'SpotLightHelper' )
 
 // Curve
-
+const CurveModel                 = mongoose.model( 'Curve' )
+const ArcCurveModel              = mongoose.model( 'ArcCurve' )
+const CatmullRomCurve3Model      = mongoose.model( 'CatmullRomCurve3' )
+const CubicBezierCurveModel      = mongoose.model( 'CubicBezierCurve' )
+const CubicBezierCurve3Model     = mongoose.model( 'CubicBezierCurve3' )
+const EllipseCurveModel          = mongoose.model( 'EllipseCurve' )
+const LineCurveModel             = mongoose.model( 'LineCurve' )
+const LineCurve3Model            = mongoose.model( 'LineCurve3' )
+const QuadraticBezierCurveModel  = mongoose.model( 'QuadraticBezierCurve' )
+const QuadraticBezierCurve3Model = mongoose.model( 'QuadraticBezierCurve3' )
+const SplineCurveModel           = mongoose.model( 'SplineCurve' )
+const CurvePathModel             = mongoose.model( 'CurvePath' )
+const PathModel                  = mongoose.model( 'Path' )
+const ShapeModel                 = mongoose.model( 'Shape' )
 
 // Geometry
 const GeometryModel             = mongoose.model( 'Geometry' )
@@ -135,6 +148,7 @@ class ThreeToMongoDB {
     constructor () {
 
         this._objectCache         = {}
+        this._curveCache          = {}
         this._geometryCache       = {}
         this._bufferGeometryCache = {}
         this._materialCache       = {}
@@ -248,14 +262,33 @@ class ThreeToMongoDB {
         const geometry   = object.geometry
         const materials  = object.material
 
-        if ( geometry && material ) {
+        if(
+            objectType === 'Curve' ||
+            objectType === 'ArcCurve' ||
+            objectType === 'CatmullRomCurve3' ||
+            objectType === 'CubicBezierCurve' ||
+            objectType === 'CubicBezierCurve3' ||
+            objectType === 'EllipseCurve' ||
+            objectType === 'LineCurve' ||
+            objectType === 'LineCurve3' ||
+            objectType === 'QuadraticBezierCurve' ||
+            objectType === 'QuadraticBezierCurve3' ||
+            objectType === 'SplineCurve' ||
+            objectType === 'CurvePath' ||
+            objectType === 'Path' ||
+            objectType === 'Shape'
+        ) {
+
+            self._saveCurveInDatabase( object, parentId, childrenIds, onError, onSuccess )
+
+        } else if ( geometry && material ) {
 
             if ( geometry.isGeometry ) {
 
                 // If it is a terminal object ( No children ) with an empty geometry
                 if ( childrenIds.length === 0 && (!geometry.vertices || geometry.vertices.length === 0) ) {
 
-                    console.error( `Mesh ${mesh.name} geometry doesn't contain vertices ! Skip it.` )
+                    console.error( `Object ${object.name} geometry doesn't contain vertices ! Skip it.` )
                     onSuccess( null )
                     return
 
@@ -361,7 +394,7 @@ class ThreeToMongoDB {
                 // If it is a terminal object ( No children ) with an empty geometry
                 if ( childrenIds.length === 0 && (!geometry.attributes[ 'position' ] || geometry.attributes[ 'position' ].count === 0 ) ) {
 
-                    console.error( `Mesh ${mesh.name} buffer geometry doesn't contain position attributes ! Skip it.` )
+                    console.error( `Object ${object.name} geometry doesn't contain vertices ! Skip it.` )
                     onSuccess( null )
                     return
 
@@ -3059,7 +3092,220 @@ class ThreeToMongoDB {
     }
 
     // Curve
-    
+
+    _checkIfCurveAlreadyExist ( curve ) {
+
+        return this._curveCache[ curve.uuid ]
+
+    }
+
+    _getCurveModel ( curve, onError, onSuccess ) {
+
+        const curveType = curve.type
+
+        switch ( curveType ) {
+
+            case 'Curve':
+                onSuccess( CurveModel( {
+                    type:               curve.type,
+                    arcLengthDivisions: curve.arcLengthDivisions
+                } ) )
+                break
+
+            case 'ArcCurve':
+                onSuccess( ArcCurveModel( {
+                    type:               curve.type,
+                    arcLengthDivisions: curve.arcLengthDivisions,
+                    // EllipseCurveModel
+                    aX:                 curve.aX,
+                    aY:                 curve.aY,
+                    xRadius:            curve.xRadius,
+                    yRadius:            curve.yRadius,
+                    aStartAngle:        curve.aStartAngle,
+                    aEndAngle:          curve.aEndAngle,
+                    aClockwise:         curve.aClockwise,
+                    aRotation:          curve.aRotation
+                } ) )
+                break
+
+            case 'CatmullRomCurve3':
+                onSuccess( CatmullRomCurve3Model( {
+                    type:               curve.type,
+                    arcLengthDivisions: curve.arcLengthDivisions,
+                    // CatmullRomCurve3Model
+                    points:             curve.points, //[ Vector3Schema ],
+                    closed:             curve.closed,
+                    curveType:          curve.curveType,
+                    tension:            curve.tension
+                } ) )
+                break
+
+            case 'CubicBezierCurve':
+                onSuccess( CubicBezierCurveModel( {
+                    type:               curve.type,
+                    arcLengthDivisions: curve.arcLengthDivisions,
+                    // CubicBezierCurveModel
+                    v0:                 curve.v0,
+                    v1:                 curve.v1,
+                    v2:                 curve.v2,
+                    v3:                 curve.v3
+                } ) )
+                break
+
+            case 'CubicBezierCurve3':
+                onSuccess( CubicBezierCurve3Model( {
+                    type:               curve.type,
+                    arcLengthDivisions: curve.arcLengthDivisions,
+                    // CubicBezierCurve3Model
+                    v0:                 curve.v0,
+                    v1:                 curve.v1,
+                    v2:                 curve.v2,
+                    v3:                 curve.v3
+                } ) )
+                break
+
+            case 'EllipseCurve':
+                onSuccess( EllipseCurveModel( {
+                    type:               curve.type,
+                    arcLengthDivisions: curve.arcLengthDivisions,
+                    // EllipseCurveModel
+                    aX:                 curve.aX,
+                    aY:                 curve.aY,
+                    xRadius:            curve.xRadius,
+                    yRadius:            curve.yRadius,
+                    aStartAngle:        curve.aStartAngle,
+                    aEndAngle:          curve.aEndAngle,
+                    aClockwise:         curve.aClockwise,
+                    aRotation:          curve.aRotation
+                } ) )
+                break
+
+            case 'LineCurve':
+                onSuccess( LineCurveModel( {
+                    type:               curve.type,
+                    arcLengthDivisions: curve.arcLengthDivisions,
+                    // LineCurveModel
+                    v0:                 curve.v0,
+                    v1:                 curve.v1,
+                } ) )
+                break
+
+            case 'LineCurve3':
+                onSuccess( LineCurve3Model( {
+                    type:               curve.type,
+                    arcLengthDivisions: curve.arcLengthDivisions,
+                    // LineCurve3Model
+                    v0:                 curve.v0,
+                    v1:                 curve.v1,
+                } ) )
+                break
+
+            case 'QuadraticBezierCurve':
+                onSuccess( QuadraticBezierCurveModel( {
+                    type:               curve.type,
+                    arcLengthDivisions: curve.arcLengthDivisions,
+                    // QuadraticBezierCurveModel
+                    v0:                 curve.v0,
+                    v1:                 curve.v1,
+                    v2:                 curve.v2,
+                } ) )
+                break
+
+            case 'QuadraticBezierCurve3':
+                onSuccess( QuadraticBezierCurve3Model( {
+                    type:               curve.type,
+                    arcLengthDivisions: curve.arcLengthDivisions,
+                    // QuadraticBezierCurve3Model
+                    v0:                 curve.v0,
+                    v1:                 curve.v1,
+                    v2:                 curve.v2,
+                } ) )
+                break
+
+            case 'SplineCurve':
+                onSuccess( SplineCurveModel( {
+                    type:               curve.type,
+                    arcLengthDivisions: curve.arcLengthDivisions,
+                    // SplineCurveModel
+                    points:             curve.points //[ Vector3Schema ]
+                } ) )
+                break
+
+            case 'CurvePath':
+                onSuccess( CurvePathModel( {
+                    type:               curve.type,
+                    arcLengthDivisions: curve.arcLengthDivisions,
+                    // CurvePathModel
+                    curves:             curve.curves, //[ NestedCurveSchema ], // Curve
+                    autoClose:          curve.autoClose
+                } ) )
+                break
+
+            case 'Path':
+                onSuccess( PathModel( {
+                    type:               curve.type,
+                    arcLengthDivisions: curve.arcLengthDivisions,
+                    // CurvePath
+                    curves:             curve.curves, //[ NestedCurveSchema ], // Curve
+                    autoClose:          curve.autoClose,
+                    // PathModel
+                    currentPoint:       curve.currentPoint
+                } ) )
+                break
+
+            case 'Shape':
+                onSuccess( ShapeModel( {
+                    type:               curve.type,
+                    arcLengthDivisions: curve.arcLengthDivisions,
+                    // CurvePath
+                    curves:             curve.curves, //[ NestedCurveSchema ], // Curve
+                    autoClose:          curve.autoClose,
+                    // Path
+                    currentPoint:       curve.currentPoint,
+                    // ShapeModel
+                    uuid:               curve.uuid,
+                    holes:              curve.holes //[ NestedPathSchema ] // Path
+                } ) )
+                break
+
+            default:
+                onError( `Unmanaged curve of type: ${curveType}` )
+                break
+
+        }
+
+    }
+
+    _saveCurveInDatabase ( curve, onError, onSuccess ) {
+
+        const self    = this
+        const curveId = this._checkIfCurveAlreadyExist( curve )
+
+        if ( curveId ) {
+
+            onSuccess( curveId )
+
+        } else {
+
+            this._getCurveModel( curve, onError, ( curveModel ) => {
+
+                curveModel.save()
+                          .then( savedCurve => {
+
+                              // Add geometry id to cache
+                              self._curveCache[ savedCurve.uuid ] = savedCurve.id
+
+                              // Return id
+                              onSuccess( savedCurve.id )
+
+                          } )
+                          .catch( onError )
+
+            } )
+
+        }
+
+    }
 
     // Geometry
 
