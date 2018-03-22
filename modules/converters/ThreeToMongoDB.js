@@ -161,27 +161,25 @@ class ThreeToMongoDB {
         this._bufferGeometryCache = {}
         this._materialCache       = {}
         this._textureCache        = {}
-        this._parentId            = undefined
 
     }
 
     // Public
-    save ( parentId, data, onSuccess, onProgress, onError ) {
-
-        if ( !parentId ) {
-            onError( 'Invalid parent id, unable to set children to unknown database node !!!' )
-            return
-        }
+    save ( data, parentId, onSuccess, onProgress, onError ) {
 
         if ( !data ) {
             onError( 'Data cannot be null or empty, aborting database insert !!!' )
             return
         }
 
-        this._parentId = parentId
+        if ( !parentId ) {
+            onError( 'Invalid parent id, unable to set children to unknown database node !!!' )
+            return
+        }
 
         this._parse(
             data,
+            parentId,
             onSuccess,
             progress => {
 
@@ -203,13 +201,14 @@ class ThreeToMongoDB {
         if ( numberOfChildren > 0 ) {
 
             let childrenIds = []
-            let childIndex  = 0;
+            let childIndex  = 0
             checkNextChild()
 
             function checkNextChild () {
 
                 self._parse(
                     object.children[ childIndex ],
+                    null,
                     objectId => {
 
                         childrenIds.push( objectId )
@@ -289,7 +288,7 @@ class ThreeToMongoDB {
 
             self._saveCurveInDatabase( object, parentId, childrenIds, onError, onSuccess )
 
-        } else if ( geometry && material ) {
+        } else if ( geometry && materials ) {
 
             if ( geometry.isGeometry ) {
 
@@ -511,7 +510,7 @@ class ThreeToMongoDB {
 
             }
 
-        } else if ( geometry && !material ) {
+        } else if ( geometry && !materials ) {
 
             // Is this right ??? Object can have geometry without material ???
 
@@ -557,7 +556,7 @@ class ThreeToMongoDB {
 
             }
 
-        } else if ( !geometry && material ) {
+        } else if ( !geometry && materials ) {
 
             if ( objectType === 'Sprite' ) {
 
@@ -2744,7 +2743,6 @@ class ThreeToMongoDB {
                     renderOrder:            object.renderOrder,
                     userData:               this._parseUserData( object.userData )
                     // Group
-
                 } ) )
                 break
 
@@ -4307,11 +4305,13 @@ class ThreeToMongoDB {
                 bufferGeometryModel.save()
                                    .then( savedBufferGeometry => {
 
+                                       const bufferGeometryId = savedBufferGeometry.id
+
                                        // Add geometry id to cache
-                                       self._bufferGeometryCache[ savedBufferGeometry.uuid ] = savedBufferGeometry.id
+                                       self._bufferGeometryCache[ savedBufferGeometry.uuid ] = bufferGeometryId
 
                                        // Return id
-                                       onSuccess( savedBufferGeometry.id )
+                                       onSuccess( bufferGeometryId )
 
                                    } )
                                    .catch( onError )
