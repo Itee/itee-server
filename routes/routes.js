@@ -63,13 +63,11 @@ module.exports = function routing ( app ) {
 
     app.use( '/users', buildRouteFor( 'User' ) )
     app.use( '/companies', buildRouteFor( 'Company' ) )
-    app.use( '/sites', buildRouteFor( 'Site' ) )
-    app.use( '/buildings', buildRouteFor( 'Building' ) )
-    app.use( '/scenes', buildRouteFor( 'Scene' ) )
     app.use( '/objects', buildRouteFor( 'Object3D' ) )
-    app.use( '/meshes', buildRouteFor( 'Mesh' ) )
+    app.use( '/curves', buildRouteFor( 'Curve' ) )
     app.use( '/geometries', buildRouteFor( 'Geometry' ) )
     app.use( '/materials', buildRouteFor( 'Material' ) )
+    app.use( '/textures', buildRouteFor( 'Texture' ) )
 
     app.use( '*/*', require( './404/404.js' ) )
 
