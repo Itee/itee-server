@@ -24,10 +24,12 @@
  *
  */
 
-var readLine   = require( 'readline' )
-var fs         = require( 'fs' )
-var WorldCell  = require( 'mongoose' ).model( 'WorldCell' )
-var PointCloud = require( 'mongoose' ).model( 'PointCloud' )
+const readLine = require( 'readline' )
+const fs       = require( 'fs' )
+
+const Mongoose   = require( 'mongoose' )
+const WorldCell  = Mongoose.model( 'WorldCell' )
+const PointCloud = Mongoose.model( 'PointCloud' )
 
 var _worldBoundingBox = {
     xMin: Number.MAX_VALUE,
