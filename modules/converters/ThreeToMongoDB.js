@@ -125,6 +125,7 @@ const TubeBufferGeometryModel        = mongoose.model( 'TubeBufferGeometry' )
 const WireframeBufferGeometryModel   = mongoose.model( 'WireframeBufferGeometry' )
 
 // Materials
+const MaterialModel             = mongoose.model( 'Material' )
 const LineBasicMaterialModel    = mongoose.model( 'LineBasicMaterial' )
 const LineDashedMaterialModel   = mongoose.model( 'LineDashedMaterial' )
 const MeshBasicMaterialModel    = mongoose.model( 'MeshBasicMaterial' )
@@ -4334,6 +4335,46 @@ class ThreeToMongoDB {
         const materialType = material.type
 
         switch ( materialType ) {
+
+            case 'Material':
+                onSuccess( MaterialModel( {
+                    uuid:                material.uuid,
+                    name:                material.name,
+                    type:                material.type,
+                    fog:                 material.fog,
+                    lights:              material.lights,
+                    blending:            material.blending,
+                    side:                material.side,
+                    flatShading:         material.flatShading,
+                    vertexColors:        material.vertexColors,
+                    opacity:             material.opacity,
+                    transparent:         material.transparent,
+                    blendSrc:            material.blendSrc,
+                    blendDst:            material.blendDst,
+                    blendEquation:       material.blendEquation,
+                    blendSrcAlpha:       material.blendSrcAlpha,
+                    blendDstAlpha:       material.blendDstAlpha,
+                    blendEquationAlpha:  material.blendEquationAlpha,
+                    depthFunc:           material.depthFunc,
+                    depthTest:           material.depthTest,
+                    depthWrite:          material.depthWrite,
+                    clippingPlanes:      material.clippingPlanes,
+                    clipIntersection:    material.clipIntersection,
+                    clipShadows:         material.clipShadows,
+                    colorWrite:          material.colorWrite,
+                    precision:           material.precision,
+                    polygonOffset:       material.polygonOffset,
+                    polygonOffsetFactor: material.polygonOffsetFactor,
+                    polygonOffsetUnits:  material.polygonOffsetUnits,
+                    dithering:           material.dithering,
+                    alphaTest:           material.alphaTest,
+                    premultipliedAlpha:  material.premultipliedAlpha,
+                    overdraw:            material.overdraw,
+                    visible:             material.visible,
+                    userData:            this._parseUserData( material.userData ),
+                    needsUpdate:         material.needsUpdate
+                } ) )
+                break
 
             case 'LineBasicMaterial':
                 onSuccess( LineBasicMaterialModel( {
