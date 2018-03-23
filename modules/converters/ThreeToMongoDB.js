@@ -105,7 +105,7 @@ const BoxBufferGeometryModel         = mongoose.model( 'BoxBufferGeometry' )
 const CircleBufferGeometryModel      = mongoose.model( 'CircleBufferGeometry' )
 const CylinderBufferGeometryModel    = mongoose.model( 'CylinderBufferGeometry' )
 const ConeBufferGeometryModel        = mongoose.model( 'ConeBufferGeometry' )
-const EdgesGeometryModel             = mongoose.model( 'EdgesGeometry' )
+const EdgesGeometryModel             = mongoose.model( 'EdgesGeometry' ) // Is Buffer
 const ExtrudeBufferGeometryModel     = mongoose.model( 'ExtrudeBufferGeometry' )
 const TextBufferGeometryModel        = mongoose.model( 'TextBufferGeometry' )
 const InstancedBufferGeometryModel   = mongoose.model( 'InstancedBufferGeometry' )
@@ -122,7 +122,7 @@ const SphereBufferGeometryModel      = mongoose.model( 'SphereBufferGeometry' )
 const TorusBufferGeometryModel       = mongoose.model( 'TorusBufferGeometry' )
 const TorusKnotBufferGeometryModel   = mongoose.model( 'TorusKnotBufferGeometry' )
 const TubeBufferGeometryModel        = mongoose.model( 'TubeBufferGeometry' )
-const WireframeBufferGeometryModel   = mongoose.model( 'WireframeBufferGeometry' )
+const WireframeGeometryModel         = mongoose.model( 'WireframeGeometry' ) // Is Buffer
 
 // Materials
 const MaterialModel             = mongoose.model( 'Material' )
