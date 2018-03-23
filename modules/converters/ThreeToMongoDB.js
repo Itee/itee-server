@@ -2375,8 +2375,8 @@ class ThreeToMongoDB {
                 } ) )
                 break
 
-            case 'VertexNormalHelper':
-                onSuccess( VertexNormalHelperModel( {
+            case 'VertexNormalsHelper':
+                onSuccess( VertexNormalsHelperModel( {
                     uuid:                   object.uuid,
                     name:                   object.name,
                     type:                   object.type,
@@ -2422,7 +2422,7 @@ class ThreeToMongoDB {
                     frustumCulled:          object.frustumCulled,
                     renderOrder:            object.renderOrder,
                     userData:               this._parseUserData( object.userData )
-                    // VertexNormalHelper
+                    // VertexNormalsHelper
 
                 } ) )
                 break
