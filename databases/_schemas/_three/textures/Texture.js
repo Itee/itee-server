@@ -60,7 +60,7 @@ function _createSchema ( Mongoose ) {
         },
         {
             collection:       'textures',
-            discriminatorKey: '_type'
+            discriminatorKey: 'type'
         } )
 
 }
@@ -79,7 +79,11 @@ function getModelFrom ( Mongoose ) {
 function _createModel ( Mongoose ) {
     'use strict'
 
-    _model = Mongoose.model( 'Texture', getSchemaFrom( Mongoose ) )
+    // We need to pre-declare the base model to be able to use correctly
+    // the discriminator 'type' correctly with the main type, instead of
+    // directly register the model as it
+    _model = Mongoose.model( 'Textures', getSchemaFrom( Mongoose ) )
+    _model.discriminator( 'Texture', new Mongoose.Schema( {} ) )
 
     _inherit( Mongoose )
 
