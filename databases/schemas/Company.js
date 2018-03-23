@@ -5,17 +5,17 @@
  * @license MIT
  */
 
-module.exports = function ( mongoose ) {
+module.exports = function ( Mongoose ) {
 
-    const schemaTypes = mongoose.Schema.Types
+    const Schema = Mongoose.Schema
+    const Types  = Schema.Types
 
-    const CompanySchema = mongoose.Schema( {
-        name:        String,
-        sites:       [ schemaTypes.ObjectId ]
-    } )
+    Mongoose.model( 'Company', new Schema( {
+        name:  String,
+        type:  String,
+        sites: [ Types.ObjectId ]
+    } ) )
 
-    mongoose.model( 'Company', CompanySchema )
-
-    return mongoose
+    return Mongoose
 
 }
