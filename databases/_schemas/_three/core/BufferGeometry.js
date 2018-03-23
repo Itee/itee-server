@@ -34,10 +34,10 @@ function _createSchema ( Mongoose ) {
     const BufferAttributeSchema = BufferAttribute.getSchemaFrom( Mongoose )
 
     _schema = new Schema( {
-        isBufferGeometry: {
-            type:    Boolean,
-            default: true
-        },
+        uuid:             String,
+        name:             String,
+        type:             String,
+        index:            BufferAttributeSchema,
         attributes:       {
             position: {
                 type:    BufferAttributeSchema,
@@ -56,6 +56,7 @@ function _createSchema ( Mongoose ) {
                 default: null
             }
         },
+        groups:           Mixed,
         boundingBox:      {
             min: {
                 x: Number,
@@ -77,13 +78,14 @@ function _createSchema ( Mongoose ) {
             radius: Number
         },
         drawRange:        Mixed,
-        groups:           Mixed,
-        index:            BufferAttributeSchema,
-        name:             String,
-        uuid:             String
+        // extra helper
+        isBufferGeometry: {
+            type:    Boolean,
+            default: true
+        },
     }, {
         collection:       'geometries',
-        discriminatorKey: '_type'
+        discriminatorKey: 'type'
     } )
 
 }
@@ -102,7 +104,11 @@ function getModelFrom ( Mongoose ) {
 function _createModel ( Mongoose ) {
     'use strict'
 
-    _model = Mongoose.model( 'BufferGeometry', getSchemaFrom( Mongoose ) )
+    // We need to pre-declare the base model to be able to use correctly
+    // the discriminator 'type' correctly with the main type, instead of
+    // directly register the model as it
+    _model = Mongoose.model( 'BufferGeometries', getSchemaFrom( Mongoose ) )
+    _model.discriminator( 'BufferGeometry', new Mongoose.Schema( {} ) )
 
     _inherit( Mongoose )
 
@@ -115,36 +121,22 @@ function _inherit ( Mongoose ) {
     const Schema        = Mongoose.Schema
 
     _model.discriminator( 'BoxBufferGeometry', new Schema( {} ) )
-
     _model.discriminator( 'CircleBufferGeometry', new Schema( {} ) )
-
     _model.discriminator( 'CylinderBufferGeometry', new Schema( {} ) )
-
     _model.discriminator( 'ConeBufferGeometry', new Schema( {} ) )
-
     _model.discriminator( 'EdgesGeometry', new Schema( {} ) )
-
     _model.discriminator( 'ExtrudeBufferGeometry', new Schema( {} ) )
-
     _model.discriminator( 'TextBufferGeometry', new Schema( {} ) )
-
     _model.discriminator( 'InstancedBufferGeometry', new Schema( {} ) )
-
     _model.discriminator( 'LatheBufferGeometry', new Schema( {} ) )
-
     _model.discriminator( 'ParametricBufferGeometry', new Schema( {} ) )
-
     _model.discriminator( 'PlaneBufferGeometry', new Schema( {} ) )
-
     _model.discriminator( 'PolyhedronBufferGeometry', new Schema( {} ) )
-
     _model.discriminator( 'IcosahedronBufferGeometry', new Schema( {} ) )
-
     _model.discriminator( 'OctahedronBufferGeometry', new Schema( {} ) )
-
     _model.discriminator( 'TetrahedronBufferGeometry', new Schema( {} ) )
-
     _model.discriminator( 'RingBufferGeometry', new Schema( {} ) )
+    _model.discriminator( 'WireframeGeometry', new Schema( {} ) )
 
     const NestedCurveSchema = new Schema(
         {
@@ -205,10 +197,6 @@ function _inherit ( Mongoose ) {
     )
 
     _model.discriminator( 'ShapeBufferGeometry', new Schema( {
-        type:          {
-            type:    String,
-            default: 'ShapeBufferGeometry'
-        },
         shapes:        [ NestedShapeSchema ],
         curveSegments: Number
     } ) )
@@ -220,8 +208,6 @@ function _inherit ( Mongoose ) {
     _model.discriminator( 'TorusKnotBufferGeometry', new Schema( {} ) )
 
     _model.discriminator( 'TubeBufferGeometry', new Schema( {} ) )
-
-    _model.discriminator( 'WireframeBufferGeometry', new Schema( {} ) )
 
 }
 
