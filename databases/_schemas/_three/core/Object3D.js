@@ -89,7 +89,11 @@ function getModelFrom ( Mongoose ) {
 function _createModel ( Mongoose ) {
     'use strict'
 
-    _model = Mongoose.model( 'Object3D', getSchemaFrom( Mongoose ) )
+    // We need to pre-declare the base model to be able to use correctly
+    // the discriminator 'type' correctly with the main type, instead of
+    // directly register the model as it
+    _model = Mongoose.model( 'Objects3D', getSchemaFrom( Mongoose ) )
+    _model.discriminator( 'Object3D', new Mongoose.Schema( {} ) )
 
     _inherit( Mongoose )
 
@@ -188,7 +192,7 @@ function _inherit ( Mongoose ) {
     _model.discriminator( 'GridHelper', new Schema( {} ) )
     _model.discriminator( 'PolarGridHelper', new Schema( {} ) )
     _model.discriminator( 'SkeletonHelper', new Schema( {} ) )
-    _model.discriminator( 'VertexNormalHelper', new Schema( {} ) )
+    _model.discriminator( 'VertexNormalsHelper', new Schema( {} ) )
     _model.discriminator( 'PlaneHelper', new Schema( {} ) )
     _model.discriminator( 'LOD', new Schema( {
         levels: [ Types.Mixed ]
