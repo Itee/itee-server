@@ -229,6 +229,9 @@ const DatabasePage = {
                             <button class="btn btn-success btn-block" v-on:click="onAddModalArrayItem( key, inputKey )">Ajouter</button>
                         </div>
                     </div>
+                    <div v-else-if="(typeof inputValue === 'object')" v-for="(subValue, subKey) in inputValue" class="form-control">
+                        <span>{{subKey}}:{{subValue}}</span>
+                    </div>
                     <input v-else type="text" class="form-control" value="undefined" readonly>
                 </div>
                 
@@ -249,93 +252,121 @@ const DatabasePage = {
 
             dbManager:       new Itee.TDataBaseManager(),
             collections:     {
-                users:      [],
-                companies:  [],
-                sites:      [],
-                buildings:  [],
-                scenes:     [],
-                objects:    [],
-                geometries: [],
-                materials:  []
+                users:         [],
+                companies:     [],
+                objects:       [],
+                curves:        [],
+                geometries:    [],
+                materials:     [],
+                textures:      []
             },
             schemas:         {
-                users:      {
+                users:         {
                     title:  'Créer un nouvelle utilisateur',
                     inputs: {
                         email:    '',
                         password: '',
                     }
                 },
-                companies:  {
+                companies:     {
                     title:  'Créer une nouvelle compagnie',
                     inputs: {
-                        name:  '',
+                        name:     '',
                         sites: []
                     }
                 },
-                sites:      {
-                    title:  'Créer un nouveau site',
-                    inputs: {
-                        uuid:      '',
-                        name:      '',
-                        company:   '',
-                        buildings: []
-                    }
-                },
-                buildings:  {
-                    title:  'Créer un nouveau bâtiment',
-                    inputs: {
-                        gmaoId: '',
-                        name:   '',
-                        site:   '',
-                        scenes: [],
-                        meshes: []
-                    }
-                },
-                scenes:     {
-                    title:  'Créer une nouvelle scene',
-                    inputs: {
-                        name: ''
-                    }
-                },
-                objects:    {
+                objects:       {
                     title:  'Créer un nouvel objet 3d',
                     inputs: {
+                        uuid:                   '',
+                        name:                   '',
+                        type:                   '',
+                        parent:                 '',
+                        children:               [],
+                        up:                     {
+                            x: 0,
+                            y: 0,
+                            z: 0
+                        },
+                        position:               {
+                            x: 0,
+                            y: 0,
+                            z: 0
+                        },
+                        rotation:               {
+                            x:     0,
+                            y:     0,
+                            z:     0,
+                            order: ''
+                        },
+                        quaternion:             {
+                            x: 0,
+                            y: 0,
+                            z: 0,
+                            w: 0
+                        },
+                        scale:                  {
+                            x: 0,
+                            y: 0,
+                            z: 0
+                        },
+                        modelViewMatrix:        [],
+                        normalMatrix:           [],
+                        matrix:                 [],
+                        matrixWorld:            [],
+                        matrixAutoUpdate:       false,
+                        matrixWorldNeedsUpdate: false,
+                        layers:                 0,
+                        visible:                true,
+                        castShadow:             false,
+                        receiveShadow:          false,
+                        frustumCulled:          0,
+                        renderOrder:            0,
+                        userData:               {}
+                    }
+                },
+                curves:        {
+                    title:  'Créer une nouvelle courbe',
+                    inputs: {
                         name: ''
                     }
                 },
-                geometries: {
+                geometries:    {
                     title:  'Créer un nouvel utilisateur',
                     inputs: {
                         name: ''
                     }
                 },
-                materials:  {
+                materials:     {
                     title:  'Créer un nouveau materiel',
+                    inputs: {
+                        name: ''
+                    }
+                },
+                textures:      {
+                    title:  'Créer une nouvelle texture',
                     inputs: {
                         name: ''
                     }
                 }
             },
             selectedId:      {
-                users:      '',
-                companies:  '',
-                sites:      '',
-                buildings:  '',
-                scenes:     '',
-                objects:    '',
-                geometries: '',
-                materials:  ''
+                users:         '',
+                companies:     '',
+                objects:       '',
+                curves:        '',
+                geometries:    '',
+                materials:     '',
+                textures:      ''
             },
             selectedElement: {
-                users:      undefined,
-                companies:  undefined,
-                sites:      undefined,
-                buildings:  undefined,
-                scenes:     undefined,
-                objects:    undefined,
-                geometries: undefined,
-                materials:  undefined
+                users:         undefined,
+                companies:     undefined,
+                objects:       undefined,
+                curves:        undefined,
+                geometries:    undefined,
+                materials:     undefined,
+                textures:      undefined
             }
 
         }
@@ -430,54 +461,12 @@ const DatabasePage = {
                 id,
                 data,
                 updated => {
+
                     console.log( `success: ${updated}` )
                     if ( callback ) {
                         callback()
                     }
-                },
-                null,
-                error => console.error( `error: ${error}` )
-            )
 
-        },
-
-        updateCompany ( companyId, data, callback ) {
-            'use strict'
-
-            // Update local model
-            this.selectedCompany.sites = this.sites.map( site => site._id )
-
-            // Update DB
-            this.companiesManager.update(
-                companyId,
-                data,
-                updated => {
-                    console.log( `success: ${updated}` )
-                    if ( callback ) {
-                        callback()
-                    }
-                },
-                null,
-                error => console.error( `error: ${error}` )
-            )
-
-        },
-
-        updateSite ( siteId, data, callback ) {
-            'use strict'
-
-            // Update local model
-            this.selectedSite.buildings = this.buildings.map( building => building._id )
-
-            // Update DB
-            this.sitesManager.update(
-                siteId,
-                data,
-                updated => {
-                    console.log( `success: ${updated}` )
-                    if ( callback ) {
-                        callback()
-                    }
                 },
                 null,
                 error => console.error( `error: ${error}` )
@@ -499,156 +488,6 @@ const DatabasePage = {
                 if ( callback ) {
                     callback()
                 }
-
-            } )
-
-        },
-
-        deleteCompanies ( companies, callback ) {
-            'use strict'
-
-            const n = companies.length
-            let r   = 0
-
-            for ( let i = 0 ; i < n ; i++ ) {
-                this.deleteCompany( companies[ i ], checkEndOfReturn )
-            }
-
-            function checkEndOfReturn () {
-
-                r++
-                if ( r < n ) {
-                    return
-                }
-
-                callback()
-
-            }
-
-        },
-
-        deleteCompany ( companyToDelete, callback ) {
-            'use strict'
-
-            const self     = this
-            const children = companyToDelete.buildings
-
-            // Remove in view
-            self.companies = self.companies.filter( company => { return company._id !== companyToDelete._id } )
-
-            // Remove in database
-            self.companiesManager.delete( companyToDelete._id, deleted => {
-
-                console.log( `deleted: ${deleted}` )
-
-                // Delete children
-                self.deleteSites( children, () => {
-
-                    callback()
-
-                } )
-
-            } )
-
-        },
-
-        deleteSites ( sites, callback ) {
-            'use strict'
-
-            const n = sites.length
-            let r   = 0
-
-            for ( let i = 0 ; i < n ; i++ ) {
-                this.deleteSite( sites[ i ], checkEndOfReturn )
-            }
-
-            function checkEndOfReturn () {
-
-                r++
-                if ( r < n ) {
-                    return
-                }
-
-                callback()
-
-            }
-
-        },
-
-        deleteSite ( siteToDelete, callback ) {
-            'use strict'
-
-            const self     = this
-            const parent   = siteToDelete.company
-            const children = siteToDelete.buildings
-
-            // Remove in view
-            self.sites = self.sites.filter( site => { return site._id !== siteToDelete._id } )
-
-            // Remove in database
-            self.sitesManager.delete( siteToDelete._id, deleted => {
-
-                console.log( `deleted: ${deleted}` )
-
-                // Remove parent entry
-                self.updateCompany( parent, { sites: self.sites.map( site => site._id ) }, () => {
-
-                    // Delete children
-                    self.deleteBuildings( children, () => {
-
-                        callback()
-
-                    } )
-
-                } )
-
-            } )
-
-        },
-
-        deleteBuildings ( buildings, callback ) {
-            'use strict'
-
-            const n = buildings.length
-            let r   = 0
-
-            for ( let i = 0 ; i < n ; i++ ) {
-                this.deleteBuilding( buildings[ i ], checkEndOfReturn )
-            }
-
-            function checkEndOfReturn () {
-
-                r++
-                if ( r < n ) {
-                    return
-                }
-
-                callback()
-
-            }
-
-        },
-
-        deleteBuilding ( buildingToDelete, callback ) {
-            'use strict'
-
-            const self   = this
-            const parent = buildingToDelete.site
-
-            // Remove in view
-            self.buildings = self.buildings.filter( building => { return building._id !== buildingToDelete._id } )
-
-            // Remove in database
-            self.buildingsManager.delete( buildingToDelete._id, deleted => {
-
-                console.log( `deleted: ${deleted}` )
-
-                // Remove parent entry
-                self.updateSite( parent, { buildings: self.buildings.map( building => building._id ) }, () => {
-
-                    callback()
-
-                } )
 
             } )
 
@@ -777,7 +616,7 @@ const DatabasePage = {
             this.selectedId[ key ]      = ''
             this.selectedElement[ key ] = undefined
 
-            this.delete( key, {} )
+            this.delete( key, {}, this.read.bind( this, key ) )
             //            this.delete( key, elementsIdsToDelete, this.read.bind( this, key ) )
 
         },
@@ -815,9 +654,11 @@ const DatabasePage = {
 
         this.read( 'users' )
         this.read( 'companies' )
-        this.read( 'sites' )
-        this.read( 'buildings' )
-        this.read( 'scenes' )
+        this.read( 'objects' )
+        this.read( 'curves' )
+        this.read( 'geometries' )
+        this.read( 'materials' )
+        this.read( 'textures' )
 
     }
 }
@@ -981,16 +822,15 @@ const UploadPage = {
     data:     function () {
 
         return {
+            objectsManager:   new Itee.TDataBaseManager(),
             companiesManager: new Itee.TDataBaseManager(),
             companies:        [],
             selectedCompany:  '',
-            sitesManager:     new Itee.TDataBaseManager(),
             sites:            [],
             selectedSite:     '',
-            buildingsManager: new Itee.TDataBaseManager(),
             buildings:        [],
             selectedBuilding: '',
-            filesList:       [],
+            filesList:        [],
             filesNames:       [],
             modalData:        {
                 title:  'Prévisualisation',
@@ -1023,7 +863,7 @@ const UploadPage = {
                 },
                 showStat:        false,
                 backgroundColor: 0xb2b2b2,
-                needResize: false
+                needResize:      false
             },
             progressBarData:  {
                 done:      0,
@@ -1056,7 +896,7 @@ const UploadPage = {
 
             const self = this
 
-            self.sitesManager.read( sitesIds, sites => {
+            self.objectsManager.read( sitesIds, sites => {
 
                 self.sites        = sites
                 self.selectedSite = ''
@@ -1071,7 +911,7 @@ const UploadPage = {
 
             const self = this
 
-            self.buildingsManager.read( buildingsIds, buildings => {
+            self.objectsManager.read( buildingsIds, buildings => {
 
                 self.buildings        = buildings
                 self.selectedBuilding = ''
@@ -1100,8 +940,8 @@ const UploadPage = {
             const selectedId  = changeEvent.target.value
             const currentSite = this.sites.find( site => { return site._id === selectedId } )
 
-            if ( currentSite.buildings ) {
-                this.readBuildings( currentSite.buildings )
+            if ( currentSite.children ) {
+                this.readBuildings( currentSite.children )
             } else {
                 this.resetBuildings()
             }
@@ -1160,12 +1000,12 @@ const UploadPage = {
 
             // clearScene()
             this.previewViewport.scene.children = []
-            const envGroup = new Itee.Group()
+            const envGroup                      = new Itee.Group()
             envGroup.add( new Itee.GridHelper( 200, 20 ) )
 
             // Ambiant light
             envGroup.add( new Itee.AmbientLight( 0x777777 ) )
-            this.previewViewport.scene.add(envGroup)
+            this.previewViewport.scene.add( envGroup )
 
             this.importFilesToViewportScene( this.filesList )
 
@@ -1290,7 +1130,7 @@ const UploadPage = {
                     }
 
                 },
-                self.updateProgressBar.bind(self),
+                self.updateProgressBar.bind( self ),
                 ( error ) => {
 
                     console.error( error )
@@ -1303,7 +1143,7 @@ const UploadPage = {
         updateProgressBar ( progressEvent ) {
             'use strict'
 
-            if( progressEvent.lengthComputable ) {
+            if ( progressEvent.lengthComputable ) {
 
                 this.progressBarData.done = progressEvent.loaded
                 this.progressBarData.todo = progressEvent.total
@@ -1687,9 +1527,8 @@ const UploadPage = {
 
         // récupérer les données lorsque la vue est créée et
         // que les données sont déjà observées
+        this.objectsManager.basePath   = '/objects'
         this.companiesManager.basePath = '/companies'
-        this.sitesManager.basePath     = '/sites'
-        this.buildingsManager.basePath = '/buildings'
         this.readCompanies( {} ) // all
 
         // Create default stuff for 3d preview
@@ -1780,13 +1619,7 @@ const ViewerPage = {
         <TSplitter :isVertical=true :initPosition=20>
             <TTree slot="left" :items="viewport.scene.children" :filter=filterTreeItem></TTree>
             <TViewport3D slot="right" 
-                :scene=viewport.scene 
-                :camera=viewport.camera
-                :control=viewport.control
-                :effect=viewport.effect
-                :renderer=viewport.renderer
-                :showStat=viewport.showStat
-                :backgroundColor=0x232323
+                v-bind="viewport"
              />
         </TSplitter>
         
@@ -1803,12 +1636,25 @@ const ViewerPage = {
             materialsManager:  new Itee.TMaterialsManager(),
             viewport:          {
                 scene:           new Itee.Scene(),
-                camera:          'perspective',
-                control:         'orbital',
-                effect:          'normal',
-                renderer:        new Itee.WebGLRenderer( { antialias: true } ),
-                showStat:        true,
-                backgroundColor: 0x123456,
+                control:         "orbit",
+                effect:          "none",
+                renderer:        "webgl",
+                camera:          {
+                    type:     'perspective',
+                    position: {
+                        x: 7,
+                        y: 2,
+                        z: 5
+                    },
+                    target:   {
+                        x: 0,
+                        y: 0,
+                        z: 0
+                    }
+                },
+                showStat:        false,
+                backgroundColor: 0xb2b2b2,
+                needResize:      false
             },
             progressBar:       {
                 timeoutId: undefined,
@@ -1849,7 +1695,7 @@ const ViewerPage = {
         setCameraOfType ( cameraType ) {
             'use strict'
 
-            this.viewport.camera = cameraType
+            this.viewport.camera.type = cameraType
 
         },
 
@@ -1862,6 +1708,8 @@ const ViewerPage = {
 
         setEffectOfType ( effectType ) {
             'use strict'
+
+            this.viewport.effect = effectType
 
         },
 
@@ -2014,96 +1862,116 @@ const ViewerPage = {
 
         populate( 'companies', {}, self.viewport.scene, ( company, companyGroup ) => {
 
-            populate( 'sites', company.sites, companyGroup, ( site, siteGroup ) => {
+            let sitesIds = company.sites
 
-                populate( 'buildings', site.buildings, siteGroup, ( building, buildingGroup ) => {
+            populate( 'objects', sitesIds, companyGroup, ( site, siteGroup ) => {
 
-                    populate( 'scenes', building.scenes, buildingGroup, ( scene, sceneGroup ) => {
+                let buildingsIds = site.children
 
-                        let numberOfChildren = scene.children.length
-                        let childrenDone     = 0
+                populate( 'objects', buildingsIds, siteGroup, ( building, buildingGroup ) => {
 
-                        self.objectsManager.read( scene.children, objects => {
+                    let categoriesIds = building.children
 
-                            const geometriesIds = objects.map( object => object.geometry ).filter( ( value, index, self ) => {
-                                return self.indexOf( value ) === index
-                            } )
-
-                            const materialsArray       = objects.map( object => object.material )
-                            const concatMaterialsArray = [].concat.apply( [], materialsArray )
-                            const materialsIds         = concatMaterialsArray.filter( ( value, index, self ) => {
-                                return self.indexOf( value ) === index
-                            } )
-
-                            self.geometriesManager.read( geometriesIds, geometries => {
-
-                                self.materialsManager.read( materialsIds, materials => {
-
-                                    for ( let objectIndex = 0, numberOfObjects = objects.length ; objectIndex < numberOfObjects ; objectIndex++ ) {
-
-                                        const childrenIds = objects[ objectIndex ].children
-                                        if ( childrenIds.length > 0 ) {
-                                            objects[ objectIndex ].children = []
-                                            populateChildren( objects[ objectIndex ], childrenIds )
-                                        }
-
-                                        const geometryId = objects[ objectIndex ].geometry
-                                        if ( geometryId ) {
-                                            objects[ objectIndex ].geometry = geometries[ geometryId ]
-                                        }
-
-                                        const materialIds = objects[ objectIndex ].material
-                                        if ( materialIds ) {
-                                            objects[ objectIndex ].material = []
-                                            for ( let materialIndex = 0, numberOfMaterial = materialIds.length ; materialIndex < numberOfMaterial ; materialIndex++ ) {
-                                                objects[ objectIndex ].material.push( materials[ materialIds[ materialIndex ] ] )
-                                            }
-                                        }
-
-                                        objects[ objectIndex ].parent = null
-
-                                        objects[ objectIndex ].modifiers = [
-                                            {
-                                                type:    'checkbox',
-                                                value:   'checked',
-                                                onClick: self.toggleVisibilityOf( objects[ objectIndex ] )
-                                            },
-                                            {
-                                                type:     'range',
-                                                onChange: function onChangeHandler ( changeEvent ) {
-
-                                                    const opacity = changeEvent.target.valueAsNumber / 100
-
-                                                    if ( !objects[ objectIndex ].material.transparent ) {
-                                                        objects[ objectIndex ].material.transparent = true
-                                                    }
-
-                                                    objects[ objectIndex ].material.opacity = opacity
-
-                                                }
-                                            }
-                                        ]
-
-                                        sceneGroup.add( objects[ objectIndex ] )
-
-                                        childrenDone++
-                                        self.onProgress( childrenDone, numberOfChildren )
-
-                                    }
-
-                                } )
-
-                            } )
-
-                        } )
-
-                    } )
+                    populateChildren( buildingGroup, categoriesIds )
 
                 } )
 
             } )
 
         } )
+
+        //        populate( 'companies', {}, self.viewport.scene, ( company, companyGroup ) => {
+        //
+        //            populate( 'sites', company.children, companyGroup, ( site, siteGroup ) => {
+        //
+        //                populate( 'buildings', site.buildings, siteGroup, ( building, buildingGroup ) => {
+        //
+        //                    populate( 'scenes', building.scenes, buildingGroup, ( scene, sceneGroup ) => {
+        //
+        //                        let numberOfChildren = scene.children.length
+        //                        let childrenDone     = 0
+        //
+        //                        self.objectsManager.read( scene.children, objects => {
+        //
+        //                            const geometriesIds = objects.map( object => object.geometry ).filter( ( value, index, self ) => {
+        //                                return self.indexOf( value ) === index
+        //                            } )
+        //
+        //                            const materialsArray       = objects.map( object => object.material )
+        //                            const concatMaterialsArray = [].concat.apply( [], materialsArray )
+        //                            const materialsIds         = concatMaterialsArray.filter( ( value, index, self ) => {
+        //                                return self.indexOf( value ) === index
+        //                            } )
+        //
+        //                            self.geometriesManager.read( geometriesIds, geometries => {
+        //
+        //                                self.materialsManager.read( materialsIds, materials => {
+        //
+        //                                    for ( let objectIndex = 0, numberOfObjects = objects.length ; objectIndex < numberOfObjects ; objectIndex++ ) {
+        //
+        //                                        const childrenIds = objects[ objectIndex ].children
+        //                                        if ( childrenIds.length > 0 ) {
+        //                                            objects[ objectIndex ].children = []
+        //                                            populateChildren( objects[ objectIndex ], childrenIds )
+        //                                        }
+        //
+        //                                        const geometryId = objects[ objectIndex ].geometry
+        //                                        if ( geometryId ) {
+        //                                            objects[ objectIndex ].geometry = geometries[ geometryId ]
+        //                                        }
+        //
+        //                                        const materialIds = objects[ objectIndex ].material
+        //                                        if ( materialIds ) {
+        //                                            objects[ objectIndex ].material = []
+        //                                            for ( let materialIndex = 0, numberOfMaterial = materialIds.length ; materialIndex < numberOfMaterial ; materialIndex++ ) {
+        //                                                objects[ objectIndex ].material.push( materials[ materialIds[ materialIndex ] ] )
+        //                                            }
+        //                                        }
+        //
+        //                                        objects[ objectIndex ].parent = null
+        //
+        //                                        objects[ objectIndex ].modifiers = [
+        //                                            {
+        //                                                type:    'checkbox',
+        //                                                value:   'checked',
+        //                                                onClick: self.toggleVisibilityOf( objects[ objectIndex ] )
+        //                                            },
+        //                                            {
+        //                                                type:     'range',
+        //                                                onChange: function onChangeHandler ( changeEvent ) {
+        //
+        //                                                    const opacity = changeEvent.target.valueAsNumber / 100
+        //
+        //                                                    if ( !objects[ objectIndex ].material.transparent ) {
+        //                                                        objects[ objectIndex ].material.transparent = true
+        //                                                    }
+        //
+        //                                                    objects[ objectIndex ].material.opacity = opacity
+        //
+        //                                                }
+        //                                            }
+        //                                        ]
+        //
+        //                                        sceneGroup.add( objects[ objectIndex ] )
+        //
+        //                                        childrenDone++
+        //                                        self.onProgress( childrenDone, numberOfChildren )
+        //
+        //                                    }
+        //
+        //                                } )
+        //
+        //                            } )
+        //
+        //                        } )
+        //
+        //                    } )
+        //
+        //                } )
+        //
+        //            } )
+        //
+        //        } )
 
         function populate ( collectionName, childrenIds, parentGroup, callback ) {
 
@@ -2116,42 +1984,33 @@ const ViewerPage = {
                     for ( let i = 0, n = children.length ; i < n ; i++ ) {
                         child = children[ i ]
 
-                        if ( collectionName === 'objects' ) {
+                        const group     = new Itee.Group()
+                        group.name      = child.name
+                        group.modifiers = [
+                            {
+                                type:    'checkbox',
+                                value:   'checked',
+                                onClick: self.toggleVisibilityOf( group )
+                            },
+                            {
+                                type:     'range',
+                                onChange: function onChangeHandler ( changeEvent ) {
 
-                            callback( child, null )
+                                    const opacity = changeEvent.target.valueAsNumber / 100
 
-                            parentGroup.add( child )
-
-                        } else {
-
-                            const group     = new Itee.Group()
-                            group.name      = child.name
-                            group.modifiers = [
-                                {
-                                    type:    'checkbox',
-                                    value:   'checked',
-                                    onClick: self.toggleVisibilityOf( group )
-                                },
-                                {
-                                    type:     'range',
-                                    onChange: function onChangeHandler ( changeEvent ) {
-
-                                        const opacity = changeEvent.target.valueAsNumber / 100
-
-                                        if ( !group.material.transparent ) {
-                                            group.material.transparent = true
-                                        }
-
-                                        group.material.opacity = opacity
-
+                                    if ( !group.material.transparent ) {
+                                        group.material.transparent = true
                                     }
+
+                                    group.material.opacity = opacity
+
                                 }
-                            ]
+                            }
+                        ]
 
-                            callback( child, group )
+                        callback( child, group )
 
-                            parentGroup.add( group )
-                        }
+                        parentGroup.add( group )
 
                     }
 
@@ -2161,10 +2020,10 @@ const ViewerPage = {
 
         }
 
-        function populateChildren ( parent, children ) {
+        function populateChildren ( parentGroup, childrenIds ) {
 
             self.objectsManager.read(
-                children,
+                childrenIds,
                 objects => {
 
                     const geometriesIds = objects.map( object => object.geometry ).filter( ( value, index, self ) => {
@@ -2223,7 +2082,7 @@ const ViewerPage = {
                                             }
                                         ]
 
-                                        parent.add( objects[ objectIndex ] )
+                                        parentGroup.add( objects[ objectIndex ] )
 
                                     }
 
