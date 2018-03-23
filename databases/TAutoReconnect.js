@@ -21,7 +21,7 @@ module.exports = function ( mongoose, config ) {
      * Connect to Mongo DataBase with the given uri
      */
     function connectTo ( url ) {
-        mongoose.connect( url, { useMongoClient: true } )
+        mongoose.connect( url, {} )
     }
 
     /**
@@ -31,7 +31,7 @@ module.exports = function ( mongoose, config ) {
         if ( !timer ) {
             console.log( 'Démarrage de la reconnexion automatique...' )
             timer = setInterval( function () {
-                mongoose.connect( config.database_url, { useMongoClient: true } )
+                mongoose.connect( config.database_url, {} )
             }, config.auto_reconnect_timeout )
         }
     }
