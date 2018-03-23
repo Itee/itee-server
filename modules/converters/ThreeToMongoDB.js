@@ -4056,115 +4056,114 @@ class ThreeToMongoDB {
 
         const bufferGeometryType = bufferGeometry.type
 
+        // Retrieve attributes
+        const geometryAttributes = bufferGeometry.attributes
+        let attributes           = {}
+        if ( geometryAttributes ) {
+            // TODO: use loop instead
+
+            const geometryAttributesPosition = geometryAttributes[ 'position' ]
+            if ( geometryAttributesPosition ) {
+                attributes[ 'position' ] = {
+                    //                    array:       geometryAttributesPosition.array,
+                    array:       Array.from( geometryAttributesPosition.array ),
+                    count:       geometryAttributesPosition.count,
+                    dynamic:     geometryAttributesPosition.dynamic,
+                    itemSize:    geometryAttributesPosition.itemSize,
+                    name:        geometryAttributesPosition.name,
+                    needsUpdate: geometryAttributesPosition.needsUpdate,
+                    normalized:  geometryAttributesPosition.normalized,
+                    updateRange: geometryAttributesPosition.updateRange,
+                    uuid:        geometryAttributesPosition.uuid,
+                    version:     geometryAttributesPosition.version
+                }
+            }
+
+            const geometryAttributesColor = geometryAttributes[ 'color' ]
+            if ( geometryAttributesColor ) {
+                attributes[ 'color' ] = {
+                    //                    array:       geometryAttributesColor.array,
+                    array:       Array.from( geometryAttributesColor.array ),
+                    count:       geometryAttributesColor.count,
+                    dynamic:     geometryAttributesColor.dynamic,
+                    itemSize:    geometryAttributesColor.itemSize,
+                    name:        geometryAttributesColor.name,
+                    needsUpdate: geometryAttributesColor.needsUpdate,
+                    normalized:  geometryAttributesColor.normalized,
+                    updateRange: geometryAttributesColor.updateRange,
+                    uuid:        geometryAttributesColor.uuid,
+                    version:     geometryAttributesColor.version
+                }
+            }
+
+            const geometryAttributesNormal = geometryAttributes[ 'normal' ]
+            if ( geometryAttributesNormal ) {
+                attributes[ 'normal' ] = {
+                    //                    array:       geometryAttributesNormal.array,
+                    array:       Array.from( geometryAttributesNormal.array ),
+                    count:       geometryAttributesNormal.count,
+                    dynamic:     geometryAttributesNormal.dynamic,
+                    itemSize:    geometryAttributesNormal.itemSize,
+                    name:        geometryAttributesNormal.name,
+                    needsUpdate: geometryAttributesNormal.needsUpdate,
+                    normalized:  geometryAttributesNormal.normalized,
+                    updateRange: geometryAttributesNormal.updateRange,
+                    uuid:        geometryAttributesNormal.uuid,
+                    version:     geometryAttributesNormal.version
+                }
+            }
+
+            const geometryAttributesUV = geometryAttributes[ 'uv' ]
+            if ( geometryAttributesUV ) {
+                attributes[ 'uv' ] = {
+                    //                    array:       geometryAttributesUV.array,
+                    array:       Array.from( geometryAttributesUV.array ),
+                    count:       geometryAttributesUV.count,
+                    dynamic:     geometryAttributesUV.dynamic,
+                    itemSize:    geometryAttributesUV.itemSize,
+                    name:        geometryAttributesUV.name,
+                    needsUpdate: geometryAttributesUV.needsUpdate,
+                    normalized:  geometryAttributesUV.normalized,
+                    updateRange: geometryAttributesUV.updateRange,
+                    uuid:        geometryAttributesUV.uuid,
+                    version:     geometryAttributesUV.version
+                }
+            }
+        }
+
+        // Retrieve index
+        const geometryIndexes = bufferGeometry.index
+        let indexes           = {}
+        if ( geometryIndexes ) {
+            indexes = {
+                //                array:       geometryIndexes.array,
+                array:       Array.from( geometryIndexes.array ),
+                count:       geometryIndexes.count,
+                dynamic:     geometryIndexes.dynamic,
+                itemSize:    geometryIndexes.itemSize,
+                name:        geometryIndexes.name,
+                needsUpdate: geometryIndexes.needsUpdate,
+                normalized:  geometryIndexes.normalized,
+                updateRange: geometryIndexes.updateRange,
+                uuid:        geometryIndexes.uuid,
+                version:     geometryIndexes.version
+            }
+        }
+
         switch ( bufferGeometryType ) {
 
             case 'BufferGeometry': {
-
-
-                // Retrieve attributes
-                const geometryAttributes = bufferGeometry.attributes
-                let attributes           = {}
-                if ( geometryAttributes ) {
-                    // TODO: use loop instead
-
-                    const geometryAttributesPosition = geometryAttributes[ 'position' ]
-                    if ( geometryAttributesPosition ) {
-                        attributes[ 'position' ] = {
-                            //                    array:       geometryAttributesPosition.array,
-                            array:       Array.from( geometryAttributesPosition.array ),
-                            count:       geometryAttributesPosition.count,
-                            dynamic:     geometryAttributesPosition.dynamic,
-                            itemSize:    geometryAttributesPosition.itemSize,
-                            name:        geometryAttributesPosition.name,
-                            needsUpdate: geometryAttributesPosition.needsUpdate,
-                            normalized:  geometryAttributesPosition.normalized,
-                            updateRange: geometryAttributesPosition.updateRange,
-                            uuid:        geometryAttributesPosition.uuid,
-                            version:     geometryAttributesPosition.version
-                        }
-                    }
-
-                    const geometryAttributesColor = geometryAttributes[ 'color' ]
-                    if ( geometryAttributesColor ) {
-                        attributes[ 'color' ] = {
-                            //                    array:       geometryAttributesColor.array,
-                            array:       Array.from( geometryAttributesColor.array ),
-                            count:       geometryAttributesColor.count,
-                            dynamic:     geometryAttributesColor.dynamic,
-                            itemSize:    geometryAttributesColor.itemSize,
-                            name:        geometryAttributesColor.name,
-                            needsUpdate: geometryAttributesColor.needsUpdate,
-                            normalized:  geometryAttributesColor.normalized,
-                            updateRange: geometryAttributesColor.updateRange,
-                            uuid:        geometryAttributesColor.uuid,
-                            version:     geometryAttributesColor.version
-                        }
-                    }
-
-                    const geometryAttributesNormal = geometryAttributes[ 'normal' ]
-                    if ( geometryAttributesNormal ) {
-                        attributes[ 'normal' ] = {
-                            //                    array:       geometryAttributesNormal.array,
-                            array:       Array.from( geometryAttributesNormal.array ),
-                            count:       geometryAttributesNormal.count,
-                            dynamic:     geometryAttributesNormal.dynamic,
-                            itemSize:    geometryAttributesNormal.itemSize,
-                            name:        geometryAttributesNormal.name,
-                            needsUpdate: geometryAttributesNormal.needsUpdate,
-                            normalized:  geometryAttributesNormal.normalized,
-                            updateRange: geometryAttributesNormal.updateRange,
-                            uuid:        geometryAttributesNormal.uuid,
-                            version:     geometryAttributesNormal.version
-                        }
-                    }
-
-                    const geometryAttributesUV = geometryAttributes[ 'uv' ]
-                    if ( geometryAttributesUV ) {
-                        attributes[ 'uv' ] = {
-                            //                    array:       geometryAttributesUV.array,
-                            array:       Array.from( geometryAttributesUV.array ),
-                            count:       geometryAttributesUV.count,
-                            dynamic:     geometryAttributesUV.dynamic,
-                            itemSize:    geometryAttributesUV.itemSize,
-                            name:        geometryAttributesUV.name,
-                            needsUpdate: geometryAttributesUV.needsUpdate,
-                            normalized:  geometryAttributesUV.normalized,
-                            updateRange: geometryAttributesUV.updateRange,
-                            uuid:        geometryAttributesUV.uuid,
-                            version:     geometryAttributesUV.version
-                        }
-                    }
-                }
-
-                // Retrieve index
-                const geometryIndexes = bufferGeometry.index
-                let indexes           = {}
-                if ( geometryIndexes ) {
-                    indexes = {
-                        //                array:       geometryIndexes.array,
-                        array:       Array.from( geometryIndexes.array ),
-                        count:       geometryIndexes.count,
-                        dynamic:     geometryIndexes.dynamic,
-                        itemSize:    geometryIndexes.itemSize,
-                        name:        geometryIndexes.name,
-                        needsUpdate: geometryIndexes.needsUpdate,
-                        normalized:  geometryIndexes.normalized,
-                        updateRange: geometryIndexes.updateRange,
-                        uuid:        geometryIndexes.uuid,
-                        version:     geometryIndexes.version
-                    }
-                }
-
                 onSuccess(
                     BufferGeometryModel( {
+                        uuid:           bufferGeometry.uuid,
+                        name:           bufferGeometry.name,
+                        type:           bufferGeometry.type,
+                        index:          indexes,
                         attributes:     attributes,
+                        groups:         bufferGeometry.groups,
                         boundingBox:    null,
                         boundingSphere: null,
-                        drawRange:      bufferGeometry.drawRange,
-                        groups:         bufferGeometry.groups,
-                        index:          indexes,
-                        name:           bufferGeometry.name,
-                        uuid:           bufferGeometry.uuid
+                        drawRange:      bufferGeometry.drawRange
                     } )
                 )
 
@@ -4172,112 +4171,364 @@ class ThreeToMongoDB {
                 break
 
             case 'BoxBufferGeometry': {
-
+                onSuccess( BoxBufferGeometryModel( {
+                    uuid:           bufferGeometry.uuid,
+                    name:           bufferGeometry.name,
+                    type:           bufferGeometry.type,
+                    index:          indexes,
+                    attributes:     attributes,
+                    groups:         bufferGeometry.groups,
+                    boundingBox:    null,
+                    boundingSphere: null,
+                    drawRange:      bufferGeometry.drawRange,
+                    // SPECIFIC
+                } ) )
             }
                 break
 
             case 'CircleBufferGeometry': {
-
+                onSuccess( CircleBufferGeometryModel( {
+                    uuid:           bufferGeometry.uuid,
+                    name:           bufferGeometry.name,
+                    type:           bufferGeometry.type,
+                    index:          indexes,
+                    attributes:     attributes,
+                    groups:         bufferGeometry.groups,
+                    boundingBox:    null,
+                    boundingSphere: null,
+                    drawRange:      bufferGeometry.drawRange,
+                    // SPECIFIC
+                } ) )
             }
                 break
 
             case 'CylinderBufferGeometry': {
-
+                onSuccess( CylinderBufferGeometryModel( {
+                    uuid:           bufferGeometry.uuid,
+                    name:           bufferGeometry.name,
+                    type:           bufferGeometry.type,
+                    index:          indexes,
+                    attributes:     attributes,
+                    groups:         bufferGeometry.groups,
+                    boundingBox:    null,
+                    boundingSphere: null,
+                    drawRange:      bufferGeometry.drawRange,
+                    // SPECIFIC
+                } ) )
             }
                 break
 
             case 'ConeBufferGeometry': {
-
+                onSuccess( ConeBufferGeometryModel( {
+                    uuid:           bufferGeometry.uuid,
+                    name:           bufferGeometry.name,
+                    type:           bufferGeometry.type,
+                    index:          indexes,
+                    attributes:     attributes,
+                    groups:         bufferGeometry.groups,
+                    boundingBox:    null,
+                    boundingSphere: null,
+                    drawRange:      bufferGeometry.drawRange,
+                    // SPECIFIC
+                } ) )
             }
                 break
 
             case 'EdgesGeometry': {
-
+                onSuccess( EdgesGeometryModel( {
+                    uuid:           bufferGeometry.uuid,
+                    name:           bufferGeometry.name,
+                    type:           bufferGeometry.type,
+                    index:          indexes,
+                    attributes:     attributes,
+                    groups:         bufferGeometry.groups,
+                    boundingBox:    null,
+                    boundingSphere: null,
+                    drawRange:      bufferGeometry.drawRange,
+                    // SPECIFIC
+                } ) )
             }
                 break
 
             case 'ExtrudeBufferGeometry': {
-
+                onSuccess( ExtrudeBufferGeometryModel( {
+                    uuid:           bufferGeometry.uuid,
+                    name:           bufferGeometry.name,
+                    type:           bufferGeometry.type,
+                    index:          indexes,
+                    attributes:     attributes,
+                    groups:         bufferGeometry.groups,
+                    boundingBox:    null,
+                    boundingSphere: null,
+                    drawRange:      bufferGeometry.drawRange,
+                    // SPECIFIC
+                } ) )
             }
                 break
 
             case 'TextBufferGeometry': {
-
+                onSuccess( TextBufferGeometryModel( {
+                    uuid:           bufferGeometry.uuid,
+                    name:           bufferGeometry.name,
+                    type:           bufferGeometry.type,
+                    index:          indexes,
+                    attributes:     attributes,
+                    groups:         bufferGeometry.groups,
+                    boundingBox:    null,
+                    boundingSphere: null,
+                    drawRange:      bufferGeometry.drawRange,
+                    // SPECIFIC
+                } ) )
             }
                 break
 
             case 'InstancedBufferGeometry': {
-
+                onSuccess( InstancedBufferGeometryModel( {
+                    uuid:           bufferGeometry.uuid,
+                    name:           bufferGeometry.name,
+                    type:           bufferGeometry.type,
+                    index:          indexes,
+                    attributes:     attributes,
+                    groups:         bufferGeometry.groups,
+                    boundingBox:    null,
+                    boundingSphere: null,
+                    drawRange:      bufferGeometry.drawRange,
+                    // SPECIFIC
+                } ) )
             }
                 break
 
             case 'LatheBufferGeometry': {
-
+                onSuccess( LatheBufferGeometryModel( {
+                    uuid:           bufferGeometry.uuid,
+                    name:           bufferGeometry.name,
+                    type:           bufferGeometry.type,
+                    index:          indexes,
+                    attributes:     attributes,
+                    groups:         bufferGeometry.groups,
+                    boundingBox:    null,
+                    boundingSphere: null,
+                    drawRange:      bufferGeometry.drawRange,
+                    // SPECIFIC
+                } ) )
             }
                 break
 
             case 'ParametricBufferGeometry': {
-
+                onSuccess( ParametricBufferGeometryModel( {
+                    uuid:           bufferGeometry.uuid,
+                    name:           bufferGeometry.name,
+                    type:           bufferGeometry.type,
+                    index:          indexes,
+                    attributes:     attributes,
+                    groups:         bufferGeometry.groups,
+                    boundingBox:    null,
+                    boundingSphere: null,
+                    drawRange:      bufferGeometry.drawRange,
+                    // SPECIFIC
+                } ) )
             }
                 break
 
             case 'PlaneBufferGeometry': {
-
+                onSuccess( PlaneBufferGeometryModel( {
+                    uuid:           bufferGeometry.uuid,
+                    name:           bufferGeometry.name,
+                    type:           bufferGeometry.type,
+                    index:          indexes,
+                    attributes:     attributes,
+                    groups:         bufferGeometry.groups,
+                    boundingBox:    null,
+                    boundingSphere: null,
+                    drawRange:      bufferGeometry.drawRange,
+                    // SPECIFIC
+                } ) )
             }
                 break
 
             case 'PolyhedronBufferGeometry': {
-
+                onSuccess( PolyhedronBufferGeometryModel( {
+                    uuid:           bufferGeometry.uuid,
+                    name:           bufferGeometry.name,
+                    type:           bufferGeometry.type,
+                    index:          indexes,
+                    attributes:     attributes,
+                    groups:         bufferGeometry.groups,
+                    boundingBox:    null,
+                    boundingSphere: null,
+                    drawRange:      bufferGeometry.drawRange,
+                    // SPECIFIC
+                } ) )
             }
                 break
 
             case 'IcosahedronBufferGeometry': {
-
+                onSuccess( IcosahedronBufferGeometryModel( {
+                    uuid:           bufferGeometry.uuid,
+                    name:           bufferGeometry.name,
+                    type:           bufferGeometry.type,
+                    index:          indexes,
+                    attributes:     attributes,
+                    groups:         bufferGeometry.groups,
+                    boundingBox:    null,
+                    boundingSphere: null,
+                    drawRange:      bufferGeometry.drawRange,
+                    // SPECIFIC
+                } ) )
             }
                 break
 
             case 'OctahedronBufferGeometry': {
-
+                onSuccess( OctahedronBufferGeometryModel( {
+                    uuid:           bufferGeometry.uuid,
+                    name:           bufferGeometry.name,
+                    type:           bufferGeometry.type,
+                    index:          indexes,
+                    attributes:     attributes,
+                    groups:         bufferGeometry.groups,
+                    boundingBox:    null,
+                    boundingSphere: null,
+                    drawRange:      bufferGeometry.drawRange,
+                    // SPECIFIC
+                } ) )
             }
                 break
 
             case 'TetrahedronBufferGeometry': {
-
+                onSuccess( BoxBufferGeometryModel( {
+                    uuid:           bufferGeometry.uuid,
+                    name:           bufferGeometry.name,
+                    type:           bufferGeometry.type,
+                    index:          indexes,
+                    attributes:     attributes,
+                    groups:         bufferGeometry.groups,
+                    boundingBox:    null,
+                    boundingSphere: null,
+                    drawRange:      bufferGeometry.drawRange,
+                    // SPECIFIC
+                } ) )
             }
                 break
 
             case 'RingBufferGeometry': {
-
+                onSuccess( RingBufferGeometryModel( {
+                    uuid:           bufferGeometry.uuid,
+                    name:           bufferGeometry.name,
+                    type:           bufferGeometry.type,
+                    index:          indexes,
+                    attributes:     attributes,
+                    groups:         bufferGeometry.groups,
+                    boundingBox:    null,
+                    boundingSphere: null,
+                    drawRange:      bufferGeometry.drawRange,
+                    // SPECIFIC
+                } ) )
             }
                 break
 
             case 'ShapeBufferGeometry': {
 
+                const shapes = []
+
+                for ( let shapeIndex = 0, numberOfShapes = bufferGeometry.shapes.length ; shapeIndex < numberOfShapes ; shapeIndex++ ) {
+                    let shape = bufferGeometry.shapes[ shapeIndex ]
+                    shapes.push( shape.toJSON() )
+                }
+
+                onSuccess( ShapeBufferGeometryModel( {
+                    uuid:           bufferGeometry.uuid,
+                    name:           bufferGeometry.name,
+                    type:           bufferGeometry.type,
+                    index:          indexes,
+                    attributes:     attributes,
+                    groups:         bufferGeometry.groups,
+                    boundingBox:    null,
+                    boundingSphere: null,
+                    drawRange:      bufferGeometry.drawRange,
+                    // SPECIFIC
+                    shapes:         shapes,
+                    curveSegments:  bufferGeometry.curveSegments
+                } ) )
             }
                 break
 
             case 'SphereBufferGeometry': {
-
+                onSuccess( SphereBufferGeometryModel( {
+                    uuid:           bufferGeometry.uuid,
+                    name:           bufferGeometry.name,
+                    type:           bufferGeometry.type,
+                    index:          indexes,
+                    attributes:     attributes,
+                    groups:         bufferGeometry.groups,
+                    boundingBox:    null,
+                    boundingSphere: null,
+                    drawRange:      bufferGeometry.drawRange,
+                    // SPECIFIC
+                } ) )
             }
                 break
 
             case 'TorusBufferGeometry': {
-
+                onSuccess( TorusBufferGeometryModel( {
+                    uuid:           bufferGeometry.uuid,
+                    name:           bufferGeometry.name,
+                    type:           bufferGeometry.type,
+                    index:          indexes,
+                    attributes:     attributes,
+                    groups:         bufferGeometry.groups,
+                    boundingBox:    null,
+                    boundingSphere: null,
+                    drawRange:      bufferGeometry.drawRange,
+                    // SPECIFIC
+                } ) )
             }
                 break
 
             case 'TorusKnotBufferGeometry': {
-
+                onSuccess( TorusKnotBufferGeometryModel( {
+                    uuid:           bufferGeometry.uuid,
+                    name:           bufferGeometry.name,
+                    type:           bufferGeometry.type,
+                    index:          indexes,
+                    attributes:     attributes,
+                    groups:         bufferGeometry.groups,
+                    boundingBox:    null,
+                    boundingSphere: null,
+                    drawRange:      bufferGeometry.drawRange,
+                    // SPECIFIC
+                } ) )
             }
                 break
 
             case 'TubeBufferGeometry': {
-
+                onSuccess( TubeBufferGeometryModel( {
+                    uuid:           bufferGeometry.uuid,
+                    name:           bufferGeometry.name,
+                    type:           bufferGeometry.type,
+                    index:          indexes,
+                    attributes:     attributes,
+                    groups:         bufferGeometry.groups,
+                    boundingBox:    null,
+                    boundingSphere: null,
+                    drawRange:      bufferGeometry.drawRange,
+                    // SPECIFIC
+                } ) )
             }
                 break
 
-            case 'WireframeBufferGeometry': {
-
+            case 'WireframeGeometry': {
+                onSuccess( WireframeGeometryModel( {
+                    uuid:           bufferGeometry.uuid,
+                    name:           bufferGeometry.name,
+                    type:           bufferGeometry.type,
+                    index:          indexes,
+                    attributes:     attributes,
+                    groups:         bufferGeometry.groups,
+                    boundingBox:    null,
+                    boundingSphere: null,
+                    drawRange:      bufferGeometry.drawRange,
+                    // SPECIFIC
+                } ) )
             }
                 break
 
@@ -4791,7 +5042,23 @@ class ThreeToMongoDB {
                     userData:            this._parseUserData( material.userData ),
                     needsUpdate:         material.needsUpdate,
                     // MeshPhongMaterial
-                    color:               material.color,
+
+                    color:        Object.assign( {}, material.color ),
+                    colorNested:  Object.assign( {}, material.color ),
+                    colorType:    Object.assign( {}, material.color ),
+                    colors:       [ material.color, material.color ],
+                    colorsNested: [ material.color, material.color ],
+                    colorsMixed:  [ material.color, material.color ],
+                    colorsType:   [ material.color, material.color ],
+                    // Dont work with pure {} schema object
+//                    color:               material.color,
+                    // Work with pur {} schema object
+//                    color:               {
+//                        r: material.color.r,
+//                        g: material.color.g,
+//                        b: material.color.b
+//                    },
+
                     specular:            material.specular,
                     shininess:           material.shininess,
                     map:                 material.map,
@@ -5241,7 +5508,7 @@ class ThreeToMongoDB {
 
                         const materialLocalIndex = materialIndex
 
-                        this._getMaterialModel( materials, onError, ( materialModel ) => {
+                        self._getMaterialModel( material, onError, ( materialModel ) => {
 
                             materialModel.save()
                                          .then( savedMaterial => {
