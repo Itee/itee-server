@@ -75,6 +75,9 @@ function _createSchema ( Mongoose ) {
         colorsNeedUpdate:        Boolean,
         lineDistancesNeedUpdate: Boolean,
         groupsNeedUpdate:        Boolean
+    }, {
+        collection:       'geometries',
+        discriminatorKey: 'type'
     } )
 
 }
@@ -93,7 +96,11 @@ function getModelFrom ( Mongoose ) {
 function _createModel ( Mongoose ) {
     'use strict'
 
-    _model = Mongoose.model( 'Geometry', getSchemaFrom( Mongoose ) )
+    // We need to pre-declare the base model to be able to use correctly
+    // the discriminator 'type' correctly with the main type, instead of
+    // directly register the model as it
+    _model = Mongoose.model( 'Geometries', getSchemaFrom( Mongoose ) )
+    _model.discriminator( 'Geometry', new Mongoose.Schema( {} ) )
 
     _inherit( Mongoose )
 
@@ -107,8 +114,7 @@ function _inherit( Mongoose ) {
     _model.discriminator( 'BoxGeometry', new Schema( {} ) )
     _model.discriminator( 'CircleGeometry', new Schema( {} ) )
     _model.discriminator( 'CylinderGeometry', new Schema( {} ) )
-        _model.discriminator( 'ConeGeometry', new Schema( {} ) )
-
+    _model.discriminator( 'ConeGeometry', new Schema( {} ) )
     _model.discriminator( 'DodecahedronGeometry', new Schema( {} ) )
     _model.discriminator( 'ExtrudeGeometry', new Schema( {} ) )
     _model.discriminator( 'IcosahedronGeometry', new Schema( {} ) )
@@ -124,6 +130,7 @@ function _inherit( Mongoose ) {
     _model.discriminator( 'TorusGeometry', new Schema( {} ) )
     _model.discriminator( 'TorusKnotGeometry', new Schema( {} ) )
     _model.discriminator( 'TubeGeometry', new Schema( {} ) )
+    _model.discriminator( 'SphereGeometry', new Schema( {} ) )
 
 
 }
