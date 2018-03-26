@@ -26,6 +26,7 @@ const AppPage = {
                         <TMenuItem label="Database" :onClickHandler="function() { routeTo('/database') }" />
                         <TMenuItem label="Téléversement" :onClickHandler="function() { routeTo('/upload') }" />
                         <TMenuItem label="Visualiseur 3D" :onClickHandler="function() { routeTo('/viewer') }" />
+                        <TMenuItem label="Editeur" :onClickHandler="function() { routeTo('/editor') }" />
                         <TMenuItem label="Utilisateur" :onClickHandler="function() { routeTo('/users') }" />
                         <TMenuDropDown popAt="bottom" label="A propos">
                             <TMenuItem label="SubMenuA" :onClickHandler=alertFooBar />
@@ -53,7 +54,7 @@ const AppPage = {
                 </TAppBar>
             </THeader>
             
-            <TContent id="appContent" >
+            <TContent id="appContent">
                 <router-view></router-view>
             </TContent>
             
@@ -66,7 +67,6 @@ const AppPage = {
             
             <TContainerCentered id="splashScreen" expand=true>
                 <img src="./resources/images/Geomap-Imagis_V_700px.png">
-                <TIcon icon="spinner" spin></TIcon>
             </TContainerCentered>
             
         </TContainer>
@@ -101,19 +101,19 @@ const AppPage = {
 
         if ( !self.isInit ) {
 
-            document.getElementById( 'appHeader' ).style.display    = 'none'
-            document.getElementById( 'appContent' ).style.display   = 'none'
             document.getElementById( 'appFooter' ).style.display    = 'none'
+            document.getElementById( 'appContent' ).style.display   = 'none'
+            document.getElementById( 'appHeader' ).style.display    = 'none'
             document.getElementById( 'splashScreen' ).style.display = 'flex'
 
             setTimeout( function () {
 
+                document.getElementById( 'splashScreen' ).style.display = 'none'
                 document.getElementById( 'appHeader' ).style.display    = 'flex'
                 document.getElementById( 'appContent' ).style.display   = 'flex'
                 document.getElementById( 'appFooter' ).style.display    = 'flex'
-                document.getElementById( 'splashScreen' ).style.display = 'none'
 
-            }, 20 )
+            }, 100 )
 
             self.isInit = true
 
@@ -150,7 +150,7 @@ const DatabasePage = {
                         <label>{{key}}</label>
                         <span class="badge badge-primary badge-pill">{{values.length}}</span>
                         <span v-on:click.stop style="float: right;">
-                            <button class="btn btn-sm btn-outline-success" v-on:click="onToggleModalVisibility('modal-' + key)">Ajouter une nouvelle entrée</button>
+                            <button class="btn btn-sm btn-outline-success" v-on:click="toggleModalVisibility('modal-' + key)">Ajouter une nouvelle entrée</button>
                             <button class="btn btn-sm btn-outline-primary" v-on:click="onUpdateAll(key)">Mettre tout à jour</button>
                             <button class="btn btn-sm btn-outline-danger" v-on:click="onDeleteAll(key)">Supprimer tout</button>
                         </span>
@@ -196,12 +196,12 @@ const DatabasePage = {
             </div>
            
 <!-- Modals -->
-<div v-for="(modalData, key) in schemas" v-on:click="onToggleModalVisibility('modal-' + key)" :id="'modal-' + key" class="modal fade" tabindex="-1" role="dialog" aria-labelledby="exampleModalCenterTitle" aria-hidden="true">
+<div v-for="(modalData, key) in schemas" v-on:click="toggleModalVisibility('modal-' + key)" :id="'modal-' + key" class="modal fade" tabindex="-1" role="dialog" aria-labelledby="exampleModalCenterTitle" aria-hidden="true" style="overflow:scroll;">
     <div class="modal-dialog modal-dialog-centered modal-lg" role="document">
         <div v-on:click.stop class="modal-content">
             <div class="modal-header">
                 <h5 class="modal-title" id="exampleModalLongTitle">{{modalData.title}}</h5>
-                <button type="button" class="close" data-dismiss="modal" aria-label="Close" v-on:click.stop="onToggleModalVisibility('modal-' + key)">
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close" v-on:click.stop="toggleModalVisibility('modal-' + key)">
                     <span aria-hidden="true">&times;</span>
                 </button>
             </div>
@@ -237,7 +237,7 @@ const DatabasePage = {
                 
             </div>
             <div class="modal-footer">
-                <button type="button" class="btn btn-secondary" data-dismiss="modal" v-on:click.stop="onToggleModalVisibility('modal-' + key)">Fermer</button>
+                <button type="button" class="btn btn-secondary" data-dismiss="modal" v-on:click.stop="toggleModalVisibility('modal-' + key)">Fermer</button>
                 <button type="button" class="btn btn-primary" v-on:click.stop="onCreate(key)">Valider</button>
             </div>
         </div>
@@ -252,98 +252,75 @@ const DatabasePage = {
 
             dbManager:       new Itee.TDataBaseManager(),
             collections:     {
-                users:         [],
-                companies:     [],
-                objects:       [],
-                curves:        [],
-                geometries:    [],
-                materials:     [],
-                textures:      []
+                users:      [],
+                companies:  [],
+                objects:    [],
+                curves:     [],
+                geometries: [],
+                materials:  [],
+                textures:   []
             },
             schemas:         {
-                users:         {
+                users:      {
                     title:  'Créer un nouvelle utilisateur',
                     inputs: {
                         email:    '',
                         password: '',
                     }
                 },
-                companies:     {
+                companies:  {
                     title:  'Créer une nouvelle compagnie',
                     inputs: {
-                        name:     '',
+                        name:  '',
                         sites: []
                     }
                 },
-                objects:       {
+                objects:    {
                     title:  'Créer un nouvel objet 3d',
                     inputs: {
-                        uuid:                   '',
-                        name:                   '',
-                        type:                   '',
-                        parent:                 '',
-                        children:               [],
-                        up:                     {
+                        name:     '',
+                        type:     '',
+                        parent:   '',
+                        children: [],
+                        position: {
                             x: 0,
                             y: 0,
                             z: 0
                         },
-                        position:               {
-                            x: 0,
-                            y: 0,
-                            z: 0
-                        },
-                        rotation:               {
+                        rotation: {
                             x:     0,
                             y:     0,
                             z:     0,
                             order: ''
                         },
-                        quaternion:             {
-                            x: 0,
-                            y: 0,
-                            z: 0,
-                            w: 0
-                        },
-                        scale:                  {
+                        scale:    {
                             x: 0,
                             y: 0,
                             z: 0
                         },
-                        modelViewMatrix:        [],
-                        normalMatrix:           [],
-                        matrix:                 [],
-                        matrixWorld:            [],
-                        matrixAutoUpdate:       false,
-                        matrixWorldNeedsUpdate: false,
-                        layers:                 0,
-                        visible:                true,
-                        castShadow:             false,
-                        receiveShadow:          false,
-                        frustumCulled:          0,
-                        renderOrder:            0,
-                        userData:               {}
+                        layers:   0,
+                        visible:  true
                     }
                 },
-                curves:        {
+                curves:     {
                     title:  'Créer une nouvelle courbe',
                     inputs: {
                         name: ''
                     }
                 },
-                geometries:    {
+                geometries: {
                     title:  'Créer un nouvel utilisateur',
                     inputs: {
                         name: ''
                     }
                 },
-                materials:     {
+                materials:  {
                     title:  'Créer un nouveau materiel',
                     inputs: {
                         name: ''
                     }
                 },
-                textures:      {
+                textures:   {
                     title:  'Créer une nouvelle texture',
                     inputs: {
                         name: ''
@@ -351,22 +328,22 @@ const DatabasePage = {
                 }
             },
             selectedId:      {
-                users:         '',
-                companies:     '',
-                objects:       '',
-                curves:        '',
-                geometries:    '',
-                materials:     '',
-                textures:      ''
+                users:      '',
+                companies:  '',
+                objects:    '',
+                curves:     '',
+                geometries: '',
+                materials:  '',
+                textures:   ''
             },
             selectedElement: {
-                users:         undefined,
-                companies:     undefined,
-                objects:       undefined,
-                curves:        undefined,
-                geometries:    undefined,
-                materials:     undefined,
-                textures:      undefined
+                users:      undefined,
+                companies:  undefined,
+                objects:    undefined,
+                curves:     undefined,
+                geometries: undefined,
+                materials:  undefined,
+                textures:   undefined
             }
 
         }
@@ -505,10 +482,10 @@ const DatabasePage = {
 
         },
 
-        onToggleModalVisibility ( modalId ) {
+        toggleModalVisibility ( modalId ) {
             'use strict'
 
-            console.log( 'onToggleModalVisibility' )
+            console.log( 'toggleModalVisibility' )
 
             const modal = document.getElementById( modalId )
             if ( modal ) {
@@ -571,7 +548,7 @@ const DatabasePage = {
             console.log( 'onCreate' )
 
             this.create( key, this.schemas[ key ].inputs, this.read.bind( this, key ) )
-            this.onToggleModalVisibility( `modal-${key}` )
+            this.toggleModalVisibility( `modal-${key}` )
 
         },
 
@@ -751,12 +728,12 @@ const UploadPage = {
         </div>
     </TContainerVertical>
     
-    <div id="modal-file-data" v-on:click="onToggleModalVisibility('modal-file-data')" class="modal fade" tabindex="-1" role="dialog" aria-labelledby="exampleModalCenterTitle" aria-hidden="true">
-        <div class="modal-dialog modal-dialog-centered modal-lg" role="document">
+    <div id="modal-file-data" v-on:click="toggleModalVisibility('modal-file-data')" class="modal fade" tabindex="-1" role="dialog" aria-labelledby="exampleModalCenterTitle" aria-hidden="true" >
+        <div class="modal-dialog modal-dialog-centered modal-lg" role="document" style="max-width: 80%;">
             <div v-on:click.stop class="modal-content">
                 <div class="modal-header">
                     <h5 class="modal-title" id="exampleModalLongTitle">{{modalData.title}}</h5>
-                    <button type="button" class="close" data-dismiss="modal" aria-label="Close" v-on:click.stop="onToggleModalVisibility('modal-file-data')">
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Close" v-on:click.stop="toggleModalVisibility('modal-file-data')">
                         <span aria-hidden="true">&times;</span>
                     </button>
                 </div>
@@ -764,7 +741,9 @@ const UploadPage = {
             
                     <TContainerHorizontal vAlign="stretch" hAlign="start" expand="true">
 
-                        <TContainerVertical class="container" vAlign="start" hAlign="stretch" expand="true">
+                        <!-- <TContainerVertical vAlign="start" hAlign="stretch" expand="true" style="flex-grow: 0.2; margin: 10px;"> -->
+                        <div style="margin: 10px; max-width: 350px;">
+                            
                             <div v-for="(inputValue, inputKey) in modalData.inputs" class="input-group mb-3">
                                 <div class="input-group-prepend">
                                     <label class="input-group-text">{{inputKey}}</label>
@@ -789,27 +768,46 @@ const UploadPage = {
                                 </div>
                                 <input v-else type="text" class="form-control" value="undefined" readonly>
                             </div>
-                        </TContainerVertical>
+                            <div>
+                                <button type="button" class="btn btn-primary btn-block" v-on:click.stop="setGroupTransparent">Rendre le groupe transparent</button>
+                                <button type="button" class="btn btn-primary btn-block" v-on:click.stop="showGroupGeometries">Voir les geometries</button>
+                                <button type="button" class="btn btn-primary btn-block" v-on:click.stop="showGroupCenter">Voir le centre du groupe</button>
+                                <button type="button" class="btn btn-primary btn-block" v-on:click.stop="showMeshesBarycenter">Voir le barycentre des meshes</button>
+                                <button type="button" class="btn btn-primary btn-block" v-on:click.stop="showGeometriesBarycenter">Voir le barycentre des geometries</button>
+                                <button type="button" class="btn btn-warn btn-block" v-on:click.stop="setGroupToCenter">Centrer le groupe à l'origine</button>
+                                <button type="button" class="btn btn-warn btn-block" v-on:click.stop="setMeshesToGroupCenter">Centrer les meshes sur le groupe</button>
+                                <button type="button" class="btn btn-warn btn-block" v-on:click.stop="setGroupPositionToChildrenMeshBarycenter">Centrer le groupe sur les meshes</button>
+                                <button type="button" class="btn btn-warn btn-block" v-on:click.stop="setGroupPositionToChildrenGeometriesBarycenter">Centrer le groupe sur les geometries</button>
+                                <button type="button" class="btn btn-warn btn-block" v-on:click.stop="rotateGeometries">Roter les geometries</button>
+                                <button type="button" class="btn btn-warn btn-block" v-on:click.stop="recenterGeometriesChildren">Recentrer les geometries</button>
+                                <button type="button" class="btn btn-success btn-block" v-on:click.stop="onPrevisualizationInputsChange">Appliquer</button>
+                            </div>
+                        </div>
+                        <!-- </TContainerVertical> -->
     
                         <div class="d-flex flex-column align-items-center justify-content-center stretchChildren">
                             <TDivider orientation="vertical" style="margin-bottom: 0px;" />
                         </div>
     
-                        <TContainerVertical class="container" vAlign="start" hAlign="stretch" expand="true">
+                        <div style="display:flex; flex-grow: 1; margin: 10px;">
+                        <!-- <TContainerVertical vAlign="start" hAlign="stretch" expand="true" style="flex-grow: 0.8; margin: 10px;"> -->
 
                              <TViewport3D
                                 id="previewViewportId"
                                 style="display:flex; flex: 1;"
                                 v-bind="previewViewport"
                              />
-                             <TProgress :done="progressBarData.done" :todo="progressBarData.todo" :isVisible="progressBarData.isVisible"/>
-                        </TContainerVertical>
+                             
+                        <!-- </TContainerVertical> -->
+                        </div>
                      
                     </TContainerHorizontal>
                    
+                    <TProgress :done="progressBarData.done" :todo="progressBarData.todo" :isVisible="progressBarData.isVisible"/>
+                   
                 </div>
                 <div class="modal-footer">
-                    <button type="button" class="btn btn-secondary" data-dismiss="modal" v-on:click.stop="onToggleModalVisibility('modal-file-data')">Fermer</button>
+                    <button type="button" class="btn btn-secondary" data-dismiss="modal" v-on:click.stop="toggleModalVisibility('modal-file-data')">Fermer</button>
                     <button type="button" class="btn btn-primary" v-on:click.stop="startUpload( filesList )">Valider</button>
                 </div>
             </div>
@@ -832,15 +830,17 @@ const UploadPage = {
             selectedBuilding: '',
             filesList:        [],
             filesNames:       [],
+            loadedGroup:      undefined,
+            //            loadedGroupName:  '',
             modalData:        {
                 title:  'Prévisualisation',
                 inputs: {
-                    rotateX:    0,
-                    rotateY:    0,
-                    rotateZ:    0,
-                    translateX: 0,
-                    translateY: 0,
-                    translateZ: 0
+                    name:      '',
+                    translate: [ 0, 0, 0 ],
+                    //                    rotateX:     0,
+                    //                    rotateY:     0,
+                    //                    rotateZ:     0,
+                    //                    rotateOrder: 'XYZ'
                 }
             },
             previewViewport:  {
@@ -995,7 +995,7 @@ const UploadPage = {
             this.filesNames = filesNames
 
             // Need to Force viewport resize :-s
-            this.onToggleModalVisibility( 'modal-file-data' )
+            this.toggleModalVisibility( 'modal-file-data' )
             this.toggleProgressBarVisibility()
 
             // clearScene()
@@ -1011,6 +1011,45 @@ const UploadPage = {
 
         },
 
+        setCameraPositionToGlobalBoundingBoxOf ( data ) {
+            'use strict'
+
+            const self            = this
+            const barycentersList = []
+            data.traverse( child => {
+
+                if ( child.isMesh ) {
+                    barycentersList.push( child.position )
+                }
+
+            } )
+            const globalBarycenter = barycentersList.reduce( ( a, b ) => { return new Itee.Vector3().addVectors( a, b )} )
+                                                    .divideScalar( barycentersList.length )
+
+            let maxCubiqueDistance = 0
+            for ( let barycenterIndex = 0, numberOfBarycenter = barycentersList.length ; barycenterIndex < numberOfBarycenter ; barycenterIndex++ ) {
+                const currentCubiqueDistance = barycentersList[ barycenterIndex ].distanceToSquared( globalBarycenter )
+                if ( currentCubiqueDistance > maxCubiqueDistance ) {
+                    maxCubiqueDistance = currentCubiqueDistance
+                }
+            }
+            const maxDistance = Math.sqrt( maxCubiqueDistance ) * 1.5
+
+            updateCameraData( globalBarycenter, maxDistance )
+
+            function updateCameraData ( barycenter, maxDistance ) {
+
+                self.previewViewport.camera.position = {
+                    x: barycenter.x + maxDistance,
+                    y: barycenter.y + maxDistance,
+                    z: barycenter.z + maxDistance
+                }
+                self.previewViewport.camera.target   = barycenter
+
+            }
+
+        },
+
         importFilesToViewportScene ( fileList ) {
             'use strict'
             console.log( 'importFilesToViewportScene' )
@@ -1023,120 +1062,129 @@ const UploadPage = {
             // reset data for camera centering
             const boundingSphereCenter = []
 
-            universalLoader.load(
-                fileList,
-                ( data ) => {
+            for ( let fileIndex = 0, numberOfFiles = fileList.length ; fileIndex < numberOfFiles ; fileIndex++ ) {
+                let file = fileList[ fileIndex ]
 
-                    extractBoundingSphere( data )
-                    const barycenter  = computeBarycenter( boundingSphereCenter )
-                    const maxDistance = computeMaxDistanceFromBarycenter( barycenter ) * 2 || 5
-                    updateCameraData( barycenter, maxDistance )
+                universalLoader.load(
+                    file,
+                    ( data ) => {
 
-                    self.toggleProgressBarVisibility()
-                    self.previewViewport.needResize = true
-                    self.previewViewport.scene.add( data )
+                        self.loadedGroup = data
 
-                    function extractBoundingSphere ( object ) {
+                        //                        extractBoundingSphere( data )
+                        //                        const barycenter  = computeBarycenter( boundingSphereCenter )
+                        //                        const maxDistance = computeMaxDistanceFromBarycenter( barycenter ) * 2 || 5
+                        //                        updateCameraData( barycenter, maxDistance )
 
-                        if ( object.children && object.children.length > 0 ) {
+                        self.toggleProgressBarVisibility()
+                        self.previewViewport.needResize = true
+                        self.previewViewport.scene.add( data )
 
-                            for ( let childIndex = 0, numberOfChildren = object.children.length ; childIndex < numberOfChildren ; childIndex++ ) {
-                                let child = object.children[ childIndex ]
-                                extractBoundingSphere( child )
-                            }
+                        self.setCameraPositionToGlobalBoundingBoxOf( data )
 
-                        }
+                        //                        function extractBoundingSphere ( object ) {
+                        //
+                        //                            if ( object.children && object.children.length > 0 ) {
+                        //
+                        //                                for ( let childIndex = 0, numberOfChildren = object.children.length ; childIndex < numberOfChildren ; childIndex++ ) {
+                        //                                    let child = object.children[ childIndex ]
+                        //                                    extractBoundingSphere( child )
+                        //                                }
+                        //
+                        //                            }
+                        //
+                        //                            if ( !object.isMesh ) {
+                        //                                return
+                        //                            }
+                        //
+                        //                            const geometry = object.geometry
+                        //                            if ( !geometry ) {
+                        //                                return
+                        //                            }
+                        //
+                        //                            if ( geometry.isGeometry ) {
+                        //
+                        //                                const bs = object.geometry.computeBoundingSphere()
+                        //                                boundingSphereCenter.push( bs.center )
+                        //
+                        //                            } else if ( geometry.isBufferGeometry ) {
+                        //
+                        //                                object.geometry.computeBoundingBox()
+                        //                                const center   = object.geometry.boundingBox.getCenter()
+                        //                                const position = object.position
+                        //
+                        //                                boundingSphereCenter.push( {
+                        //                                    x: position.x + center.x,
+                        //                                    y: position.y + center.y,
+                        //                                    z: position.z + center.z,
+                        //                                } )
+                        //
+                        //                            }
+                        //
+                        //                        }
+                        //
+                        //                        function computeBarycenter ( boundingSphereCenters ) {
+                        //
+                        //                            const centerSum = boundingSphereCenters.reduce( ( a, b ) => ({
+                        //                                x: a.x + b.x,
+                        //                                y: a.y + b.y,
+                        //                                z: a.z + b.z
+                        //                            }) )
+                        //
+                        //                            const numberOfCenter = boundingSphereCenters.length || 1
+                        //
+                        //                            return {
+                        //                                x: centerSum.x / numberOfCenter,
+                        //                                y: centerSum.y / numberOfCenter,
+                        //                                z: centerSum.z / numberOfCenter
+                        //                            }
+                        //
+                        //                        }
+                        //
+                        //                        function computeMaxDistanceFromBarycenter ( barycenter ) {
+                        //
+                        //                            const baryX            = barycenter.x
+                        //                            const baryY            = barycenter.y
+                        //                            const baryZ            = barycenter.z
+                        //                            let maxCubiqueDistance = 0
+                        //                            let indexOfTheFarest   = null
+                        //                            boundingSphereCenter.filter( ( a, index ) => {
+                        //
+                        //                                const currentCubiqueDistance = ((baryX - a.x) * (baryX - a.x)) + ((baryY - a.y) * (baryY - a.y)) + ((baryZ - a.z) * (baryZ - a.z))
+                        //
+                        //                                if ( currentCubiqueDistance > maxCubiqueDistance ) {
+                        //                                    maxCubiqueDistance = currentCubiqueDistance
+                        //                                    indexOfTheFarest   = index
+                        //                                }
+                        //                                return false
+                        //
+                        //                            } )
+                        //
+                        //                            return Math.sqrt( maxCubiqueDistance )
+                        //
+                        //                        }
+                        //
+                        //                        function updateCameraData ( barycenter, maxDistance ) {
+                        //
+                        //                            self.previewViewport.camera.position = {
+                        //                                x: barycenter.x + maxDistance,
+                        //                                y: barycenter.y + maxDistance,
+                        //                                z: barycenter.z + maxDistance
+                        //                            }
+                        //                            self.previewViewport.camera.target   = barycenter
+                        //
+                        //                        }
 
-                        if ( !object.isMesh ) {
-                            return
-                        }
+                    },
+                    self.updateProgressBar.bind( self ),
+                    ( error ) => {
 
-                        const geometry = object.geometry
-                        if ( !geometry ) {
-                            return
-                        }
+                        console.error( error )
 
-                        if ( geometry.isGeometry ) {
+                    },
+                )
 
-                            const bs = object.geometry.computeBoundingSphere()
-                            boundingSphereCenter.push( bs.center )
-
-                        } else if ( geometry.isBufferGeometry ) {
-
-                            object.geometry.computeBoundingBox()
-                            const center   = object.geometry.boundingBox.getCenter()
-                            const position = object.position
-
-                            boundingSphereCenter.push( {
-                                x: position.x + center.x,
-                                y: position.y + center.y,
-                                z: position.z + center.z,
-                            } )
-
-                        }
-
-                    }
-
-                    function computeBarycenter ( boundingSphereCenters ) {
-
-                        const centerSum = boundingSphereCenters.reduce( ( a, b ) => ({
-                            x: a.x + b.x,
-                            y: a.y + b.y,
-                            z: a.z + b.z
-                        }) )
-
-                        const numberOfCenter = boundingSphereCenters.length || 1
-
-                        return {
-                            x: centerSum.x / numberOfCenter,
-                            y: centerSum.y / numberOfCenter,
-                            z: centerSum.z / numberOfCenter
-                        }
-
-                    }
-
-                    function computeMaxDistanceFromBarycenter ( barycenter ) {
-
-                        const baryX            = barycenter.x
-                        const baryY            = barycenter.y
-                        const baryZ            = barycenter.z
-                        let maxCubiqueDistance = 0
-                        let indexOfTheFarest   = null
-                        boundingSphereCenter.filter( ( a, index ) => {
-
-                            const currentCubiqueDistance = ((baryX - a.x) * (baryX - a.x)) + ((baryY - a.y) * (baryY - a.y)) + ((baryZ - a.z) * (baryZ - a.z))
-
-                            if ( currentCubiqueDistance > maxCubiqueDistance ) {
-                                maxCubiqueDistance = currentCubiqueDistance
-                                indexOfTheFarest   = index
-                            }
-                            return false
-
-                        } )
-
-                        return Math.sqrt( maxCubiqueDistance )
-
-                    }
-
-                    function updateCameraData ( barycenter, maxDistance ) {
-
-                        self.previewViewport.camera.position = {
-                            x: barycenter.x + maxDistance,
-                            y: barycenter.y + maxDistance,
-                            z: barycenter.z + maxDistance
-                        }
-                        self.previewViewport.camera.target   = barycenter
-
-                    }
-
-                },
-                self.updateProgressBar.bind( self ),
-                ( error ) => {
-
-                    console.error( error )
-
-                },
-            )
+            }
 
         },
 
@@ -1159,10 +1207,10 @@ const UploadPage = {
 
         },
 
-        onToggleModalVisibility ( modalId ) {
+        toggleModalVisibility ( modalId ) {
             'use strict'
 
-            console.log( 'onToggleModalVisibility' )
+            console.log( 'toggleModalVisibility' )
 
             const modal = document.getElementById( modalId )
             if ( modal ) {
@@ -1177,6 +1225,294 @@ const UploadPage = {
                 }
 
             }
+
+        },
+
+        ////////////////////////////////////////////////
+        onPrevisualizationInputsChange ( changeEvent ) {
+            'use strict'
+
+            const groupToUpdate = this.loadedGroup
+            //            const groupToUpdate = this.previewViewport.scene.getObjectByName( this.loadedGroupName )
+
+            const tX = parseFloat( this.modalData.inputs.translate[ 0 ] )
+            const tY = parseFloat( this.modalData.inputs.translate[ 1 ] )
+            const tZ = parseFloat( this.modalData.inputs.translate[ 2 ] )
+
+            //            groupToUpdate.position.set( tX, tY, tZ )
+            groupToUpdate.translateX( tX )
+            groupToUpdate.translateY( tY )
+            groupToUpdate.translateZ( tZ )
+
+            //            const rX    = Itee.degreesToRadians( parseFloat( this.modalData.inputs.rotateX ) )
+            //            const rY    = Itee.degreesToRadians( parseFloat( this.modalData.inputs.rotateY ) )
+            //            const rZ    = Itee.degreesToRadians( parseFloat( this.modalData.inputs.rotateZ ) )
+            //            const order = this.modalData.inputs.rotateOrder
+            //
+            //            //            groupToUpdate.rotation.set( rX, rY, rZ, order )
+            //            groupToUpdate.rotateX( rX )
+            //            groupToUpdate.rotateY( rY )
+            //            groupToUpdate.rotateZ( rZ )
+
+        },
+
+        setGroupTransparent () {
+            'use strict'
+
+            const group = this.loadedGroup
+
+            group.traverse( child => {
+
+                if ( !child.isMesh ) {
+                    return
+                }
+
+                const materials = child.material
+                if ( !materials ) {
+                    return
+                }
+
+                if ( Array.isArray( materials ) ) {
+                    for ( let i = 0, n = materials.length ; i < n ; i++ ) {
+                        materials[ i ].transparent = true
+                        materials[ i ].opacity     = 0.5
+                    }
+                } else {
+                    materials.transparent = true
+                    materials.opacity     = 0.5
+                }
+
+            } )
+
+        },
+
+        showGroupGeometries ( color ) {
+            'use strict'
+
+            const self   = this
+            const _group = this.loadedGroup
+            const _color = color || Math.random() * 0xffffff
+
+            _group.traverse( child => {
+
+                if ( !child.isMesh ) {
+                    return
+                }
+
+                const geometry = child.geometry
+                if ( !geometry ) {
+                    return
+                }
+
+                self.previewViewport.scene.add(
+                    new Itee.LineSegments(
+                        new Itee.EdgesGeometry( child.geometry ),
+                        new Itee.LineBasicMaterial( { color: _color } )
+                    )
+                )
+
+            } )
+
+        },
+
+        showGroupCenter () {
+            'use strict'
+
+            const group      = this.loadedGroup
+            //            const position   = group.position
+            const position   = group.getWorldPosition( group.position.clone() )
+            const axesHelper = new Itee.AxesHelper( 100 )
+            axesHelper.position.set( position.x, position.y, position.z )
+
+            this.previewViewport.scene.add( axesHelper )
+
+        },
+
+        showMeshesBarycenter () {
+            'use strict'
+
+            const group            = this.loadedGroup
+            const children         = group.children
+            const numberOfChildren = children.length || 1
+            const barycenter       = children.map( child => {return child.getWorldPosition( child.position.clone() )} )
+                                             .reduce( ( a, b ) => { return new Itee.Vector3().addVectors( a, b )} )
+                                             .divideScalar( numberOfChildren )
+
+            const axesHelper = new Itee.AxesHelper( 75 )
+            axesHelper.position.set( barycenter.x, barycenter.y, barycenter.z )
+
+            this.previewViewport.scene.add( axesHelper )
+
+        },
+
+        showGeometriesBarycenter () {
+            'use strict'
+
+            const group            = this.loadedGroup
+            const children         = group.children
+            const numberOfChildren = children.length || 1
+            const barycenter       = children.map( child => {
+
+                                                 if ( !child.geometry.boundingBox ) {
+                                                     child.geometry.computeBoundingBox()
+                                                 }
+
+                                                 return child.geometry.boundingBox.getCenter()
+
+                                             } )
+                                             .reduce( ( a, b ) => { return new Itee.Vector3().addVectors( a, b )} )
+                                             .divideScalar( numberOfChildren )
+
+            const axesHelper = new Itee.AxesHelper( 50 )
+            axesHelper.position.set( barycenter.x, barycenter.y, barycenter.z )
+
+            this.previewViewport.scene.add( axesHelper )
+
+        },
+
+        setMeshesToBarycenter () {
+            'use strict'
+
+        },
+
+        setGroupToCenter () {
+            'use strict'
+
+            const group = this.loadedGroup
+            group.position.set( 0, 0, 0 )
+            group.updateMatrix()
+
+        },
+
+        setMeshesToGroupCenter () {
+            'use strict'
+
+            const group            = this.loadedGroup
+            const groupPosition    = group.position
+            const children         = group.children
+            const numberOfChildren = children.length || 1
+            const barycenter       = children.map( child => {return child.position} )
+                                             .reduce( ( a, b ) => { return new Itee.Vector3().addVectors( a, b )} )
+                                             .divideScalar( numberOfChildren )
+
+            const subVector = new Itee.Vector3().subVectors( barycenter, groupPosition )
+
+            group.traverse( child => {
+
+                if ( child.uuid === group.uuid ) {
+                    return
+                }
+
+                child.position.x -= subVector.x
+                child.position.y -= subVector.y
+                child.position.z -= subVector.z
+                child.updateMatrix()
+
+            } )
+
+        },
+
+        setGroupPositionToChildrenMeshBarycenter () {
+            'use strict'
+
+            const group            = this.loadedGroup
+            const groupPosition    = group.position
+            const children         = group.children
+            const numberOfChildren = children.length || 1
+            const barycenter       = children.map( child => {return child.position} )
+                                             .reduce( ( a, b ) => { return new Itee.Vector3().addVectors( a, b )} )
+                                             .divideScalar( numberOfChildren )
+
+            const subVector = new Itee.Vector3().subVectors( barycenter, groupPosition )
+
+            group.traverse( child => {
+
+                if ( child.uuid === group.uuid ) {
+                    return
+                }
+
+                child.position.x -= subVector.x
+                child.position.y -= subVector.y
+                child.position.z -= subVector.z
+                child.updateMatrix()
+
+            } )
+
+            group.position.set( barycenter.x, barycenter.y, barycenter.z )
+            group.updateMatrix()
+
+        },
+
+        setGroupPositionToChildrenGeometryBarycenter () {
+            'use strict'
+
+            const groupToUpdate    = this.loadedGroup
+            const children         = groupToUpdate.children
+            const numberOfChildren = children.length || 1
+            const barycenter       = children.map( child => {
+
+                                                 if ( !child.geometry.boundingBox ) {
+                                                     child.geometry.computeBoundingBox()
+                                                 }
+
+                                                 return child.geometry.boundingBox.getCenter()
+
+                                             } )
+                                             .reduce( ( a, b ) => { return new Itee.Vector3().addVectors( a, b )} )
+                                             .divideScalar( numberOfChildren )
+
+            const negatedBarycenter = barycenter.clone().negate()
+
+            groupToUpdate.position.set( barycenter.x, barycenter.y, barycenter.z )
+            groupToUpdate.updateMatrix()
+
+            groupToUpdate.traverse( child => {
+
+                if ( child.uuid === groupToUpdate.uuid ) {
+                    return
+                }
+
+                child.position.set( negatedBarycenter.x, negatedBarycenter.y, negatedBarycenter.z )
+                child.updateMatrix()
+
+            } )
+
+        },
+
+        rotateGeometries () {
+            'use strict'
+
+            const group = this.loadedGroup
+            group.traverse( child => {
+
+                if ( !child.isMesh ) {
+                    return
+                }
+
+                child.geometry.rotateX( Itee.degreesToRadians( 90 ) )
+
+            } )
+
+        },
+
+        recenterGeometriesChildren () {
+            'use strict'
+
+            // Recenter buffergeometry in world center
+            const group = this.loadedGroup
+            group.traverse( child => {
+
+                if ( !child.isMesh ) {
+                    return
+                }
+
+                const center         = child.geometry.center()
+                const meshBarycenter = center.negate()
+
+                child.position.set( meshBarycenter.x, meshBarycenter.y, meshBarycenter.z )
+                child.updateMatrix()
+
+            } )
 
         },
 
@@ -1274,7 +1610,7 @@ const UploadPage = {
 
         startUpload ( files ) {
 
-            this.onToggleModalVisibility( 'modal-file-data' )
+            this.toggleModalVisibility( 'modal-file-data' )
 
             if ( files.length === 0 ) {
                 return;
@@ -1692,21 +2028,21 @@ const ViewerPage = {
 
         ////
 
-        setCameraOfType ( cameraType ) {
+        setViewportCameraOfType ( cameraType ) {
             'use strict'
 
             this.viewport.camera.type = cameraType
 
         },
 
-        setControlOfType ( controlType ) {
+        setViewportControlOfType ( controlType ) {
             'use strict'
 
             this.viewport.control = controlType
 
         },
 
-        setEffectOfType ( effectType ) {
+        setViewportEffectOfType ( effectType ) {
             'use strict'
 
             this.viewport.effect = effectType
@@ -1730,10 +2066,10 @@ const ViewerPage = {
         addGrid () {
             'use strict'
 
-            let aidesGroup = this.viewport.scene.getObjectByName( "Environement" )
+            let aidesGroup = this.viewport.scene.getObjectByName( "Environnement" )
             if ( !aidesGroup ) {
                 aidesGroup           = new Itee.Group()
-                aidesGroup.name      = "Environement"
+                aidesGroup.name      = "Environnement"
                 aidesGroup.modifiers = [
                     {
                         type:    'checkbox',
@@ -1860,6 +2196,66 @@ const ViewerPage = {
 
         const self = this
 
+        let aidesGroup = this.viewport.scene.getObjectByName( "Environnement" )
+        if ( !aidesGroup ) {
+            aidesGroup           = new Itee.Group()
+            aidesGroup.name      = "Environnement"
+            aidesGroup.modifiers = [
+                {
+                    type:    'checkbox',
+                    value:   'checked',
+                    onClick: this.toggleVisibilityOf( aidesGroup )
+                },
+                {
+                    type:     'range',
+                    onChange: function onChangeHandler ( changeEvent ) {
+
+                        const opacity  = changeEvent.target.valueAsNumber / 100
+                        const children = group.children
+
+                        let child = undefined
+                        for ( let childIndex = 0, numberOfChildren = children.length ; childIndex < numberOfChildren ; childIndex++ ) {
+                            child = children[ childIndex ]
+
+                            if ( !child.material.transparent ) {
+                                child.material.transparent = true
+                            }
+                            child.material.opacity = opacity
+
+                        }
+
+                    }
+                }
+            ]
+            this.viewport.scene.add( aidesGroup )
+        }
+
+        // Ambiant light
+        aidesGroup.add( new Itee.AmbientLight( 0x777777 ) )
+
+        /// Hemi light
+        //        const hemiLight = new Itee.HemisphereLight( 0xffffff, 0xffffff, 0.8 )
+        //        hemiLight.color.setHSL( 0.6, 1, 0.6 )
+        //        hemiLight.groundColor.setHSL( 0.095, 1, 0.75 )
+        //        hemiLight.position.set( -100, 400, 50 )
+        //        envGroup.add( hemiLight )
+
+        //        const hemiLightHelper = new Itee.HemisphereLightHelper( hemiLight, 100 )
+        //        envGroup.add( hemiLightHelper )
+
+        /// dir light
+        //        const dirLight = new Itee.DirectionalLight( 0xffffff, 1 )
+        //        dirLight.color.setHSL( 0.1, 1, 0.95 )
+        //        dirLight.position.set( -100, 175, 50 )
+        //        dirLight.target.set( -100, 0, -50 )
+        //        dirLight.castShadow            = true
+        //        dirLight.shadow.mapSize.width  = 2048
+        //        dirLight.shadow.mapSize.height = 2048
+        //        envGroup.add( dirLight )
+        //
+        //        const dirLightHeper = new Itee.DirectionalLightHelper( dirLight, 10 )
+        //        envGroup.add( dirLightHeper )
+
         populate( 'companies', {}, self.viewport.scene, ( company, companyGroup ) => {
 
             let sitesIds = company.sites
@@ -1872,106 +2268,23 @@ const ViewerPage = {
 
                     let categoriesIds = building.children
 
-                    populateChildren( buildingGroup, categoriesIds )
+                    populate( 'objects', categoriesIds, buildingGroup, ( category, categoryGroup ) => {
+
+                        let categoriesIds = category.children
+
+                        if ( categoryGroup.type === 'Group' ) {
+                            categoryGroup.updateMatrix()
+                        }
+
+                        populateChildren( categoryGroup, categoriesIds )
+
+                    } )
 
                 } )
 
             } )
 
         } )
-
-        //        populate( 'companies', {}, self.viewport.scene, ( company, companyGroup ) => {
-        //
-        //            populate( 'sites', company.children, companyGroup, ( site, siteGroup ) => {
-        //
-        //                populate( 'buildings', site.buildings, siteGroup, ( building, buildingGroup ) => {
-        //
-        //                    populate( 'scenes', building.scenes, buildingGroup, ( scene, sceneGroup ) => {
-        //
-        //                        let numberOfChildren = scene.children.length
-        //                        let childrenDone     = 0
-        //
-        //                        self.objectsManager.read( scene.children, objects => {
-        //
-        //                            const geometriesIds = objects.map( object => object.geometry ).filter( ( value, index, self ) => {
-        //                                return self.indexOf( value ) === index
-        //                            } )
-        //
-        //                            const materialsArray       = objects.map( object => object.material )
-        //                            const concatMaterialsArray = [].concat.apply( [], materialsArray )
-        //                            const materialsIds         = concatMaterialsArray.filter( ( value, index, self ) => {
-        //                                return self.indexOf( value ) === index
-        //                            } )
-        //
-        //                            self.geometriesManager.read( geometriesIds, geometries => {
-        //
-        //                                self.materialsManager.read( materialsIds, materials => {
-        //
-        //                                    for ( let objectIndex = 0, numberOfObjects = objects.length ; objectIndex < numberOfObjects ; objectIndex++ ) {
-        //
-        //                                        const childrenIds = objects[ objectIndex ].children
-        //                                        if ( childrenIds.length > 0 ) {
-        //                                            objects[ objectIndex ].children = []
-        //                                            populateChildren( objects[ objectIndex ], childrenIds )
-        //                                        }
-        //
-        //                                        const geometryId = objects[ objectIndex ].geometry
-        //                                        if ( geometryId ) {
-        //                                            objects[ objectIndex ].geometry = geometries[ geometryId ]
-        //                                        }
-        //
-        //                                        const materialIds = objects[ objectIndex ].material
-        //                                        if ( materialIds ) {
-        //                                            objects[ objectIndex ].material = []
-        //                                            for ( let materialIndex = 0, numberOfMaterial = materialIds.length ; materialIndex < numberOfMaterial ; materialIndex++ ) {
-        //                                                objects[ objectIndex ].material.push( materials[ materialIds[ materialIndex ] ] )
-        //                                            }
-        //                                        }
-        //
-        //                                        objects[ objectIndex ].parent = null
-        //
-        //                                        objects[ objectIndex ].modifiers = [
-        //                                            {
-        //                                                type:    'checkbox',
-        //                                                value:   'checked',
-        //                                                onClick: self.toggleVisibilityOf( objects[ objectIndex ] )
-        //                                            },
-        //                                            {
-        //                                                type:     'range',
-        //                                                onChange: function onChangeHandler ( changeEvent ) {
-        //
-        //                                                    const opacity = changeEvent.target.valueAsNumber / 100
-        //
-        //                                                    if ( !objects[ objectIndex ].material.transparent ) {
-        //                                                        objects[ objectIndex ].material.transparent = true
-        //                                                    }
-        //
-        //                                                    objects[ objectIndex ].material.opacity = opacity
-        //
-        //                                                }
-        //                                            }
-        //                                        ]
-        //
-        //                                        sceneGroup.add( objects[ objectIndex ] )
-        //
-        //                                        childrenDone++
-        //                                        self.onProgress( childrenDone, numberOfChildren )
-        //
-        //                                    }
-        //
-        //                                } )
-        //
-        //                            } )
-        //
-        //                        } )
-        //
-        //                    } )
-        //
-        //                } )
-        //
-        //            } )
-        //
-        //        } )
 
         function populate ( collectionName, childrenIds, parentGroup, callback ) {
 
@@ -1998,11 +2311,37 @@ const ViewerPage = {
 
                                     const opacity = changeEvent.target.valueAsNumber / 100
 
-                                    if ( !group.material.transparent ) {
-                                        group.material.transparent = true
-                                    }
+                                    group.traverse( child => {
 
-                                    group.material.opacity = opacity
+                                        const materials = child.material
+                                        if ( !materials ) {
+                                            return
+                                        }
+
+                                        if ( Array.isArray( materials ) ) {
+
+                                            for ( let materialIndex = 0, numberOfMaterial = materials.length ; materialIndex < numberOfMaterial ; materialIndex++ ) {
+
+                                                let material = materials[ materialIndex ]
+
+                                                if ( !material.transparent ) {
+                                                    material.transparent = true
+                                                }
+
+                                                material.opacity = opacity
+                                            }
+
+                                        } else {
+
+                                            if ( !materials.transparent ) {
+                                                materials.transparent = true
+                                            }
+
+                                            materials.opacity = opacity
+
+                                        }
+
+                                    } )
 
                                 }
                             }
@@ -2082,6 +2421,11 @@ const ViewerPage = {
                                             }
                                         ]
 
+                                        // Start Test
+                                        objects[ objectIndex ].matrixAutoUpdate = false
+                                        objects[ objectIndex ].updateMatrix()
+                                        // End Test
+
                                         parentGroup.add( objects[ objectIndex ] )
 
                                     }
@@ -2104,6 +2448,499 @@ const ViewerPage = {
 
 }
 
+const EditorPage = {
+    template: `
+    <TContainerVertical>
+
+        <TToolBar>
+            <TToolItem icon="upload" tooltip="Load" :onClick="function() { toggleModalVisibility('modal-file-data') }" />
+            <TToolItem icon="download" tooltip="Download" :onClick=download />
+            <TDivider orientation="vertical" />
+            <TToolItem icon="hand-pointer" tooltip="Sélection" :onClick=toggleSelectionMode />
+            <TDivider orientation="vertical" />
+            <TToolItem icon="chart-bar" tooltip="Afficher les statistiques webgl" :onClick=toggleViewportStats />
+        </TToolBar>
+        
+        <TSplitter :isVertical=true :initPosition=20>
+        
+            <TTree slot="left" :items="viewport.scene.children"></TTree>
+           
+            <TSplitter slot="right" :isVertical=true :initPosition=25>
+                            
+                <div slot="left" class="container pt-3 pb-3" style="min-width:300px; overflow-y: scroll;">
+                    
+                    <div v-if="selectedObject" class="card bg-transparent border-success mb-3">
+                        <TInputObject label="Sélection" :value=selectedObject :onChange=onSelectionDataChange>
+                    </div>  
+                    
+                    <div class="card bg-transparent border-success mb-3">
+                        <div class="card-header border-success text-center">
+                            Affichage
+                        </div>
+                        <div class="card-body bg-transparent">
+                            <button type="button" class="btn btn-outline-primary btn-block" v-on:click.stop="setGroupTransparent">Rendre le groupe transparent</button>
+                            <button type="button" class="btn btn-outline-primary btn-block" v-on:click.stop="showGroupGeometries">Voir les geometries</button>
+                            <button type="button" class="btn btn-outline-primary btn-block" v-on:click.stop="showGroupCenter">Voir le centre du groupe</button>
+                            <button type="button" class="btn btn-outline-primary btn-block" v-on:click.stop="showMeshesBarycenter">Voir le barycentre des meshes</button>
+                            <button type="button" class="btn btn-outline-primary btn-block" v-on:click.stop="showGeometriesBarycenter">Voir le barycentre des geometries</button>
+                        </div>
+                    </div>    
+                    
+                    <div class="card bg-transparent border-success mb-3">
+                        <div class="card-header border-success text-center">
+                            Modifications
+                        </div>
+                        <div class="card-body bg-transparent">
+                            <button type="button" class="btn btn-outline-warning btn-block" v-on:click.stop="setGroupToCenter">Centrer le groupe à l'origine</button>
+                            <button type="button" class="btn btn-outline-warning btn-block" v-on:click.stop="setMeshesToGroupCenter">Centrer les meshes sur le groupe</button>
+                            <button type="button" class="btn btn-outline-warning btn-block" v-on:click.stop="setGroupPositionToChildrenMeshBarycenter">Centrer le groupe sur les meshes</button>
+                            <button type="button" class="btn btn-outline-warning btn-block" v-on:click.stop="setGroupPositionToChildrenGeometriesBarycenter">Centrer le groupe sur les geometries</button>
+                            <button type="button" class="btn btn-outline-warning btn-block" v-on:click.stop="rotateGeometries">Roter les geometries</button>
+                            <button type="button" class="btn btn-outline-warning btn-block" v-on:click.stop="recenterGeometriesChildren">Recentrer les geometries</button>
+                        </div>
+                    </div>    
+                    
+                    <div class="card bg-transparent border-success mb-3">
+                        <div class="card-header border-success text-center">
+                            Transformations
+                        </div>
+                        <div class="card-body bg-transparent">
+                            <div class="input-group mb-2">
+                                <div class="input-group-prepend">
+                                    <span class="input-group-text" id="">Rotate</span>
+                                </div>
+                                <input type="number" class="form-control">
+                                <input type="number" class="form-control">
+                                <input type="number" class="form-control">
+                                <div class="input-group-append">
+                                    <button class="btn btn-outline-success" type="button">Apply</button>
+                                </div>
+                            </div>
+                            <div class="input-group mb-2">
+                                <div class="input-group-prepend">
+                                    <span class="input-group-text" id="">Translate</span>
+                                </div>
+                                <input type="number" class="form-control">
+                                <input type="number" class="form-control">
+                                <input type="number" class="form-control">
+                                <div class="input-group-append">
+                                    <button class="btn btn-outline-success" type="button">Apply</button>
+                                </div>
+                            </div>
+                        </div>
+                    </div>  
+
+                </div>
+                
+                <TViewport3D slot="right" v-bind="viewport" />
+
+            </TSplitter>
+            
+        </TSplitter>
+        
+        <div id="modal-file-data" v-on:click="toggleModalVisibility('modal-file-data')" class="modal fade" tabindex="-1" role="dialog">
+            <div class="modal-dialog modal-dialog-centered modal-lg" role="document">
+                <div v-on:click.stop class="modal-content">
+                    <div class="modal-header">
+                        <h5 class="modal-title" id="exampleModalLongTitle">Charger des fichiers dans la vue 3D</h5>
+                        <button type="button" class="close" data-dismiss="modal" aria-label="Close" v-on:click.stop="toggleModalVisibility('modal-file-data')">
+                            <span aria-hidden="true">&times;</span>
+                        </button>
+                    </div>
+                    <div class="modal-body">
+                        <div class="input-group mb-3">
+                            <div class="custom-file">
+                                <input id="js-upload-files" class="custom-file-input" type="file" name="files[]" multiple v-on:change=updateFilesList>
+                                <label for="js-upload-files" class="custom-file-label">Sélectionner les fichiers à téléverser</label>
+                            </div>
+                        </div>
+                    </div>
+                    <div v-if="filesList && filesList.length > 0" class="container">
+                        <ul class="list-group list-group-flush">
+                            <li v-for="file in filesList" class="list-group-item">{{file.name}}</li>
+                        </ul>
+                    </div>
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-secondary" data-dismiss="modal" v-on:click.stop="toggleModalVisibility('modal-file-data')">Fermer</button>
+                        <button type="button" class="btn btn-primary" v-on:click.stop="upload">Valider</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <TProgress v-if="progressBar.show" v-bind:done=progressBar.done v-bind:todo=progressBar.todo></TProgress>
+
+    </TContainerVertical>
+    `,
+    data:     function () {
+
+        return {
+            loader:         new Itee.TUniversalLoader(),
+            filesList:      undefined,
+            viewport:       {
+                scene:           new Itee.Scene(),
+                control:         "orbit",
+                effect:          "none",
+                renderer:        "webgl",
+                camera:          {
+                    type:     'perspective',
+                    position: {
+                        x: 7,
+                        y: 2,
+                        z: 5
+                    },
+                    target:   {
+                        x: 0,
+                        y: 0,
+                        z: 0
+                    }
+                },
+                showStats:       false,
+                backgroundColor: 0xb2b2b2,
+                needResize:      false
+            },
+            selectedObject: undefined,
+            progressBar:    {
+                show:      false,
+                timeoutId: undefined,
+                done:      0,
+                todo:      0
+            }
+
+        }
+
+    },
+    methods:  {
+
+        toggleModalVisibility ( modalId ) {
+            'use strict'
+
+            const modal = document.getElementById( modalId )
+            if ( modal ) {
+
+                if ( modal.className === 'modal fade' ) {
+                    modal.className             = 'modal fade show'
+                    modal.style.display         = 'block'
+                    modal.style.backgroundColor = '#f9f9f980'
+                } else {
+                    modal.className     = 'modal fade'
+                    modal.style.display = 'none'
+                }
+
+            }
+
+        },
+
+        updateFilesList ( changeEvent ) {
+            'use strict'
+
+            this.filesList = changeEvent.target.files
+
+        },
+
+        upload () {
+            'use strict'
+
+            const self = this
+
+            this.toggleModalVisibility( 'modal-file-data' )
+
+            this.loader.load(
+                this.filesList,
+                data => {
+
+                    // Import routine
+
+                    data.traverse( element => {
+
+                        if ( !element.name ) {
+                            element.name = `${element.type}_${element.id}`
+                        }
+
+                        element.onClick = this.selectObject( element )
+
+                        element.modifiers = [
+                            {
+                                type:    'checkbox',
+                                value:   'checked',
+                                onClick: this.toggleVisibilityOf( element )
+                            },
+                            {
+                                type:     'range',
+                                onChange: this.updateOpacityOf( element )
+                            },
+                            {
+                                type:    'button',
+                                value:   'X',
+                                onClick: this.removeObject( element )
+                            }
+                        ]
+
+                    } )
+
+                    self.viewport.scene.add( data )
+
+                },
+                progress => { self.onProgress( progress.loaded, progress.total ) },
+                error => { console.error( error ) }
+            )
+
+        },
+
+        download ( objectType ) {
+            'use strict'
+
+        },
+
+        ////
+
+        toggleSelectionMode () {
+            'use strict'
+
+            this.viewport.isRaycastable = !this.viewport.isRaycastable
+
+        },
+
+        onSelectionDataChange ( key, value ) {
+
+            let _key     = key
+            let _value   = value
+            let _element = this.selectedObject
+
+            // Care: the order of assignement is important here !
+            while ( _value.key ) {
+                _element = _element[ _key ]
+                _key     = _value.key
+                _value   = _value.value
+            }
+
+            _element[ _key ] = _value
+
+        },
+
+        ////
+
+        toggleViewportStats () {
+            'use strict'
+
+            this.viewport.showStats = !this.viewport.showStats
+
+        },
+
+        /// Tree modifiers
+        selectObject ( object ) {
+            'use strict'
+
+            const self      = this
+            const _object   = object
+            let _selected = false
+
+            return function selectObjectHandler () {
+
+                _selected = !_selected
+                self.selectedObject = (_selected) ? _object : undefined
+
+            }
+
+        },
+
+        toggleVisibilityOf ( object ) {
+            'use strict'
+
+            const _object = object
+
+            return function toggleVisibility () {
+                _object.visible = !_object.visible
+            }
+
+        },
+
+        updateOpacityOf ( object ) {
+            'use strict'
+
+            const _object = object
+
+            return function onChangeHandler ( changeEvent ) {
+
+                const opacity = changeEvent.target.valueAsNumber / 100
+
+                _object.traverse( child => {
+
+                    if ( !child.isMesh ) {
+                        return
+                    }
+
+                    const materials = child.material
+                    if ( !materials ) {
+                        return
+                    }
+
+                    if ( Array.isArray( materials ) ) {
+
+                        for ( let materialIndex = 0, numberOfMaterial = materials.length ; materialIndex < numberOfMaterial ; materialIndex++ ) {
+                            setOpacity( materials[ materialIndex ], opacity )
+                        }
+
+                    } else {
+
+                        setOpacity( material, opacity )
+
+                    }
+
+                } )
+
+                function setOpacity ( material, opacity ) {
+
+                    if ( !material.transparent ) {
+                        material.transparent = true
+                    }
+
+                    material.opacity = opacity
+
+                }
+
+            }
+
+        },
+
+        removeObject ( element ) {
+            'use strict'
+
+            let _element = element
+
+            return function removeElementHandler () {
+                _element.parent.remove( _element )
+
+                const geometry = _element.geometry
+                if ( geometry ) {
+                    geometry.dispose()
+                }
+
+                const materials = _element.material
+                if ( materials ) {
+
+                    if ( Array.isArray( materials ) ) {
+                        for ( let i = 0, n = materials.length ; i < n ; i++ ) {
+                            materials[ i ].dispose()
+                        }
+                    } else {
+                        materials.dispose()
+                    }
+
+                }
+
+                _element = undefined
+            }
+
+        },
+
+        /////////////
+
+        onProgress ( loaded, total ) {
+            'use strict'
+
+            if ( !this.progressBar.show ) {
+                this.progressBar.show = true
+            }
+
+            this.progressBar.done = loaded
+            this.progressBar.todo = total
+
+            if ( loaded === total ) {
+
+                if ( this.progressBar.timeoutId ) {
+                    clearTimeout( this.progressBar.timeoutId )
+                }
+
+                this.progressBar.timeoutId = setTimeout( () => {
+                    this.progressBar.show = false
+                }, 1000 )
+
+            }
+
+        }
+
+    },
+    created () {
+        'use strict'
+
+        let aidesGroup = this.viewport.scene.getObjectByName( "Environnement" )
+        if ( !aidesGroup ) {
+            aidesGroup           = new Itee.Group()
+            aidesGroup.name      = "Environnement"
+            aidesGroup.onClick   = this.selectObject( aidesGroup )
+            aidesGroup.modifiers = [
+                {
+                    type:    'checkbox',
+                    value:   'checked',
+                    onClick: this.toggleVisibilityOf( aidesGroup )
+                },
+                {
+                    type:     'range',
+                    onChange: this.updateOpacityOf( aidesGroup )
+                }
+            ]
+            this.viewport.scene.add( aidesGroup )
+        }
+
+        // Ambiant light
+        const ambientLight     = new Itee.AmbientLight( 0x777777 )
+        ambientLight.name      = 'AmbientLight'
+        ambientLight.onClick   = this.selectObject( ambientLight )
+        ambientLight.modifiers = [
+            {
+                type:    'checkbox',
+                value:   'checked',
+                onClick: this.toggleVisibilityOf( ambientLight )
+            },
+            {
+                type:     'range',
+                onChange: this.updateOpacityOf( ambientLight )
+            }
+        ]
+        aidesGroup.add( ambientLight )
+
+        /// Hemi light
+        //        const hemiLight = new Itee.HemisphereLight( 0xffffff, 0xffffff, 0.8 )
+        //        hemiLight.color.setHSL( 0.6, 1, 0.6 )
+        //        hemiLight.groundColor.setHSL( 0.095, 1, 0.75 )
+        //        hemiLight.position.set( -100, 400, 50 )
+        //        envGroup.add( hemiLight )
+
+        //        const hemiLightHelper = new Itee.HemisphereLightHelper( hemiLight, 100 )
+        //        envGroup.add( hemiLightHelper )
+
+        /// dir light
+        //        const dirLight = new Itee.DirectionalLight( 0xffffff, 1 )
+        //        dirLight.color.setHSL( 0.1, 1, 0.95 )
+        //        dirLight.position.set( -100, 175, 50 )
+        //        dirLight.target.set( -100, 0, -50 )
+        //        dirLight.castShadow            = true
+        //        dirLight.shadow.mapSize.width  = 2048
+        //        dirLight.shadow.mapSize.height = 2048
+        //        envGroup.add( dirLight )
+        //
+        //        const dirLightHeper = new Itee.DirectionalLightHelper( dirLight, 10 )
+        //        envGroup.add( dirLightHeper )
+
+        const gridHelper     = new Itee.GridHelper( 200, 20 )
+        gridHelper.name      = 'Grid'
+        gridHelper.onClick   = this.selectObject( gridHelper )
+        gridHelper.modifiers = [
+            {
+                type:    'checkbox',
+                value:   'checked',
+                onClick: this.toggleVisibilityOf( gridHelper )
+            },
+            {
+                type:     'range',
+                onChange: this.updateOpacityOf( gridHelper )
+            }
+        ]
+        aidesGroup.add( gridHelper )
+    }
+}
+
 const UsersPage = {
     template: `
         <div class="userList">
@@ -2124,7 +2961,6 @@ const User = {
             <h2>Utilisateur {{ user.name }} #{{ user.id }}</h2>
             <router-link :to="'/users/'+user.id+'/'">Global</router-link>
             <router-link :to="'/users/'+user.id+'/profile'">Profile</router-link>
-            <router-link :to="'/users/'+user.id+'/posts'">Posts</router-link>
             <router-view></router-view>
         </div>
     `,
@@ -2147,143 +2983,12 @@ const UserProfile = {
     `
 }
 
-const UserPosts = {
-    template: `
-        <div class="user-posts">
-            Posts:
-            <ul v-if="posts">
-                <li v-for="post in posts">
-                    <router-link :to="baseRoute+post.id">{{post.title}}</router-link>
-                </li>
-            </ul>
-            <router-view></router-view>
-        </div>
-    `,
-    props:    [ 'baseRoute' ]
-}
-
-const UserPost = {
-    template: `
-        <div class="post">
-                
-            <div class="loading" v-if="loading">
-              Chargement...
-            </div>
-        
-            <div v-if="error" class="error">
-              {{ error }}
-            </div>
-        
-            <div v-if="post" class="content">
-              <h2>{{ post.title }}</h2>
-              <p>{{ post.message }}</p>
-            </div>
-            
-        </div>
-    `,
-    data () {
-        return {
-            loading: false,
-            post:    null,
-            error:   null
-        }
-    },
-    created () {
-        // récupérer les données lorsque la vue est créée et
-        // que les données sont déjà observées
-        this.fetchData()
-    },
-    watch:    {
-        // appeler encore la méthode si la route change
-        '$route': 'fetchData'
-    },
-    methods:  {
-        fetchData () {
-
-            this.error   = null
-            this.post    = null
-            this.loading = true
-
-            // remplacer `getPost` par une fonction de récupération de données
-            getUserPostById( this.$route.params.postId, ( error, post ) => {
-
-                this.loading = false
-
-                if ( error ) {
-
-                    this.error = error.message
-
-                } else {
-
-                    this.post = post
-
-                }
-
-            } )
-
-        }
-    }
-}
-
 const NotFound = {
     template: `
         <div>
             Uuuuhhhh, you got a 404 !
         </div>
     `
-}
-
-/////////////////
-// SIMULATE DB //
-/////////////////
-
-const fakeUsersData = [
-    {
-        id:   '123',
-        name: 'Toto'
-    }, {
-        id:   '456',
-        name: 'Tata'
-    }, {
-        id:   '789',
-        name: 'TiTI'
-    }
-]
-
-const fakeUserPostsData = [
-    {
-        id:      '12345',
-        title:   'Hello world !',
-        message: 'En utilisant cette approche, nous naviguons et faisons immédiatement le rendu du composant et récupérons les données via le hook created du composant. Cela nous donne l\'opportunité d\'afficher un état de chargement pendant que les données sont récupérées à travers le réseau, et nous pouvons aussi gérer le chargement différemment pour chaque vue.'
-    },
-    {
-        id:      '654321',
-        title:   'Awesome post',
-        message: 'Récupération de données après la navigation : effectue la navigation en premier, et récupère les données dans le hook entrant du cycle de vie d\'un composant. Affiche un état de chargement pendant que les données sont en train d\'être récupérées.'
-    }
-]
-
-function getUserPostById ( id, callback ) {
-    'use strict'
-
-    if ( id === '123456' ) {
-
-        setTimeout( () => {
-            callback( null, fakeUserPostsData[ 0 ] )
-        }, 1000 )
-
-    } else if ( id === '654321' ) {
-
-        setTimeout( () => {
-            callback( null, fakeUserPostsData[ 1 ] )
-        }, 3000 )
-
-    } else {
-
-        callback( { message: 'Invalid post id !' }, null )
-
-    }
-
 }
 
 //////////////
@@ -2296,27 +3001,6 @@ var TConfigParameters = {
         {
             path:      '/',
             component: AppPage,
-            props:     {
-                navLinks: [
-                    {
-                        id:    'homeId',
-                        route: '/',
-                        text:  'Home'
-                    }, {
-                        id:    'barId',
-                        route: '/bar',
-                        text:  'Bar'
-                    }, {
-                        id:    'usersId',
-                        route: '/users',
-                        text:  'Users'
-                    }, {
-                        id:    'deadlinkId',
-                        route: '/deadlink',
-                        text:  'Deadlink'
-                    }
-                ]
-            },
             children:  [
                 {
                     path:      '',
@@ -2337,6 +3021,10 @@ var TConfigParameters = {
                 {
                     path:      '/viewer',
                     component: ViewerPage
+                },
+                {
+                    path:      '/editor',
+                    component: EditorPage
                 },
                 {
                     path:      '/users',
