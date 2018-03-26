@@ -217,7 +217,24 @@ function _inherit ( Mongoose ) {
     } ) )
 
     _model.discriminator( 'MeshPhongMaterial', new Schema( {
-        color:              ColorSchema,
+        color: Types.Color,
+
+//        directColorObject: { r: Number, g: Number, b: Number },
+//        directColorNested: ColorSchema,
+//        directColorMixed:  Mixed,
+//        directColorType:   Types.Color,
+//
+//        assignColorObject: { r: Number, g: Number, b: Number },
+//        assignColorNested: ColorSchema,
+//        assignColorMixed:  Mixed,
+//        assignColorType:   Types.Color,
+//
+//        arrayColorsObject: [ { r: Number, g: Number, b: Number } ],
+//        arrayColorsNested: [ ColorSchema ],
+//        arrayColorsMixed:  [ Mixed ],
+//        arrayColorsType:   [ Types.Color ],
+
+
         specular:           ColorSchema,
         shininess:          Number,
         map:                Mixed, // Unknown yet
