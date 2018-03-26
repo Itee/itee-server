@@ -13,7 +13,27 @@ function isNull ( data ) {
 }
 
 function isNotNull ( data ) {
-    return !isNull( data )
+    return (data !== null)
+}
+
+function isUndefined ( data ) {
+    return (data === undefined)
+}
+
+function isNotUndefined ( data ) {
+    return (data !== undefined)
+}
+
+function isNullOrUndefined ( data ) {
+    return (isNull( data ) || isUndefined( data ))
+}
+
+function isNumber ( value ) {
+    return !isNaN( parseFloat( value ) ) && Number.isFinite( value )
+}
+
+function isNotNumber ( value ) {
+    return isNaN( parseFloat( value ) ) || !Number.isFinite( value )
 }
 
 function isString ( data ) {
@@ -44,8 +64,20 @@ function isFunction ( data ) {
     return data && {}.toString.call( data ) === '[object Function]'
 }
 
+function isArray( data ) {
+    return Array.isArray( data )
+}
+
+function isNotArray( data ) {
+    return !Array.isArray( data )
+}
+
 function isObject ( data ) {
-    return ( isNotNull( data ) && (typeof data === 'object') && !Array.isArray( data ) )
+    return ( isNotNull( data ) && (typeof data === 'object') && isNotArray( data ) )
+}
+
+function isNotObject ( data ) {
+    return ( isNullOrUndefined( data ) || (typeof data !== 'object') || isArray( data ) )
 }
 
 function isSchema ( data ) {
@@ -59,12 +91,20 @@ function isMongoose ( data ) {
 module.exports = {
     isNull,
     isNotNull,
+    isUndefined,
+    isNotUndefined,
+    isNullOrUndefined,
+    isNumber,
+    isNotNumber,
     isString,
     isNotString,
     isEmptyString,
     isBlankString,
     isFunction,
+    isArray,
+    isNotArray,
     isObject,
+    isNotObject,
     isSchema,
     isMongoose
 }
