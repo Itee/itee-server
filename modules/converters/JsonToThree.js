@@ -13,7 +13,7 @@ const THREE           = require( 'three' )
 
 ////
 
-class MtlToThree extends FileToThreeBase {
+class JsonToThree extends FileToThreeBase {
 
     constructor () {
 
@@ -40,4 +40,4 @@ class MtlToThree extends FileToThreeBase {
 
 }
 
-module.exports = MtlToThree
+module.exports = JsonToThree
