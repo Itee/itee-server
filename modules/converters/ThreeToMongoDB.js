@@ -181,12 +181,7 @@ class ThreeToMongoDB {
             data,
             parentId,
             onSuccess,
-            progress => {
-
-                console.log( `${progress.name}: ${progress.done}/${progress.todo}` )
-                onProgress( progress )
-
-            },
+            onProgress,
             onError
         )
 
@@ -3021,80 +3016,141 @@ class ThreeToMongoDB {
 
     _saveObject3DInDatabase ( object, parentId, childrenIds, geometryId, materialsIds, onError, onSuccess ) {
 
-        const self     = this
-        const objectId = this._checkIfObject3DAlreadyExist( object )
+        const self      = this
+        const _parentId = parentId
+        //        const objectId = this._checkIfObject3DAlreadyExist( object )
+        //
+        //        if ( objectId ) {
+        //
+        //            onSuccess( objectId )
+        //
+        //        } else {
 
-        if ( objectId ) {
+        this._getObject3DModel( object, parentId, childrenIds, geometryId, materialsIds, onError, ( objectModel ) => {
 
-            onSuccess( objectId )
+            objectModel.save()
+                       .then( savedObject => {
 
-        } else {
+                           const objectId = savedObject.id
 
-            this._getObject3DModel( object, parentId, childrenIds, geometryId, materialsIds, onError, ( objectModel ) => {
+                           // Add geometry id to cache
+                           //                               self._objectCache[ savedObject.uuid ] = objectId
 
-                objectModel.save()
-                           .then( savedObject => {
+                           // Update Parent with this id ( only if parentId is provided
+                           if ( _parentId ) {
 
-                               const objectId = savedObject.id
+                               onSuccess( objectId )
 
-                               // Add geometry id to cache
-                               self._objectCache[ savedObject.uuid ] = objectId
+//                               Object3DModel.find( { '_id': _parentId } ).exec( function ( error, parent ) {
+//
+//                                   if ( error ) {
+//                                       onError( error )
+//                                   } else if(parent && parent.length > 0 ) {
+//
+//                                       parent.children.push( objectId ).save( ( error, data ) => {
+//
+//                                           if ( error ) {
+//                                               onError( error )
+//                                           } else {
+//                                               onSuccess( `${objectId} with parent: ${_parentId}` )
+//                                           }
+//
+//                                       } )
+//
+//                                   } else {
+//                                       onError( error )
+//                                   }
+//
+//                               } );
+//
+//                               Object3DModel.findOne( { '_id': _parentId }, function ( error, parent ) {
+//
+//                                   if ( error ) {
+//                                       onError( error )
+//                                   } else if(parent && parent.length > 0 ) {
+//
+//                                       parent.children.push( objectId ).save( ( error, data ) => {
+//
+//                                           if ( error ) {
+//                                               onError( error )
+//                                           } else {
+//                                               onSuccess( `${objectId} with parent: ${_parentId}` )
+//                                           }
+//
+//                                       } )
+//
+//                                   } else {
+//                                       onError( error )
+//                                   }
+//
+//                               } );
+//
+//                               Object3DModel.findOneAndUpdate( { _id: _parentId }, { $push: { children: objectId } }, ( error, data ) => {
+//
+//                                   if ( error ) {
+//                                       onError( error )
+//                                   } else if(data) {
+//                                       onSuccess( `${objectId} with parent: ${_parentId}` )
+//                                   } else {
+//                                       onError( error )
+//                                   }
+//
+//                               } )
+//
+//                               Object3DModel.findOneAndUpdate( { '_id': _parentId }, { $push: { children: objectId } }, ( error, data ) => {
+//
+//                                   if ( error ) {
+//                                       onError( error )
+//                                   } else if(data) {
+//                                       onSuccess( `${objectId} with parent: ${_parentId}` )
+//                                   } else {
+//                                       onError( error )
+//                                   }
+//
+//                               } )
+
+                           } else {
 
                                // Return id
                                onSuccess( objectId )
 
-                               // Update Parent with this id ( only if parentId is provided
-                               //                  updateBuilding( onError, updateChildren.bind( this, onError, onSuccess ) )
-                               //
-                               //                  function updateBuilding ( onError, onSuccess ) {
-                               //
-                               //                      BuildingModel.findOneAndUpdate( { _id: _buildingId }, { $push: { scenes: sceneId } }, ( error ) => {
-                               //
-                               //                          if ( error ) {
-                               //                              onError( error )
-                               //                          } else {
-                               //                              onSuccess()
-                               //                          }
-                               //
-                               //                      } )
-                               //
-                               //                  }
+                           }
 
-                               // Update Children with parent id
-                               //                               function updateChildren ( onError, onSuccess ) {
-                               //
-                               //                                   const savedChildrenIds = savedScene._doc.children
-                               //                                   const numberOfChildren = savedChildrenIds.length
-                               //
-                               //                                   let endUpdates = 0
-                               //                                   let childIndex
-                               //                                   let childId
-                               //
-                               //                                   for ( childIndex = 0 ; childIndex < numberOfChildren ; childIndex++ ) {
-                               //
-                               //                                       childId = savedChildrenIds[ childIndex ]
-                               //
-                               //                                       MeshModel.update( { _id: childId }, { $set: { parent: sceneId } }, () => {
-                               //
-                               //                                           endUpdates++
-                               //                                           if ( endUpdates < numberOfChildren ) {
-                               //                                               return
-                               //                                           }
-                               //
-                               //                                           onSuccess( sceneId )
-                               //
-                               //                                       } );
-                               //
-                               //                                   }
-                               //
-                               //                               }
-                               //
-                           } )
-                           .catch( onError )
+                           // Update Children with parent id
+                           //                               function updateChildren ( onError, onSuccess ) {
+                           //
+                           //                                   const savedChildrenIds = savedScene._doc.children
+                           //                                   const numberOfChildren = savedChildrenIds.length
+                           //
+                           //                                   let endUpdates = 0
+                           //                                   let childIndex
+                           //                                   let childId
+                           //
+                           //                                   for ( childIndex = 0 ; childIndex < numberOfChildren ; childIndex++ ) {
+                           //
+                           //                                       childId = savedChildrenIds[ childIndex ]
+                           //
+                           //                                       MeshModel.update( { _id: childId }, { $set: { parent: sceneId } }, () => {
+                           //
+                           //                                           endUpdates++
+                           //                                           if ( endUpdates < numberOfChildren ) {
+                           //                                               return
+                           //                                           }
+                           //
+                           //                                           onSuccess( sceneId )
+                           //
+                           //                                       } );
+                           //
+                           //                                   }
+                           //
+                           //                               }
+                           //
+                       } )
+                       .catch( onError )
 
-            } )
+        } )
 
-        }
+        //        }
 
     }
 
@@ -4155,15 +4211,15 @@ class ThreeToMongoDB {
             case 'BufferGeometry': {
                 onSuccess(
                     BufferGeometryModel( {
-                        uuid:           bufferGeometry.uuid,
-                        name:           bufferGeometry.name,
-                        type:           bufferGeometry.type,
-                        index:          indexes,
-                        attributes:     attributes,
-                        groups:         bufferGeometry.groups,
-                        boundingBox:    null,
-                        boundingSphere: null,
-                        drawRange:      bufferGeometry.drawRange
+                        uuid:       bufferGeometry.uuid,
+                        name:       bufferGeometry.name,
+                        type:       bufferGeometry.type,
+                        index:      indexes,
+                        attributes: attributes,
+                        groups:     bufferGeometry.groups,
+                        //                        boundingBox:    null,
+                        //                        boundingSphere: null,
+                        drawRange:  bufferGeometry.drawRange
                     } )
                 )
 
@@ -4428,12 +4484,23 @@ class ThreeToMongoDB {
 
             case 'ShapeBufferGeometry': {
 
-                const shapes = []
-
-                for ( let shapeIndex = 0, numberOfShapes = bufferGeometry.shapes.length ; shapeIndex < numberOfShapes ; shapeIndex++ ) {
-                    let shape = bufferGeometry.shapes[ shapeIndex ]
-                    shapes.push( shape.toJSON() )
-                }
+                //                const bufferGeometryParameters = bufferGeometry.parameters
+                //                const shapes                   = bufferGeometryParameters.shapes
+                //
+                //                const _shapes  = []
+                //                let _jsonShape = undefined
+                //
+                //                if ( Array.isArray( shapes ) ) {
+                //
+                //                    for ( let shapeIndex = 0, numberOfShapes = shapes.length ; shapeIndex < numberOfShapes ; shapeIndex++ ) {
+                //                        _jsonShape = shapes[ shapeIndex ].toJSON()
+                //                        _shapes.push( _jsonShape )
+                //                    }
+                //
+                //                } else {
+                //                    _jsonShape = shapes.toJSON()
+                //                    _shapes.push( _jsonShape )
+                //                }
 
                 onSuccess( ShapeBufferGeometryModel( {
                     uuid:           bufferGeometry.uuid,
@@ -4446,7 +4513,7 @@ class ThreeToMongoDB {
                     boundingSphere: null,
                     drawRange:      bufferGeometry.drawRange,
                     // SPECIFIC
-                    shapes:         shapes,
+                    //                    shapes:         _shapes,
                     curveSegments:  bufferGeometry.curveSegments
                 } ) )
             }
@@ -5042,53 +5109,53 @@ class ThreeToMongoDB {
                     userData:            this._parseUserData( material.userData ),
                     needsUpdate:         material.needsUpdate,
                     // MeshPhongMaterial
+                    color:               material.color,
 
-                    color:        Object.assign( {}, material.color ),
-                    colorNested:  Object.assign( {}, material.color ),
-                    colorType:    Object.assign( {}, material.color ),
-                    colors:       [ material.color, material.color ],
-                    colorsNested: [ material.color, material.color ],
-                    colorsMixed:  [ material.color, material.color ],
-                    colorsType:   [ material.color, material.color ],
-                    // Dont work with pure {} schema object
-//                    color:               material.color,
-                    // Work with pur {} schema object
-//                    color:               {
-//                        r: material.color.r,
-//                        g: material.color.g,
-//                        b: material.color.b
-//                    },
+                    //                    directColorObject: material.color,
+                    //                    directColorNested: material.color,
+                    //                    directColorMixed:  material.color,
+                    //                    directColorType:   material.color,
+                    //
+                    //                    assignColorObject: Object.assign( {}, material.color ),
+                    //                    assignColorNested: Object.assign( {}, material.color ),
+                    //                    assignColorMixed:  Object.assign( {}, material.color ),
+                    //                    assignColorType:   Object.assign( {}, material.color ),
+                    //
+                    //                    arrayColorsObject: [ material.color, material.color ],
+                    //                    arrayColorsNested: [ material.color, material.color ],
+                    //                    arrayColorsMixed:  [ material.color, material.color ],
+                    //                    arrayColorsType:   [ material.color, material.color ],
 
-                    specular:            material.specular,
-                    shininess:           material.shininess,
-                    map:                 material.map,
-                    lightMap:            material.lightMap,
-                    lightMapIntensity:   material.lightMapIntensity,
-                    aoMap:               material.aoMap,
-                    aoMapIntensity:      material.aoMapIntensity,
-                    emissive:            material.emissive,
-                    emissiveIntensity:   material.emissiveIntensity,
-                    emissiveMap:         material.emissiveMap,
-                    bumpMap:             material.bumpMap,
-                    bumpScale:           material.bumpScale,
-                    normalMap:           material.normalMap,
-                    normalScale:         material.normalScale,
-                    displacementMap:     material.displacementMap,
-                    displacementScale:   material.displacementScale,
-                    displacementBias:    material.displacementBias,
-                    specularMap:         material.specularMap,
-                    alphaMap:            material.alphaMap,
-                    envMap:              material.alphaMap,
-                    combine:             material.combine,
-                    reflectivity:        material.reflectivity,
-                    refractionRatio:     material.refractionRatio,
-                    wireframe:           material.wireframe,
-                    wireframeLinewidth:  material.wireframeLinewidth,
-                    wireframeLinecap:    material.wireframeLinecap,
-                    wireframeLinejoin:   material.wireframeLinejoin,
-                    skinning:            material.skinning,
-                    morphTargets:        material.morphTargets,
-                    morphNormals:        material.morphNormals
+                    specular:           material.specular,
+                    shininess:          material.shininess,
+                    map:                material.map,
+                    lightMap:           material.lightMap,
+                    lightMapIntensity:  material.lightMapIntensity,
+                    aoMap:              material.aoMap,
+                    aoMapIntensity:     material.aoMapIntensity,
+                    emissive:           material.emissive,
+                    emissiveIntensity:  material.emissiveIntensity,
+                    emissiveMap:        material.emissiveMap,
+                    bumpMap:            material.bumpMap,
+                    bumpScale:          material.bumpScale,
+                    normalMap:          material.normalMap,
+                    normalScale:        material.normalScale,
+                    displacementMap:    material.displacementMap,
+                    displacementScale:  material.displacementScale,
+                    displacementBias:   material.displacementBias,
+                    specularMap:        material.specularMap,
+                    alphaMap:           material.alphaMap,
+                    envMap:             material.alphaMap,
+                    combine:            material.combine,
+                    reflectivity:       material.reflectivity,
+                    refractionRatio:    material.refractionRatio,
+                    wireframe:          material.wireframe,
+                    wireframeLinewidth: material.wireframeLinewidth,
+                    wireframeLinecap:   material.wireframeLinecap,
+                    wireframeLinejoin:  material.wireframeLinejoin,
+                    skinning:           material.skinning,
+                    morphTargets:       material.morphTargets,
+                    morphNormals:       material.morphNormals
                 } ) )
                 break
 
