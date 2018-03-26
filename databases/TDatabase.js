@@ -13,7 +13,7 @@ const fs                       = require( 'fs' )
 const path                     = require( 'path' )
 const mongooseDouble           = require( 'mongoose-double' )
 const autoReconnect            = require( './TAutoReconnect' )
-const { isFunction, isObject } = require( './validators/Validator' )
+const { isFunction } = require( './validators/Validator' )
 let mongoose                   = require( 'mongoose' )
 
 /**
@@ -28,14 +28,21 @@ function _fileExistForPath ( filePath ) {
 
 }
 
-function _fileIsEmpty( filePath, limit ) {
+/**
+ * Check the file size against a limit ( 0 as default ).
+ * @param filePath
+ * @param limit
+ * @return {boolean} - True if below the limit or zero, false otherwise
+ * @private
+ */
+function _fileIsEmpty ( filePath, limit ) {
     'use strict'
-    
-    const _limit = limit || 0
+
+    const _limit   = limit || 0
     const fileSize = fs.statSync( filePath ).size
-    
-    return ( fileSize > _limit )
-    
+
+    return ( fileSize < _limit )
+
 }
 
 /**
@@ -119,8 +126,40 @@ module.exports = function SchemaRegister ( config ) {
      */
     mongooseDouble( mongoose )
 
-    /*
-     * REGISTER ITEE DATABASE SCHEMAS
+    /**
+     * Register Itee Mongoose types
+     */
+    const typesBasePath   = path.join( __dirname, '_types' )
+    const typesFilesPaths = _getFilesPathsUnder( typesBasePath )
+    let typeFilePath      = ''
+    let typeFile          = undefined
+
+    for ( let typeIndex = 0, numberOfTypes = typesFilesPaths.length ; typeIndex < numberOfTypes ; typeIndex++ ) {
+
+        typeFilePath = typesFilesPaths[ typeIndex ]
+
+        if ( _fileIsEmpty( typeFilePath, 200 ) ) {
+            console.warn( `Skip empty core database schema: ${typeFilePath}` )
+            continue
+        }
+
+        typeFile = require( typeFilePath )
+
+        if ( isFunction( typeFile ) ) {
+
+            console.log( `Register type: ${typeFilePath}` )
+            mongoose = typeFile( mongoose )
+
+        } else {
+
+            console.error( `Unable to register type: ${typeFilePath}` )
+
+        }
+
+    }
+
+    /**
+     * Register Itee database schemas and models
      */
     const coreSchemasBasePath   = path.join( __dirname, '_schemas' )
     const coreSchemasFilesPaths = _getFilesPathsUnder( coreSchemasBasePath )
@@ -131,28 +170,25 @@ module.exports = function SchemaRegister ( config ) {
         coreSchemaFilePath = coreSchemasFilesPaths[ schemaIndex ]
 
         if ( _fileIsEmpty( coreSchemaFilePath, 200 ) ) {
+            console.warn( `Skip empty core database schema: ${coreSchemaFilePath}` )
+            continue
+        }
 
-            coreSchemaFile = require( coreSchemaFilePath )
+        coreSchemaFile = require( coreSchemaFilePath )
 
-            if ( isFunction( coreSchemaFile ) ) {
+        if ( isFunction( coreSchemaFile ) ) {
 
-                console.log( `Direct register local database schema: ${coreSchemaFilePath}` )
-                mongoose = coreSchemaFile( mongoose )
+            console.log( `Direct register local database schema: ${coreSchemaFilePath}` )
+            mongoose = coreSchemaFile( mongoose )
 
-            } else if ( isFunction( coreSchemaFile.registerModelTo ) ) {
+        } else if ( isFunction( coreSchemaFile.registerModelTo ) ) {
 
-                console.log( `Register core database schema: ${coreSchemaFilePath}` )
-                mongoose = coreSchemaFile.registerModelTo( mongoose )
-
-            } else {
-
-                console.error( `Unable to register core database schema: ${coreSchemaFilePath}` )
-
-            }
+            console.log( `Register core database schema: ${coreSchemaFilePath}` )
+            mongoose = coreSchemaFile.registerModelTo( mongoose )
 
         } else {
 
-            console.warn( `Skip empty core database schema: ${coreSchemaFilePath}` )
+            console.error( `Unable to register core database schema: ${coreSchemaFilePath}` )
 
         }
 
@@ -171,27 +207,25 @@ module.exports = function SchemaRegister ( config ) {
 
         if ( _fileIsEmpty( localSchemaFilePath ) ) {
 
-            localSchemaFile = require( localSchemaFilePath )
+            console.warn( `Skip empty local database schema: ${localSchemaFilePath}` )
+            continue
+        }
 
-            if ( isFunction( localSchemaFile ) ) {
+        localSchemaFile = require( localSchemaFilePath )
 
-                console.log( `Direct register local database schema: ${localSchemaFilePath}` )
-                mongoose = localSchemaFile( mongoose )
+        if ( isFunction( localSchemaFile ) ) {
 
-            } else if ( isFunction( localSchemaFile.registerModelTo ) ) {
+            console.log( `Direct register local database schema: ${localSchemaFilePath}` )
+            mongoose = localSchemaFile( mongoose )
 
-                console.log( `Register local database schema: ${localSchemaFilePath}` )
-                mongoose = localSchemaFile.registerModelTo( mongoose )
+        } else if ( isFunction( localSchemaFile.registerModelTo ) ) {
 
-            } else {
-
-                console.error( `Unable to register local database schema: ${localSchemaFilePath}` )
-
-            }
+            console.log( `Register local database schema: ${localSchemaFilePath}` )
+            mongoose = localSchemaFile.registerModelTo( mongoose )
 
         } else {
 
-            console.warn( `Skip empty local database schema: ${localSchemaFilePath}` )
+            console.error( `Unable to register local database schema: ${localSchemaFilePath}` )
 
         }
 
