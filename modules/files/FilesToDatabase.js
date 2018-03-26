@@ -11,9 +11,9 @@ const I     = require( 'i-return' )
 const path  = require( 'path' )
 const THREE = require( 'three' )
 
-const AscFile     = require( './AscFile' )
+const AscFile = require( './AscFile' )
 
-const JsonToThree  = require( '../converters/JsonToThree' )
+const JsonToThree = require( '../converters/JsonToThree' )
 const ShpToThree  = require( '../converters/ShpToThree' )
 const DbfToThree  = require( '../converters/DbfToThree' )
 const MtlToThree  = require( '../converters/MtlToThree' )
@@ -52,12 +52,12 @@ class FilesToDatabase {
         this._errors                = []
 
         this._jsonToThree = new JsonToThree()
-        this._shpToThree = new ShpToThree()
-        this._dbfToThree = new DbfToThree()
-        this._mtlToThree = new MtlToThree()
-        this._objToThree = (true) ? new ObjToThree() : new Obj2ToThree()
+        this._shpToThree  = new ShpToThree()
+        this._dbfToThree  = new DbfToThree()
+        this._mtlToThree  = new MtlToThree()
+        this._objToThree  = (true) ? new ObjToThree() : new Obj2ToThree()
 
-        this._parentId = undefined
+        this._parentId     = undefined
         this._threeToMongo = new ThreeToMongoDB()
 
     }
@@ -122,7 +122,12 @@ class FilesToDatabase {
             this._parentId,
             ( success ) => {
                 this._numberOfFileToProcess--
-                this._checkEndOfReturns( response, [{title: 'Succées', message: `Sauvegarder avec l'identifiant: ${success}`}] )
+                this._checkEndOfReturns( response, [
+                    {
+                        title:   'Succées',
+                        message: `Sauvegarder avec l'identifiant: ${success}`
+                    }
+                ] )
             },
             this._fileConversionProgressCallback.bind( this, response ),
             this._fileConversionErrorCallback.bind( this, response )
@@ -232,6 +237,8 @@ class FilesToDatabase {
 
     _saveJson ( file, parameters, response ) {
 
+        const self = this
+
         this._jsonToThree.convert(
             file,
             parameters,
@@ -311,7 +318,7 @@ class FilesToDatabase {
                     this._fileConversionErrorCallback.bind( this, response )
                 )
 
-            }.bind(this) ),
+            }.bind( this ) ),
             this._fileConversionProgressCallback.bind( this, response ),
             this._fileConversionErrorCallback.bind( this, response )
         )
@@ -334,17 +341,19 @@ class FilesToDatabase {
                         const group = new THREE.Group()
                         group.name  = "Locaux"
 
-                        let mesh = undefined
+                        let mesh     = undefined
+                        let geometry = undefined
+                        let material = undefined
                         for ( let shapeIndex = 0, numberOfShapes = shpData.length ; shapeIndex < numberOfShapes ; shapeIndex++ ) {
 
-                            mesh = new THREE.Mesh(
-                                new THREE.ShapeBufferGeometry( shpData[ shapeIndex ] ),
-                                new THREE.MeshPhongMaterial( {
-                                    color: 0xb0f2b6,
-                                    side:  THREE.DoubleSide
-                                } )
-                            )
+                            geometry = new THREE.ShapeBufferGeometry( shpData[ shapeIndex ] )
+                            material = new THREE.MeshPhongMaterial( {
+                                color: 0xb0f2b6,
+                                side:  THREE.DoubleSide
+                            } )
+                            mesh     = new THREE.Mesh( geometry, material )
 
+                            // Merge Dbf data with Shp data
                             const shapeName         = dbfData.datas[ shapeIndex ][ 'CODE' ]
                             mesh.name               = shapeName
                             mesh.userData[ 'Code' ] = shapeName
@@ -353,12 +362,66 @@ class FilesToDatabase {
 
                         }
 
-                        group.rotateX( THREE.Math.degToRad( -90 ) )
-                        group.rotateZ( THREE.Math.degToRad( 180 ) )
 
-                        group.position.z -= 159.5
-                        group.position.x -= 0.6
-                        group.position.y = 14
+                        // rotateGeometries
+                        group.traverse( child => {
+
+                            if ( child.uuid === group.uuid ) {
+                                return
+                            }
+
+                            child.geometry.rotateX( THREE.Math.degToRad(90))
+                            child.geometry.rotateZ( THREE.Math.degToRad(180))
+
+                        } )
+
+                        // Recenter buffergeometry in world center and keep trace of original geometry barycenter
+                        const barycentersList  = []
+                        group.traverse( child => {
+
+                            if ( child.uuid === group.uuid ) {
+                                return
+                            }
+
+                            const center         = child.geometry.center()
+                            const meshBarycenter = center.negate()
+
+                            barycentersList.push( meshBarycenter )
+
+                            child.position.set( meshBarycenter.x, meshBarycenter.y, meshBarycenter.z )
+                            child.updateMatrix()
+
+                        } )
+
+                        // setGroupPositionToChildrenMeshBarycenter
+                        const groupPosition    = group.position
+                        const children         = group.children
+                        const numberOfChildren = children.length || 1
+                        const barycenter       = children.map( child => {return child.position} )
+                                                         .reduce( ( a, b ) => { return new THREE.Vector3().addVectors( a, b )} )
+                                                         .divideScalar( numberOfChildren )
+
+                        const subVector = new THREE.Vector3().subVectors( barycenter, groupPosition )
+
+                        group.traverse( child => {
+
+                            if ( child.uuid === group.uuid ) {
+                                return
+                            }
+
+                            child.position.x -= subVector.x
+                            child.position.y -= subVector.y
+                            child.position.z -= subVector.z
+                            child.updateMatrix()
+
+                        } )
+
+                        group.position.set( barycenter.x, barycenter.y, barycenter.z )
+                        group.updateMatrix()
+
+                        // setGroupToCenter
+//                        group.position.set( 0, 0, 0 )
+//                        group.updateMatrix()
 
                         // Insert to db here !
                         self._fileConversionSuccessCallback( response, null, group )
@@ -368,7 +431,7 @@ class FilesToDatabase {
                     this._fileConversionErrorCallback.bind( this, response )
                 )
 
-            }.bind(this) ),
+            }.bind( this ) ),
             this._fileConversionProgressCallback.bind( this, response ),
             this._fileConversionErrorCallback.bind( this, response )
         )
