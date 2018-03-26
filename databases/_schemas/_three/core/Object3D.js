@@ -70,7 +70,7 @@ function _createSchema ( Mongoose ) {
         },
         {
             collection:       'objects',
-            discriminatorKey: '_type'
+            discriminatorKey: 'type'
         } )
 
 }
