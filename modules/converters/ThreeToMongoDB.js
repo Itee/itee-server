@@ -15,6 +15,7 @@
 const mongoose = require( 'mongoose' )
 
 // Object3D
+const Objects3DModelBase          = mongoose.model( 'Objects3D' )
 const Object3DModel               = mongoose.model( 'Object3D' )
 const AudioModel                  = mongoose.model( 'Audio' )
 const PositionalAudioModel        = mongoose.model( 'PositionalAudio' )
@@ -179,8 +180,21 @@ class ThreeToMongoDB {
 
         this._parse(
             data,
-            parentId,
-            onSuccess,
+            ( childrenIds ) => {
+
+                Objects3DModelBase.findOneAndUpdate( { _id: parentId }, { $push: { children: childrenIds } }, ( error, data ) => {
+
+                    if ( error ) {
+                        onError( error )
+                    } else if ( !data ) {
+                        onError( 'Unable to retrieve parent object !!!' )
+                    } else {
+                        onSuccess( `${childrenIds} with parent ${parentId}` )
+                    }
+
+                } )
+
+            },
             onProgress,
             onError
         )
@@ -188,7 +202,7 @@ class ThreeToMongoDB {
     }
 
     // Private
-    _parse ( object, parentId, onSuccess, onProgress, onError ) {
+    _parse ( object, onSuccess, onProgress, onError ) {
 
         const self             = this
         const numberOfChildren = object.children.length
@@ -203,7 +217,6 @@ class ThreeToMongoDB {
 
                 self._parse(
                     object.children[ childIndex ],
-                    null,
                     objectId => {
 
                         childrenIds.push( objectId )
@@ -220,7 +233,7 @@ class ThreeToMongoDB {
                             return
                         }
 
-                        self._saveInDataBase( object, parentId, childrenIds, onError, onSuccess )
+                        self._saveInDataBase( object, childrenIds, onError, onSuccess )
 
                     },
                     onProgress,
@@ -231,7 +244,7 @@ class ThreeToMongoDB {
 
         } else {
 
-            self._saveInDataBase( object, parentId, [], onError, onSuccess )
+            self._saveInDataBase( object, [], onError, onSuccess )
 
         }
 
@@ -251,7 +264,7 @@ class ThreeToMongoDB {
 
     }
 
-    _saveInDataBase ( object, parentId, childrenArrayIds, onError, onSuccess ) {
+    _saveInDataBase ( object, childrenArrayIds, onError, onSuccess ) {
 
         // Remove null ids that could come from invalid objects
         const self        = this
@@ -281,7 +294,7 @@ class ThreeToMongoDB {
             objectType === 'Shape'
         ) {
 
-            self._saveCurveInDatabase( object, parentId, childrenIds, onError, onSuccess )
+            self._saveCurveInDatabase( object, childrenIds, onError, onSuccess )
 
         } else if ( geometry && materials ) {
 
@@ -385,7 +398,7 @@ class ThreeToMongoDB {
 
                     self._saveMaterialInDatabase( materials, onError, ( materialIds ) => {
 
-                        self._saveObject3DInDatabase( object, parentId, childrenIds, geometryId, materialIds, onError, onSuccess )
+                        self._saveObject3DInDatabase( object, childrenIds, geometryId, materialIds, onError, onSuccess )
 
                     } )
 
@@ -491,7 +504,7 @@ class ThreeToMongoDB {
 
                     self._saveMaterialInDatabase( materials, onError, ( materialIds ) => {
 
-                        self._saveObject3DInDatabase( object, parentId, childrenIds, geometryId, materialIds, onError, onSuccess )
+                        self._saveObject3DInDatabase( object, childrenIds, geometryId, materialIds, onError, onSuccess )
 
                     } )
 
@@ -522,7 +535,7 @@ class ThreeToMongoDB {
 
                 self._saveGeometryInDatabase( geometry, onError, ( geometryId ) => {
 
-                    self._saveObject3DInDatabase( object, parentId, childrenIds, geometryId, [], onError, onSuccess )
+                    self._saveObject3DInDatabase( object, childrenIds, geometryId, [], onError, onSuccess )
 
                 } )
 
@@ -539,7 +552,7 @@ class ThreeToMongoDB {
 
                 self._saveBufferGeometryInDatabase( geometry, onError, ( geometryId ) => {
 
-                    self._saveObject3DInDatabase( object, parentId, childrenIds, geometryId, null, onError, onSuccess )
+                    self._saveObject3DInDatabase( object, childrenIds, geometryId, null, onError, onSuccess )
 
                 } )
 
@@ -602,13 +615,13 @@ class ThreeToMongoDB {
 
             self._saveMaterialInDatabase( materials, onError, ( materialIds ) => {
 
-                self._saveObject3DInDatabase( object, parentId, childrenIds, null, materialIds, onError, onSuccess )
+                self._saveObject3DInDatabase( object, childrenIds, null, materialIds, onError, onSuccess )
 
             } )
 
         } else {
 
-            self._saveObject3DInDatabase( object, parentId, childrenIds, null, null, onError, onSuccess )
+            self._saveObject3DInDatabase( object, childrenIds, null, null, onError, onSuccess )
 
         }
 
@@ -622,7 +635,7 @@ class ThreeToMongoDB {
 
     }
 
-    _getObject3DModel ( object, parentId, childrenIds, geometryId, materialsIds, onError, onSuccess ) {
+    _getObject3DModel ( object, childrenIds, geometryId, materialsIds, onError, onSuccess ) {
 
         const objectType = object.type
 
@@ -633,7 +646,7 @@ class ThreeToMongoDB {
                     uuid:                   object.uuid,
                     name:                   object.name,
                     type:                   object.type,
-                    parent:                 parentId,
+                    parent:                 null,
                     children:               childrenIds,
                     up:                     {
                         x: object.up.x,
@@ -683,7 +696,7 @@ class ThreeToMongoDB {
                     uuid:                   object.uuid,
                     name:                   object.name,
                     type:                   object.type,
-                    parent:                 parentId,
+                    parent:                 null,
                     children:               childrenIds,
                     up:                     {
                         x: object.up.x,
@@ -734,7 +747,7 @@ class ThreeToMongoDB {
                     uuid:                   object.uuid,
                     name:                   object.name,
                     type:                   object.type,
-                    parent:                 parentId,
+                    parent:                 null,
                     children:               childrenIds,
                     up:                     {
                         x: object.up.x,
@@ -786,7 +799,7 @@ class ThreeToMongoDB {
                     uuid:                   object.uuid,
                     name:                   object.name,
                     type:                   object.type,
-                    parent:                 parentId,
+                    parent:                 null,
                     children:               childrenIds,
                     up:                     {
                         x: object.up.x,
@@ -838,7 +851,7 @@ class ThreeToMongoDB {
                     uuid:                   object.uuid,
                     name:                   object.name,
                     type:                   object.type,
-                    parent:                 parentId,
+                    parent:                 null,
                     children:               childrenIds,
                     up:                     {
                         x: object.up.x,
@@ -890,7 +903,7 @@ class ThreeToMongoDB {
                     uuid:                   object.uuid,
                     name:                   object.name,
                     type:                   object.type,
-                    parent:                 parentId,
+                    parent:                 null,
                     children:               childrenIds,
                     up:                     {
                         x: object.up.x,
@@ -942,7 +955,7 @@ class ThreeToMongoDB {
                     uuid:                   object.uuid,
                     name:                   object.name,
                     type:                   object.type,
-                    parent:                 parentId,
+                    parent:                 null,
                     children:               childrenIds,
                     up:                     {
                         x: object.up.x,
@@ -994,7 +1007,7 @@ class ThreeToMongoDB {
                     uuid:                   object.uuid,
                     name:                   object.name,
                     type:                   object.type,
-                    parent:                 parentId,
+                    parent:                 null,
                     children:               childrenIds,
                     up:                     {
                         x: object.up.x,
@@ -1046,7 +1059,7 @@ class ThreeToMongoDB {
                     uuid:                   object.uuid,
                     name:                   object.name,
                     type:                   object.type,
-                    parent:                 parentId,
+                    parent:                 null,
                     children:               childrenIds,
                     up:                     {
                         x: object.up.x,
@@ -1098,7 +1111,7 @@ class ThreeToMongoDB {
                     uuid:                   object.uuid,
                     name:                   object.name,
                     type:                   object.type,
-                    parent:                 parentId,
+                    parent:                 null,
                     children:               childrenIds,
                     up:                     {
                         x: object.up.x,
@@ -1150,7 +1163,7 @@ class ThreeToMongoDB {
                     uuid:                   object.uuid,
                     name:                   object.name,
                     type:                   object.type,
-                    parent:                 parentId,
+                    parent:                 null,
                     children:               childrenIds,
                     up:                     {
                         x: object.up.x,
@@ -1202,7 +1215,7 @@ class ThreeToMongoDB {
                     uuid:                   object.uuid,
                     name:                   object.name,
                     type:                   object.type,
-                    parent:                 parentId,
+                    parent:                 null,
                     children:               childrenIds,
                     up:                     {
                         x: object.up.x,
@@ -1254,7 +1267,7 @@ class ThreeToMongoDB {
                     uuid:                   object.uuid,
                     name:                   object.name,
                     type:                   object.type,
-                    parent:                 parentId,
+                    parent:                 null,
                     children:               childrenIds,
                     up:                     {
                         x: object.up.x,
@@ -1306,7 +1319,7 @@ class ThreeToMongoDB {
                     uuid:                   object.uuid,
                     name:                   object.name,
                     type:                   object.type,
-                    parent:                 parentId,
+                    parent:                 null,
                     children:               childrenIds,
                     up:                     {
                         x: object.up.x,
@@ -1358,7 +1371,7 @@ class ThreeToMongoDB {
                     uuid:                   object.uuid,
                     name:                   object.name,
                     type:                   object.type,
-                    parent:                 parentId,
+                    parent:                 null,
                     children:               childrenIds,
                     up:                     {
                         x: object.up.x,
@@ -1433,7 +1446,7 @@ class ThreeToMongoDB {
                     uuid:                   object.uuid,
                     name:                   object.name,
                     type:                   object.type,
-                    parent:                 parentId,
+                    parent:                 null,
                     children:               childrenIds,
                     up:                     {
                         x: object.up.x,
@@ -1485,7 +1498,7 @@ class ThreeToMongoDB {
                     uuid:                   object.uuid,
                     name:                   object.name,
                     type:                   object.type,
-                    parent:                 parentId,
+                    parent:                 null,
                     children:               childrenIds,
                     up:                     {
                         x: object.up.x,
@@ -1537,7 +1550,7 @@ class ThreeToMongoDB {
                     uuid:                   object.uuid,
                     name:                   object.name,
                     type:                   object.type,
-                    parent:                 parentId,
+                    parent:                 null,
                     children:               childrenIds,
                     up:                     {
                         x: object.up.x,
@@ -1589,7 +1602,7 @@ class ThreeToMongoDB {
                     uuid:                   object.uuid,
                     name:                   object.name,
                     type:                   object.type,
-                    parent:                 parentId,
+                    parent:                 null,
                     children:               childrenIds,
                     up:                     {
                         x: object.up.x,
@@ -1641,7 +1654,7 @@ class ThreeToMongoDB {
                     uuid:                   object.uuid,
                     name:                   object.name,
                     type:                   object.type,
-                    parent:                 parentId,
+                    parent:                 null,
                     children:               childrenIds,
                     up:                     {
                         x: object.up.x,
@@ -1693,7 +1706,7 @@ class ThreeToMongoDB {
                     uuid:                   object.uuid,
                     name:                   object.name,
                     type:                   object.type,
-                    parent:                 parentId,
+                    parent:                 null,
                     children:               childrenIds,
                     up:                     {
                         x: object.up.x,
@@ -1745,7 +1758,7 @@ class ThreeToMongoDB {
                     uuid:                   object.uuid,
                     name:                   object.name,
                     type:                   object.type,
-                    parent:                 parentId,
+                    parent:                 null,
                     children:               childrenIds,
                     up:                     {
                         x: object.up.x,
@@ -1797,7 +1810,7 @@ class ThreeToMongoDB {
                     uuid:                   object.uuid,
                     name:                   object.name,
                     type:                   object.type,
-                    parent:                 parentId,
+                    parent:                 null,
                     children:               childrenIds,
                     up:                     {
                         x: object.up.x,
@@ -1851,7 +1864,7 @@ class ThreeToMongoDB {
                     uuid:                   object.uuid,
                     name:                   object.name,
                     type:                   object.type,
-                    parent:                 parentId,
+                    parent:                 null,
                     children:               childrenIds,
                     up:                     {
                         x: object.up.x,
@@ -1905,7 +1918,7 @@ class ThreeToMongoDB {
                     uuid:                   object.uuid,
                     name:                   object.name,
                     type:                   object.type,
-                    parent:                 parentId,
+                    parent:                 null,
                     children:               childrenIds,
                     up:                     {
                         x: object.up.x,
@@ -1959,7 +1972,7 @@ class ThreeToMongoDB {
                     uuid:                   object.uuid,
                     name:                   object.name,
                     type:                   object.type,
-                    parent:                 parentId,
+                    parent:                 null,
                     children:               childrenIds,
                     up:                     {
                         x: object.up.x,
@@ -2011,7 +2024,7 @@ class ThreeToMongoDB {
                     uuid:                   object.uuid,
                     name:                   object.name,
                     type:                   object.type,
-                    parent:                 parentId,
+                    parent:                 null,
                     children:               childrenIds,
                     up:                     {
                         x: object.up.x,
@@ -2063,7 +2076,7 @@ class ThreeToMongoDB {
                     uuid:                   object.uuid,
                     name:                   object.name,
                     type:                   object.type,
-                    parent:                 parentId,
+                    parent:                 null,
                     children:               childrenIds,
                     up:                     {
                         x: object.up.x,
@@ -2115,7 +2128,7 @@ class ThreeToMongoDB {
                     uuid:                   object.uuid,
                     name:                   object.name,
                     type:                   object.type,
-                    parent:                 parentId,
+                    parent:                 null,
                     children:               childrenIds,
                     up:                     {
                         x: object.up.x,
@@ -2167,7 +2180,7 @@ class ThreeToMongoDB {
                     uuid:                   object.uuid,
                     name:                   object.name,
                     type:                   object.type,
-                    parent:                 parentId,
+                    parent:                 null,
                     children:               childrenIds,
                     up:                     {
                         x: object.up.x,
@@ -2219,7 +2232,7 @@ class ThreeToMongoDB {
                     uuid:                   object.uuid,
                     name:                   object.name,
                     type:                   object.type,
-                    parent:                 parentId,
+                    parent:                 null,
                     children:               childrenIds,
                     up:                     {
                         x: object.up.x,
@@ -2271,7 +2284,7 @@ class ThreeToMongoDB {
                     uuid:                   object.uuid,
                     name:                   object.name,
                     type:                   object.type,
-                    parent:                 parentId,
+                    parent:                 null,
                     children:               childrenIds,
                     up:                     {
                         x: object.up.x,
@@ -2323,7 +2336,7 @@ class ThreeToMongoDB {
                     uuid:                   object.uuid,
                     name:                   object.name,
                     type:                   object.type,
-                    parent:                 parentId,
+                    parent:                 null,
                     children:               childrenIds,
                     up:                     {
                         x: object.up.x,
@@ -2375,7 +2388,7 @@ class ThreeToMongoDB {
                     uuid:                   object.uuid,
                     name:                   object.name,
                     type:                   object.type,
-                    parent:                 parentId,
+                    parent:                 null,
                     children:               childrenIds,
                     up:                     {
                         x: object.up.x,
@@ -2427,7 +2440,7 @@ class ThreeToMongoDB {
                     uuid:                   object.uuid,
                     name:                   object.name,
                     type:                   object.type,
-                    parent:                 parentId,
+                    parent:                 null,
                     children:               childrenIds,
                     up:                     {
                         x: object.up.x,
@@ -2479,7 +2492,7 @@ class ThreeToMongoDB {
                     uuid:                   object.uuid,
                     name:                   object.name,
                     type:                   object.type,
-                    parent:                 parentId,
+                    parent:                 null,
                     children:               childrenIds,
                     up:                     {
                         x: object.up.x,
@@ -2531,7 +2544,7 @@ class ThreeToMongoDB {
                     uuid:                   object.uuid,
                     name:                   object.name,
                     type:                   object.type,
-                    parent:                 parentId,
+                    parent:                 null,
                     children:               childrenIds,
                     up:                     {
                         x: object.up.x,
@@ -2585,7 +2598,7 @@ class ThreeToMongoDB {
                     uuid:                   object.uuid,
                     name:                   object.name,
                     type:                   object.type,
-                    parent:                 parentId,
+                    parent:                 null,
                     children:               childrenIds,
                     up:                     {
                         x: object.up.x,
@@ -2637,7 +2650,7 @@ class ThreeToMongoDB {
                     uuid:                   object.uuid,
                     name:                   object.name,
                     type:                   object.type,
-                    parent:                 parentId,
+                    parent:                 null,
                     children:               childrenIds,
                     up:                     {
                         x: object.up.x,
@@ -2695,7 +2708,7 @@ class ThreeToMongoDB {
                     uuid:                   object.uuid,
                     name:                   object.name,
                     type:                   object.type,
-                    parent:                 parentId,
+                    parent:                 null,
                     children:               childrenIds,
                     up:                     {
                         x: object.up.x,
@@ -2746,7 +2759,7 @@ class ThreeToMongoDB {
                     uuid:                   object.uuid,
                     name:                   object.name,
                     type:                   object.type,
-                    parent:                 parentId,
+                    parent:                 null,
                     children:               childrenIds,
                     up:                     {
                         x: object.up.x,
@@ -2800,7 +2813,7 @@ class ThreeToMongoDB {
                     uuid:                   object.uuid,
                     name:                   object.name,
                     type:                   object.type,
-                    parent:                 parentId,
+                    parent:                 null,
                     children:               childrenIds,
                     up:                     {
                         x: object.up.x,
@@ -2852,7 +2865,7 @@ class ThreeToMongoDB {
                     uuid:                   object.uuid,
                     name:                   object.name,
                     type:                   object.type,
-                    parent:                 parentId,
+                    parent:                 null,
                     children:               childrenIds,
                     up:                     {
                         x: object.up.x,
@@ -2907,7 +2920,7 @@ class ThreeToMongoDB {
                     uuid:                   object.uuid,
                     name:                   object.name,
                     type:                   object.type,
-                    parent:                 parentId,
+                    parent:                 null,
                     children:               childrenIds,
                     up:                     {
                         x: object.up.x,
@@ -2959,7 +2972,7 @@ class ThreeToMongoDB {
                     uuid:                   object.uuid,
                     name:                   object.name,
                     type:                   object.type,
-                    parent:                 parentId,
+                    parent:                 null,
                     children:               childrenIds,
                     up:                     {
                         x: object.up.x,
@@ -3014,10 +3027,8 @@ class ThreeToMongoDB {
 
     }
 
-    _saveObject3DInDatabase ( object, parentId, childrenIds, geometryId, materialsIds, onError, onSuccess ) {
+    _saveObject3DInDatabase ( object, childrenIds, geometryId, materialsIds, onError, onSuccess ) {
 
-        const self      = this
-        const _parentId = parentId
         //        const objectId = this._checkIfObject3DAlreadyExist( object )
         //
         //        if ( objectId ) {
@@ -3026,125 +3037,66 @@ class ThreeToMongoDB {
         //
         //        } else {
 
-        this._getObject3DModel( object, parentId, childrenIds, geometryId, materialsIds, onError, ( objectModel ) => {
+        this._getObject3DModel( object, childrenIds, geometryId, materialsIds, onError, ( objectModel ) => {
 
             objectModel.save()
                        .then( savedObject => {
 
                            const objectId = savedObject.id
 
-                           // Add geometry id to cache
+                           // Add object id to cache
                            //                               self._objectCache[ savedObject.uuid ] = objectId
+                           //                           onSuccess( savedObject.id )
 
-                           // Update Parent with this id ( only if parentId is provided
-                           if ( _parentId ) {
-
-                               onSuccess( objectId )
-
-//                               Object3DModel.find( { '_id': _parentId } ).exec( function ( error, parent ) {
-//
-//                                   if ( error ) {
-//                                       onError( error )
-//                                   } else if(parent && parent.length > 0 ) {
-//
-//                                       parent.children.push( objectId ).save( ( error, data ) => {
-//
-//                                           if ( error ) {
-//                                               onError( error )
-//                                           } else {
-//                                               onSuccess( `${objectId} with parent: ${_parentId}` )
-//                                           }
-//
-//                                       } )
-//
-//                                   } else {
-//                                       onError( error )
-//                                   }
-//
-//                               } );
-//
-//                               Object3DModel.findOne( { '_id': _parentId }, function ( error, parent ) {
-//
-//                                   if ( error ) {
-//                                       onError( error )
-//                                   } else if(parent && parent.length > 0 ) {
-//
-//                                       parent.children.push( objectId ).save( ( error, data ) => {
-//
-//                                           if ( error ) {
-//                                               onError( error )
-//                                           } else {
-//                                               onSuccess( `${objectId} with parent: ${_parentId}` )
-//                                           }
-//
-//                                       } )
-//
-//                                   } else {
-//                                       onError( error )
-//                                   }
-//
-//                               } );
-//
-//                               Object3DModel.findOneAndUpdate( { _id: _parentId }, { $push: { children: objectId } }, ( error, data ) => {
-//
-//                                   if ( error ) {
-//                                       onError( error )
-//                                   } else if(data) {
-//                                       onSuccess( `${objectId} with parent: ${_parentId}` )
-//                                   } else {
-//                                       onError( error )
-//                                   }
-//
-//                               } )
-//
-//                               Object3DModel.findOneAndUpdate( { '_id': _parentId }, { $push: { children: objectId } }, ( error, data ) => {
-//
-//                                   if ( error ) {
-//                                       onError( error )
-//                                   } else if(data) {
-//                                       onSuccess( `${objectId} with parent: ${_parentId}` )
-//                                   } else {
-//                                       onError( error )
-//                                   }
-//
-//                               } )
-
+                           // Update Children with parent id
+                           if ( childrenIds && childrenIds.length > 0 ) {
+                               updateChildren( onError, onSuccess )
                            } else {
-
-                               // Return id
                                onSuccess( objectId )
+                           }
+
+                           function updateChildren ( onError, onSuccess ) {
+
+                               const savedChildrenIds = savedObject._doc.children
+                               const numberOfChildren = savedChildrenIds.length
+
+                               let endUpdates = 0
+                               let childId    = undefined
+                               const errors   = []
+
+                               for ( let childIndex = 0 ; childIndex < numberOfChildren ; childIndex++ ) {
+
+                                   childId = savedChildrenIds[ childIndex ]
+
+                                   Objects3DModelBase.update( { _id: childId }, { $set: { parent: objectId } }, ( error, success ) => {
+
+                                       if ( error ) {
+                                           errors.push( error )
+                                       }
+
+                                       endUpdates++
+                                       if ( endUpdates < numberOfChildren ) {
+                                           return
+                                       }
+
+                                       returnResult( onError, onSuccess )
+
+                                   } );
+
+                               }
+
+                               function returnResult ( onError, onSuccess ) {
+
+                                   if ( errors.length > 0 ) {
+                                       onError( errors )
+                                   } else {
+                                       onSuccess( objectId )
+                                   }
+
+                               }
 
                            }
 
-                           // Update Children with parent id
-                           //                               function updateChildren ( onError, onSuccess ) {
-                           //
-                           //                                   const savedChildrenIds = savedScene._doc.children
-                           //                                   const numberOfChildren = savedChildrenIds.length
-                           //
-                           //                                   let endUpdates = 0
-                           //                                   let childIndex
-                           //                                   let childId
-                           //
-                           //                                   for ( childIndex = 0 ; childIndex < numberOfChildren ; childIndex++ ) {
-                           //
-                           //                                       childId = savedChildrenIds[ childIndex ]
-                           //
-                           //                                       MeshModel.update( { _id: childId }, { $set: { parent: sceneId } }, () => {
-                           //
-                           //                                           endUpdates++
-                           //                                           if ( endUpdates < numberOfChildren ) {
-                           //                                               return
-                           //                                           }
-                           //
-                           //                                           onSuccess( sceneId )
-                           //
-                           //                                       } );
-                           //
-                           //                                   }
-                           //
-                           //                               }
-                           //
                        } )
                        .catch( onError )
 
