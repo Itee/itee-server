@@ -196,12 +196,26 @@ class ThreeToMongoDB {
 
             },
             onProgress,
-            onError
+            ( error ) => {
+                self._clearCache()
+                onError( error )
+            }
         )
 
     }
 
     // Private
+    _clearCache () {
+
+        this._objectCache         = {}
+        this._curveCache          = {}
+        this._geometryCache       = {}
+        this._bufferGeometryCache = {}
+        this._materialCache       = {}
+        this._textureCache        = {}
+
+    }
+
     _parse ( object, onSuccess, onProgress, onError ) {
 
         const self             = this
