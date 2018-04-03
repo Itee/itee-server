@@ -42,14 +42,16 @@ html(lang='en')
             router-view
 
     script(src='../resources/scripts/itee-client.iife.js', type='text/javascript')
-    script(src='../resources/configs/config.' + config + '.js', type='application/javascript')
-    script.
+    script(src='../resources/configs/config.' + _config_ + '.js', type='application/javascript')
 
-    script.
-        var TUrlParameters = { urlQuery: !{JSON.stringify( urlParams )} } || {} // Todo: use js-stringify in prod
-
-        const rawMaterial = Itee.getRawMaterial()
-        Itee.startApp( rawMaterial )
+    if _query_
+        script.
+            var IteeQueryConfig = JSON.parse( !{JSON.stringify( _query_ )} )
+            Itee.startApp( IteeConfig )
+    else
+        script.
+            var IteeQueryConfig = null // Todo: use js-stringify in prod
+            Itee.startApp( IteeConfig )
 
 //        var environment  = Itee.analyseEnvironment()
 //        var rawMaterial  = Itee.getRawMaterial( environment )
