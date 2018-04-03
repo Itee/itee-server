@@ -14,6 +14,7 @@ const AppPage = {
     template: `
         <TContainer orientation="vertical" hAlign="stretch" vAlign="start" expand=true>
         
+        
             <THeader id="appHeader" style="min-height: 60px;">
                 <TAppBar height="60px">
                     <TContainer vAlign="center" hAlign="start">
@@ -21,31 +22,31 @@ const AppPage = {
                         <!--<TLabel class="tBrand" label="Geomap-Imagis" icon="rocket" />-->
                     </TContainer>
                     <TMenu>
-                        <TMenuItem label="Home" :onClickHandler="function() { routeTo('/') }" />
-                        <TMenuItem label="Documentation" :onClickHandler="function() { routeTo('/documentation') }" />
-                        <TMenuItem label="Database" :onClickHandler="function() { routeTo('/database') }" />
-                        <TMenuItem label="Téléversement" :onClickHandler="function() { routeTo('/upload') }" />
-                        <TMenuItem label="Visualiseur 3D" :onClickHandler="function() { routeTo('/viewer') }" />
-                        <TMenuItem label="Editeur" :onClickHandler="function() { routeTo('/editor') }" />
-                        <TMenuItem label="Utilisateur" :onClickHandler="function() { routeTo('/users') }" />
+                        <TMenuItem label="Home" :onClick="function() { routeTo('/') }" />
+                        <TMenuItem label="Documentation" :onClick="function() { routeTo('/documentation') }" />
+                        <TMenuItem label="Database" :onClick="function() { routeTo('/database') }" />
+                        <TMenuItem label="Téléversement" :onClick="function() { routeTo('/upload') }" />
+                        <TMenuItem label="Visualiseur 3D" :onClick="function() { routeTo('/viewer') }" />
+                        <TMenuItem label="Editeur" :onClick="function() { routeTo('/editor') }" />
+                        <TMenuItem label="Utilisateur" :onClick="function() { routeTo('/users') }" />
                         <TMenuDropDown popAt="bottom" label="A propos">
-                            <TMenuItem label="SubMenuA" :onClickHandler=alertFooBar />
-                            <TMenuItem label="SubMenuB" :onClickHandler=alertFooBar />
+                            <TMenuItem label="SubMenuA" :onClick=alertFooBar />
+                            <TMenuItem label="SubMenuB" :onClick=alertFooBar />
                             <TMenuDropDown popAt="rightUp" label="SubDropDown">
-                                <TMenuItem label="SubSubMenuA" :onClickHandler=alertFooBar />
-                                <TMenuItem label="SubSubMenuB" :onClickHandler=alertFooBar />
-                                <TMenuItem label="SubSubMenuC" :onClickHandler=alertFooBar />
+                                <TMenuItem label="SubSubMenuA" :onClick=alertFooBar />
+                                <TMenuItem label="SubSubMenuB" :onClick=alertFooBar />
+                                <TMenuItem label="SubSubMenuC" :onClick=alertFooBar />
                                 <TMenuDropDown popAt="rightUp" label="SubSubDropDown">
-                                    <TMenuItem label="FarAwayMenuA" :onClickHandler=alertFooBar />
-                                    <TMenuItem label="FarAwayMenuB" :onClickHandler=alertFooBar />
-                                    <TMenuItem label="FarAwayMenuC" :onClickHandler=alertFooBar />
-                                    <TMenuItem label="FarAwayMenuD" :onClickHandler=alertFooBar />
-                                    <TMenuItem label="FarAwayMenuE" :onClickHandler=alertFooBar />
+                                    <TMenuItem label="FarAwayMenuA" :onClick=alertFooBar />
+                                    <TMenuItem label="FarAwayMenuB" :onClick=alertFooBar />
+                                    <TMenuItem label="FarAwayMenuC" :onClick=alertFooBar />
+                                    <TMenuItem label="FarAwayMenuD" :onClick=alertFooBar />
+                                    <TMenuItem label="FarAwayMenuE" :onClick=alertFooBar />
                                 </TMenuDropDown>
                             </TMenuDropDown>
-                            <TMenuItem label="SubMenuC" :onClickHandler=alertFooBar />
-                            <TMenuItem label="SubMenuD" :onClickHandler=alertFooBar />
-                            <TMenuItem label="SubMenuE" :onClickHandler=alertFooBar />
+                            <TMenuItem label="SubMenuC" :onClick=alertFooBar />
+                            <TMenuItem label="SubMenuD" :onClick=alertFooBar />
+                            <TMenuItem label="SubMenuE" :onClick=alertFooBar />
                         </TMenuDropDown>
                     </TMenu>
                     <TContainer vAlign="center" hAlign="end">
@@ -2454,23 +2455,32 @@ const EditorPage = {
 
         <TToolBar>
             <TToolItem icon="upload" tooltip="Load" :onClick="function() { toggleModalVisibility('modal-file-data') }" />
-            <TToolItem icon="download" tooltip="Download" :onClick=download />
+            <TToolDropDown popAt="bottomLeft" tooltip="Choisir le type de projection de la camera" icon="download">
+                <TToolItem label="JSON" tooltip="Download" :onClick="()=>{download('json')}" />
+                <TToolItem label="OBJ" tooltip="Download" :onClick="()=>{download('obj')}" />
+            </TToolDropDown>
             <TDivider orientation="vertical" />
-            <TToolItem icon="hand-pointer" tooltip="Sélection" :onClick=toggleSelectionMode />
+            <TToolItem icon="hand-pointer" tooltip="Sélection" :onClick=setSelectionMode />
+            <TToolItem icon="minus" tooltip="Supprimer tous les chargements" :onClick=clearDataGroup />
             <TDivider orientation="vertical" />
             <TToolItem icon="chart-bar" tooltip="Afficher les statistiques webgl" :onClick=toggleViewportStats />
         </TToolBar>
         
         <TSplitter :isVertical=true :initPosition=20>
         
-            <TTree slot="left" :items="viewport.scene.children"></TTree>
-           
+            <TTree 
+                slot="left" 
+                :items="scene.children"
+                :maxDeepLevel="4"
+                :needUpdate="tree.needUpdate"
+            ></TTree>
+                       
             <TSplitter slot="right" :isVertical=true :initPosition=25>
                             
                 <div slot="left" class="container pt-3 pb-3" style="min-width:300px; overflow-y: scroll;">
                     
                     <div v-if="selectedObject" class="card bg-transparent border-success mb-3">
-                        <TInputObject label="Sélection" :value=selectedObject :onChange=onSelectionDataChange>
+                        <TInputObject label="Sélection" :value=selectedObject :onChange=onSelectionDataChange />
                     </div>  
                     
                     <div class="card bg-transparent border-success mb-3">
@@ -2502,29 +2512,59 @@ const EditorPage = {
                     
                     <div class="card bg-transparent border-success mb-3">
                         <div class="card-header border-success text-center">
-                            Transformations
+                            Transformations sur les geometries
                         </div>
                         <div class="card-body bg-transparent">
                             <div class="input-group mb-2">
                                 <div class="input-group-prepend">
                                     <span class="input-group-text" id="">Rotate</span>
                                 </div>
-                                <input type="number" class="form-control">
-                                <input type="number" class="form-control">
-                                <input type="number" class="form-control">
+                                <input type="number" class="form-control" v-model="geometries.rotate.x">
+                                <input type="number" class="form-control" v-model="geometries.rotate.y">
+                                <input type="number" class="form-control" v-model="geometries.rotate.z">
                                 <div class="input-group-append">
-                                    <button class="btn btn-outline-success" type="button">Apply</button>
+                                    <button class="btn btn-outline-success" type="button" @click=applyRotationToGeometries>Apply</button>
                                 </div>
                             </div>
                             <div class="input-group mb-2">
                                 <div class="input-group-prepend">
                                     <span class="input-group-text" id="">Translate</span>
                                 </div>
-                                <input type="number" class="form-control">
-                                <input type="number" class="form-control">
-                                <input type="number" class="form-control">
+                                <input type="number" class="form-control" v-model="geometries.translate.x">
+                                <input type="number" class="form-control" v-model="geometries.translate.y">
+                                <input type="number" class="form-control" v-model="geometries.translate.z">
                                 <div class="input-group-append">
-                                    <button class="btn btn-outline-success" type="button">Apply</button>
+                                    <button class="btn btn-outline-success" type="button" @click=applyTranslationToGeometries>Apply</button>
+                                </div>
+                            </div>
+                        </div>
+                    </div> 
+                    
+                    <div class="card bg-transparent border-success mb-3">
+                        <div class="card-header border-success text-center">
+                            Transformations sur les meshes
+                        </div>
+                        <div class="card-body bg-transparent">
+                            <div class="input-group mb-2">
+                                <div class="input-group-prepend">
+                                    <span class="input-group-text" id="">Rotate</span>
+                                </div>
+                                <input type="number" class="form-control" v-model="meshes.rotate.x">
+                                <input type="number" class="form-control" v-model="meshes.rotate.y">
+                                <input type="number" class="form-control" v-model="meshes.rotate.z">
+                                <div class="input-group-append">
+                                    <button class="btn btn-outline-success" type="button" @click=applyRotationToMeshes>Apply</button>
+                                </div>
+                            </div>
+                            <div class="input-group mb-2">
+                                <div class="input-group-prepend">
+                                    <span class="input-group-text" id="">Translate</span>
+                                </div>
+                                <input type="number" class="form-control" v-model="meshes.translate.x">
+                                <input type="number" class="form-control" v-model="meshes.translate.y">
+                                <input type="number" class="form-control" v-model="meshes.translate.z">
+                                <div class="input-group-append">
+                                    <button class="btn btn-outline-success" type="button" @click=applyTranslationToMeshes>Apply</button>
                                 </div>
                             </div>
                         </div>
@@ -2532,8 +2572,18 @@ const EditorPage = {
 
                 </div>
                 
-                <TViewport3D slot="right" v-bind="viewport" />
-
+                <TViewport3D
+                    slot="right"
+                    v-bind="viewport"
+                    :scene="scene"
+                    :renderer="renderer"
+                    v-on:intersect=onIntersect
+                    v-on:select=onSelect
+                    v-on:deselect=onDeselect
+                    v-on:cacheUpdated="viewport.needCacheUpdate = false"
+                    v-on:cameraFitWorldBoundingBox="viewport.needCameraFitWorldBoundingBox = false"
+                 />
+                 
             </TSplitter>
             
         </TSplitter>
@@ -2548,12 +2598,7 @@ const EditorPage = {
                         </button>
                     </div>
                     <div class="modal-body">
-                        <div class="input-group mb-3">
-                            <div class="custom-file">
-                                <input id="js-upload-files" class="custom-file-input" type="file" name="files[]" multiple v-on:change=updateFilesList>
-                                <label for="js-upload-files" class="custom-file-label">Sélectionner les fichiers à téléverser</label>
-                            </div>
-                        </div>
+                        <TInputFile :onChange=updateFilesList />
                     </div>
                     <div v-if="filesList && filesList.length > 0" class="container">
                         <ul class="list-group list-group-flush">
@@ -2561,33 +2606,68 @@ const EditorPage = {
                         </ul>
                     </div>
                     <div class="modal-footer">
-                        <button type="button" class="btn btn-secondary" data-dismiss="modal" v-on:click.stop="toggleModalVisibility('modal-file-data')">Fermer</button>
+                        <button type="button" class="btn btn-error" data-dismiss="modal" v-on:click.stop="toggleModalVisibility('modal-file-data')">Fermer</button>
                         <button type="button" class="btn btn-primary" v-on:click.stop="upload">Valider</button>
                     </div>
                 </div>
             </div>
         </div>
+        
+        <div id="modal-display-data" v-on:click="toggleModalVisibility('modal-display-data')" class="modal fade" tabindex="-1" role="dialog">
+            <div class="modal-dialog modal-dialog-centered modal-lg" role="document">
+                <div v-on:click.stop class="modal-content">
+                    <div class="modal-header">
+                        <h5 class="modal-title" id="exampleModalLongTitle">Données</h5>
+                        <button type="button" class="close" data-dismiss="modal" aria-label="Close" v-on:click.stop="toggleModalVisibility('modal-display-data')">
+                            <span aria-hidden="true">&times;</span>
+                        </button>
+                    </div>
+                    <div class="modal-body">
+                    
+                        <textarea v-if="downloadDatas" v-model="downloadDatas" style="width: 100%; min-height: 500px;"></textarea>
+                        <div v-else class="fa-3x">
+                          <i class="fas fa-spinner fa-pulse"></i>
+                        </div>
+                        
+                    </div>
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-error" data-dismiss="modal" v-on:click.stop="toggleModalVisibility('modal-display-data')">Fermer</button>
+                    </div>
+                </div>
+            </div>
+        </div>
 
-        <TProgress v-if="progressBar.show" v-bind:done=progressBar.done v-bind:todo=progressBar.todo></TProgress>
-
+        <TFooter id="appFooter" style="min-height: 30px;">
+            <TProgress v-if="progressBar.isVisible" :isVisible="progressBar.isVisible" v-bind:done=progressBar.done v-bind:todo=progressBar.todo style="width:100%; margin: 0 15px;"></TProgress>
+        </TFooter>
+        
     </TContainerVertical>
     `,
-    data:     function () {
+    data () {
 
         return {
-            loader:         new Itee.TUniversalLoader(),
-            filesList:      undefined,
-            viewport:       {
-                scene:           new Itee.Scene(),
-                control:         "orbit",
-                effect:          "none",
-                renderer:        "webgl",
-                camera:          {
+
+            // File loading
+            loader:    new Itee.TUniversalLoader(),
+            filesList: undefined,
+
+            //
+            downloadDatas: undefined,
+
+            // Tree
+            tree: {
+                needUpdate: false
+            },
+
+            // Viewport
+            viewport:    {
+                scene:                         undefined,
+                camera:                        {
                     type:     'perspective',
                     position: {
-                        x: 7,
-                        y: 2,
-                        z: 5
+                        x: 70,
+                        y: 20,
+                        z: 50
                     },
                     target:   {
                         x: 0,
@@ -2595,22 +2675,404 @@ const EditorPage = {
                         z: 0
                     }
                 },
-                showStats:       false,
-                backgroundColor: 0xb2b2b2,
-                needResize:      false
+                control:                       'orbit',
+                effect:                        'none',
+                renderer:                      undefined,
+                showStats:                     false,
+                autoUpdate:                    true,
+                backgroundColor:               0x000000,
+                enableShadow:                  false,
+                isRaycastable:                 false,
+                allowDecimate:                 true,
+                needCameraFitWorldBoundingBox: false,
+                needCacheUpdate:               false
             },
-            selectedObject: undefined,
-            progressBar:    {
-                show:      false,
+            intersected: {
+                object:           undefined,
+                originalMaterial: undefined
+            },
+            selected:    {
+                object:           undefined,
+                originalMaterial: undefined
+            },
+            pointer:     undefined,
+
+            // Modifiers
+            geometries: {
+                rotate:    {
+                    x: 0,
+                    y: 0,
+                    z: 0
+                },
+                translate: {
+                    x: 0,
+                    y: 0,
+                    z: 0
+                },
+            },
+            meshes:     {
+                rotate:    {
+                    x: 0,
+                    y: 0,
+                    z: 0
+                },
+                translate: {
+                    x: 0,
+                    y: 0,
+                    z: 0
+                },
+            },
+
+            // Progress bar
+            progressBar: {
+                isVisible: false,
                 timeoutId: undefined,
                 done:      0,
                 todo:      0
-            }
+            },
 
+            // Treeitem
+            selectedObject: undefined
         }
 
     },
+    created () {
+        'use strict'
+
+        // Should not be observed...
+        this._initUntrackableDatasHooks()
+        this._initEnvironement()
+        this._initDatas()
+
+        console.log( 'created' )
+
+    },
     methods:  {
+
+        ///// GLOBAL
+
+        onProgress ( progressEvent ) {
+            'use strict'
+
+            if ( !progressEvent.lengthComputable ) { return }
+
+            if ( !this.progressBar.isVisible ) {
+                this.progressBar.isVisible = true
+            }
+
+            this.progressBar.done = progressEvent.loaded
+            this.progressBar.todo = progressEvent.total
+
+            if ( this.progressBar.done === this.progressBar.todo ) {
+
+                if ( this.progressBar.timeoutId ) {
+                    clearTimeout( this.progressBar.timeoutId )
+                }
+
+                this.progressBar.timeoutId = setTimeout( () => {
+                    this.progressBar.isVisible = false
+                }, 1000 )
+
+            }
+
+        },
+
+        onError ( error ) {
+            'use strict'
+
+            console.error( error )
+
+        },
+
+        _initUntrackableDatasHooks () {
+            'use strict'
+
+            this.scene    = new Itee.Scene()
+            this.renderer = new Itee.WebGLRenderer( {
+                antialias:              true,
+                logarithmicDepthBuffer: true
+            } )
+
+        },
+
+        _initEnvironement () {
+            'use strict'
+
+            ///////////////////
+            // Add Env group //
+            ///////////////////
+            let envGroup = this.scene.getObjectByName( 'Environement' )
+            if ( !envGroup ) {
+
+                envGroup      = new Itee.Group()
+                envGroup.name = "Environement"
+                this.scene.add( envGroup )
+
+            }
+
+            this._initLights( envGroup )
+            this._initGrids( envGroup )
+            this._initPointers( envGroup )
+            this._initModifiers( envGroup )
+            this._initHelpers( envGroup )
+
+        },
+
+        _initLights ( parentGroup ) {
+            'use strict'
+
+            ///////////////
+            // Add light //
+            ///////////////
+            let lightGroup = parentGroup.getObjectByName( 'Lumières' )
+            if ( !lightGroup ) {
+
+                lightGroup      = new Itee.Group()
+                lightGroup.name = "Lumières"
+                parentGroup.add( lightGroup )
+
+            }
+
+            const ambiantLight = new Itee.AmbientLight( 0xC8C8C8 )
+            ambiantLight.name  = "Lumière ambiante"
+            lightGroup.add( ambiantLight )
+
+            //                        const SHADOW_MAP_SIZE = 16384
+            //                        const spotLight       = new Itee.SpotLight( 0xffffff, 1, 0, Math.PI / 2 )
+            //                        spotLight.position.set( 0, 1500, 1000 )
+            //                        spotLight.target.position.set( 0, 0, 0 )
+            //                        spotLight.castShadow            = true
+            //                        spotLight.shadow                = new Itee.LightShadow( new Itee.PerspectiveCamera( 50, 1, 1200, 2500 ) )
+            //                        spotLight.shadow.bias           = 0.0001
+            //                        spotLight.shadow.mapSize.width  = SHADOW_MAP_SIZE
+            //                        spotLight.shadow.mapSize.height = SHADOW_MAP_SIZE
+            //                        envGroup.add( spotLight )
+
+            const frustum          = 500
+            const mapSize          = 2048
+            const directionalLight = new Itee.DirectionalLight( 0xaaaaaa, 0.6 )
+            directionalLight.position.set( 100, 300, 100 )
+            directionalLight.name = "Lumière directionnel"
+            //                        dirLight.castShadow            = true
+            //                        dirLight.shadow.mapSize.width  = mapSize
+            //                        dirLight.shadow.mapSize.height = mapSize
+            //                        dirLight.shadow.darkness       = 1
+            //                        dirLight.shadow.camera.left    = -frustum
+            //                        dirLight.shadow.camera.right   = frustum
+            //                        dirLight.shadow.camera.top     = frustum
+            //                        dirLight.shadow.camera.bottom  = -frustum
+            //                        dirLight.shadow.camera.near    = 1
+            //                        dirLight.shadow.camera.far     = 500
+            lightGroup.add( directionalLight )
+
+            //                        const dirLightHelper = new Itee.DirectionalLightHelper( dirLight, 10 )
+            //                        envGroup.add( dirLightHelper )
+            //
+            //                        //Create a helper for the shadow camera
+            //                        const dirLightShadowCameraHelper = new Itee.CameraHelper( dirLight.shadow.camera )
+            //                        envGroup.add( dirLightShadowCameraHelper )
+
+        },
+
+        _initGrids ( parentGroup ) {
+            'use strict'
+
+            ///////////////
+            // Add grids //
+            ///////////////
+            let gridGroup = parentGroup.getObjectByName( 'Grilles' )
+            if ( !gridGroup ) {
+
+                gridGroup           = new Itee.Group()
+                gridGroup.name      = "Grilles"
+                gridGroup.modifiers = [
+                    {
+                        type:    'checkbox',
+                        value:   'checked',
+                        onClick: this.toggleVisibilityOf( gridGroup )
+                    },
+                    {
+                        type:     'range',
+                        onChange: this.updateOpacityOf( gridGroup )
+                    }
+                ]
+                parentGroup.add( gridGroup )
+
+            }
+
+            /// XZ
+
+            const gridHelperXZ_1     = new Itee.GridHelper( 20, 20 )
+            gridHelperXZ_1.name      = "Grille XZ - Mètrique"
+            gridHelperXZ_1.modifiers = [
+                {
+                    type:    'checkbox',
+                    value:   'checked',
+                    onClick: this.toggleVisibilityOf( gridHelperXZ_1 )
+                },
+                {
+                    type:     'range',
+                    onChange: this.updateOpacityOf( gridHelperXZ_1 )
+                }
+            ]
+            gridGroup.add( gridHelperXZ_1 )
+
+            const gridHelperXZ_10     = new Itee.GridHelper( 200, 20 )
+            gridHelperXZ_10.name      = "Grille XZ - Décamètrique"
+            gridHelperXZ_10.modifiers = [
+                {
+                    type:    'checkbox',
+                    value:   'checked',
+                    onClick: this.toggleVisibilityOf( gridHelperXZ_10 )
+                },
+                {
+                    type:     'range',
+                    onChange: this.updateOpacityOf( gridHelperXZ_10 )
+                }
+            ]
+            gridGroup.add( gridHelperXZ_10 )
+
+            const gridHelperXZ_100     = new Itee.GridHelper( 2000, 20 )
+            gridHelperXZ_100.name      = "Grille XZ - Hectomètrique"
+            gridHelperXZ_100.modifiers = [
+                {
+                    type:    'checkbox',
+                    value:   'checked',
+                    onClick: this.toggleVisibilityOf( gridHelperXZ_100 )
+                },
+                {
+                    type:     'range',
+                    onChange: this.updateOpacityOf( gridHelperXZ_100 )
+                }
+            ]
+            gridGroup.add( gridHelperXZ_100 )
+
+            /// XY
+
+            //                        const gridHelperXY_1 = new Itee.GridHelper( 20, 20 )
+            //                        gridHelperXY_1.name  = "Grille XY - Mètrique"
+            //                        gridHelperXY_1.rotateX( Itee.degreesToRadians( 90 ) )
+            //                        gridGroup.add( gridHelperXY_1 )
+            //
+            //                        const gridHelperXY_10 = new Itee.GridHelper( 200, 20 )
+            //                        gridHelperXY_10.name  = "Grille XY - Décamètrique"
+            //                        gridHelperXY_10.rotateX( Itee.degreesToRadians( 90 ) )
+            //                        gridGroup.add( gridHelperXY_10 )
+            //
+            //                        const gridHelperXY_100 = new Itee.GridHelper( 2000, 20 )
+            //                        gridHelperXY_100.name  = "Grille XY - Hectomètrique"
+            //                        gridHelperXY_100.rotateX( Itee.degreesToRadians( 90 ) )
+            //                        gridGroup.add( gridHelperXY_100 )
+
+            /// YZ
+
+            //                        const gridHelperYZ_1 = new Itee.GridHelper( 20, 20 )
+            //                        gridHelperYZ_1.name  = "Grille YZ - Mètrique"
+            //                        gridHelperYZ_1.rotateZ( Itee.degreesToRadians( 90 ) )
+            //                        gridGroup.add( gridHelperYZ_1 )
+            //
+            //                        const gridHelperYZ_10 = new Itee.GridHelper( 200, 20 )
+            //                        gridHelperYZ_10.name  = "Grille YZ - Décamètrique"
+            //                        gridHelperYZ_10.rotateZ( Itee.degreesToRadians( 90 ) )
+            //                        gridGroup.add( gridHelperYZ_10 )
+            //
+            //                        const gridHelperYZ_100 = new Itee.GridHelper( 2000, 20 )
+            //                        gridHelperYZ_100.name  = "Grille YZ - Hectomètrique"
+            //                        gridHelperYZ_100.rotateZ( Itee.degreesToRadians( 90 ) )
+            //                        gridGroup.add( gridHelperYZ_100 )
+
+        },
+
+        _initPointers ( parentGroup ) {
+            'use strict'
+
+            //////////////////
+            // Add pointers //
+            //////////////////
+            let pointersGroup = parentGroup.getObjectByName( 'Pointers' )
+            if ( !pointersGroup ) {
+
+                pointersGroup      = new Itee.Group()
+                pointersGroup.name = "Pointers"
+                parentGroup.add( pointersGroup )
+
+            }
+
+            const sphereGeometry = new Itee.SphereBufferGeometry( 0.5, 32, 32 )
+            const sphereMaterial = new Itee.MeshPhongMaterial( { color: 0x007bff } )
+            const sphere         = new Itee.Mesh( sphereGeometry, sphereMaterial )
+            sphere.name          = 'Sphère'
+            sphere.visible       = false
+            sphere.isRaycastable = false
+            pointersGroup.add( sphere )
+
+            // Plane
+            const planeGeometry = new Itee.PlaneGeometry( 2, 2, 10, 10 )
+            const planeMaterial = new Itee.MeshBasicMaterial( {
+                color:       0x000000,
+                side:        Itee.DoubleSide,
+                opacity:     0.2,
+                transparent: true
+            } )
+            const plane         = new Itee.Mesh( planeGeometry, planeMaterial )
+            plane.name          = 'Plan'
+            plane.visible       = false
+            plane.isRaycastable = false
+            pointersGroup.add( plane )
+
+            const octahedronGeometry = new Itee.OctahedronBufferGeometry( 0.3, 0 )
+            const octahedronMaterial = new Itee.MeshPhongMaterial( { color: 0x007bff } )
+            const octahedron         = new Itee.Mesh( octahedronGeometry, octahedronMaterial )
+            octahedron.name          = 'Octahèdre'
+            octahedron.visible       = false
+            octahedron.isRaycastable = false
+            pointersGroup.add( octahedron )
+
+        },
+
+        _initModifiers ( parentGroup ) {
+            'use strict'
+
+            let modifiersGroup = parentGroup.getObjectByName( 'Modificateurs' )
+            if ( !modifiersGroup ) {
+
+                modifiersGroup      = new Itee.Group()
+                modifiersGroup.name = "Modificateurs"
+                parentGroup.add( modifiersGroup )
+
+            }
+
+        },
+
+        _initHelpers ( parentGroup ) {
+            'use strict'
+
+            let helpersGroup = parentGroup.getObjectByName( 'Aides' )
+            if ( !helpersGroup ) {
+
+                helpersGroup      = new Itee.Group()
+                helpersGroup.name = "Aides"
+                parentGroup.add( helpersGroup )
+
+            }
+
+        },
+
+        _initDatas () {
+            'use strict'
+
+            let datasGroup = this.scene.getObjectByName( 'Données' )
+            if ( !datasGroup ) {
+
+                datasGroup      = new Itee.Group()
+                datasGroup.name = "Données"
+                this.scene.add( datasGroup )
+
+            }
+
+        },
+
+        /// MODALS
 
         toggleModalVisibility ( modalId ) {
             'use strict'
@@ -2631,17 +3093,20 @@ const EditorPage = {
 
         },
 
-        updateFilesList ( changeEvent ) {
+        /// Loader
+
+        updateFilesList ( files ) {
             'use strict'
 
-            this.filesList = changeEvent.target.files
+            this.filesList = files
 
         },
 
         upload () {
             'use strict'
 
-            const self = this
+            const self       = this
+            const datasGroup = self.scene.getObjectByName( 'Données' )
 
             this.toggleModalVisibility( 'modal-file-data' )
 
@@ -2651,94 +3116,132 @@ const EditorPage = {
 
                     // Import routine
 
-                    data.traverse( element => {
+                    data.traverse( object => {
 
-                        if ( !element.name ) {
-                            element.name = `${element.type}_${element.id}`
+                        if ( !object.name ) {
+                            object.name = `${object.type}_${object.id}`
                         }
 
-                        element.onClick = this.selectObject( element )
+                        object.onClick = this.selectObject( object )
 
-                        element.modifiers = [
+                        object.modifiers = [
                             {
                                 type:    'checkbox',
                                 value:   'checked',
-                                onClick: this.toggleVisibilityOf( element )
+                                onClick: this.toggleVisibilityOf( object )
                             },
                             {
                                 type:     'range',
-                                onChange: this.updateOpacityOf( element )
+                                onChange: this.updateOpacityOf( object )
                             },
                             {
                                 type:    'button',
                                 value:   'X',
-                                onClick: this.removeObject( element )
+                                onClick: this.removeObject( object )
+                            },
+                            {
+                                type:    'button',
+                                value:   'Up',
+                                onClick: this.parentUp( object )
                             }
                         ]
 
+                        if ( object.isMesh || object.isLineSegments ) {
+                            object.isRaycastable = true
+                            object.geometry.computeFaceNormals()
+                            object.geometry.computeVertexNormals()
+                            //                                            object.castShadow    = true        //default is false
+                            //                                            object.receiveShadow = true     //default is false
+                        }
+
                     } )
 
-                    self.viewport.scene.add( data )
+                    datasGroup.add( data )
 
                 },
-                progress => { self.onProgress( progress.loaded, progress.total ) },
-                error => { console.error( error ) }
+                self.onProgress,
+                self.onError
             )
 
         },
 
-        download ( objectType ) {
+        clearDataGroup () {
             'use strict'
 
-        },
+            let dataGroup = this.scene.getObjectByName( 'Données' )
 
-        ////
-
-        toggleSelectionMode () {
-            'use strict'
-
-            this.viewport.isRaycastable = !this.viewport.isRaycastable
-
-        },
-
-        onSelectionDataChange ( key, value ) {
-
-            let _key     = key
-            let _value   = value
-            let _element = this.selectedObject
-
-            // Care: the order of assignement is important here !
-            while ( _value.key ) {
-                _element = _element[ _key ]
-                _key     = _value.key
-                _value   = _value.value
+            for ( let childIndex = 0, numChildren = dataGroup.children.length ; childIndex < numChildren ; childIndex++ ) {
+                let child = dataGroup.children[ childIndex ]
+                dataGroup.remove( child )
             }
 
-            _element[ _key ] = _value
+        },
+
+        download ( downloadType ) {
+            'use strict'
+
+            this.toggleModalVisibility( 'modal-display-data' )
+
+            let result = undefined
+            switch ( downloadType ) {
+
+                case 'json':
+                    result = this.downloadJSON()
+                    break
+
+                case 'obj':
+                    result = this.downloadOBJ()
+                    break
+
+                default:
+                    throw new RangeError( `Invalid switch parameter: ${downloadType}` )
+                    break
+
+            }
+
+            console.log( `File size: ${result.length}` )
+            this.downloadDatas = result
 
         },
 
-        ////
-
-        toggleViewportStats () {
+        downloadJSON () {
             'use strict'
 
-            this.viewport.showStats = !this.viewport.showStats
+            let dataGroup = this.scene.getObjectByName( 'Données' )
+            return JSON.stringify( dataGroup.children[ 0 ].toJSON() )
+
+        },
+
+        downloadOBJ () {
+            'use strict'
+
+            let dataGroup     = this.scene.getObjectByName( 'Données' )
+            const objExporter = new Itee.OBJExporter()
+            return objExporter.parse( dataGroup.children[ 0 ] )
 
         },
 
         /// Tree modifiers
+
         selectObject ( object ) {
             'use strict'
 
-            const self      = this
-            const _object   = object
+            const _self   = this
+            const _object = object
             let _selected = false
 
             return function selectObjectHandler () {
 
-                _selected = !_selected
-                self.selectedObject = (_selected) ? _object : undefined
+                _self.action = 'selection'
+                _selected    = !_selected
+
+                _self.selectedObject = _object
+
+                //                if ( _selected ) {
+                //                    _self.onSelect( {object: _object} )
+                //                } else {
+                //                    _self.onDeselect()
+                //                }
 
             }
 
@@ -2747,10 +3250,12 @@ const EditorPage = {
         toggleVisibilityOf ( object ) {
             'use strict'
 
+            const _self   = this
             const _object = object
 
             return function toggleVisibility () {
-                _object.visible = !_object.visible
+                _object.visible                = !_object.visible
+                _self.viewport.needCacheUpdate = true
             }
 
         },
@@ -2766,7 +3271,7 @@ const EditorPage = {
 
                 _object.traverse( child => {
 
-                    if ( !child.isMesh ) {
+                    if ( !child.isMesh && !child.isLineSegments ) {
                         return
                     }
 
@@ -2783,7 +3288,7 @@ const EditorPage = {
 
                     } else {
 
-                        setOpacity( material, opacity )
+                        setOpacity( materials, opacity )
 
                     }
 
@@ -2834,110 +3339,918 @@ const EditorPage = {
 
         },
 
-        /////////////
-
-        onProgress ( loaded, total ) {
+        parentUp ( object ) {
             'use strict'
 
-            if ( !this.progressBar.show ) {
-                this.progressBar.show = true
-            }
+            const _object = object
 
-            this.progressBar.done = loaded
-            this.progressBar.todo = total
+            return function () {
 
-            if ( loaded === total ) {
-
-                if ( this.progressBar.timeoutId ) {
-                    clearTimeout( this.progressBar.timeoutId )
+                const grandParent = _object.parent.parent
+                if ( grandParent ) {
+                    grandParent.add( object )
                 }
 
-                this.progressBar.timeoutId = setTimeout( () => {
-                    this.progressBar.show = false
-                }, 1000 )
+            }
+
+        },
+
+        parentDown ( object ) {
+            'use strict'
+
+            const _object = object
+
+            return function () {
+
+                const brothers = _object.parent.children
+                if ( brothers ) {
+                    brothers[ 0 ].add( object )
+                }
 
             }
 
-        }
+        },
 
-    },
-    created () {
-        'use strict'
+        //// MESH MODIFIERS
 
-        let aidesGroup = this.viewport.scene.getObjectByName( "Environnement" )
-        if ( !aidesGroup ) {
-            aidesGroup           = new Itee.Group()
-            aidesGroup.name      = "Environnement"
-            aidesGroup.onClick   = this.selectObject( aidesGroup )
-            aidesGroup.modifiers = [
+        setGroupTransparent () {
+            'use strict'
+
+            const group = this.scene.getObjectByName( 'Données' ).children[ 0 ]
+
+            group.traverse( child => {
+
+                if ( !child.isMesh ) {
+                    return
+                }
+
+                const materials = child.material
+                if ( !materials ) {
+                    return
+                }
+
+                if ( Array.isArray( materials ) ) {
+                    for ( let i = 0, n = materials.length ; i < n ; i++ ) {
+                        materials[ i ].transparent = true
+                        materials[ i ].opacity     = 0.5
+                    }
+                } else {
+                    materials.transparent = true
+                    materials.opacity     = 0.5
+                }
+
+            } )
+
+        },
+
+        showGroupGeometries ( color ) {
+            'use strict'
+
+            const group   = this.scene.getObjectByName( 'Données' ).children[ 0 ]
+            let helpGroup = this.scene.getObjectByName( 'Aides' )
+            if ( !helpGroup ) {
+
+                helpGroup      = new Itee.Group()
+                helpGroup.name = "Aides"
+                this.scene.add( helpGroup )
+
+            }
+
+            let geometriesHelperGroup = helpGroup.getObjectByName( 'Geometries' )
+            if ( !geometriesHelperGroup ) {
+
+                geometriesHelperGroup           = new Itee.Group()
+                geometriesHelperGroup.name      = "Geometries"
+                geometriesHelperGroup.modifiers = [
+                    {
+                        type:    'checkbox',
+                        value:   'checked',
+                        onClick: this.toggleVisibilityOf( geometriesHelperGroup )
+                    },
+                    {
+                        type:     'range',
+                        onChange: this.updateOpacityOf( geometriesHelperGroup )
+                    },
+                    {
+                        type:    'button',
+                        value:   'X',
+                        onClick: this.removeObject( geometriesHelperGroup )
+                    }
+                ]
+                helpGroup.add( geometriesHelperGroup )
+
+            }
+
+            const _color = color || Math.random() * 0xffffff
+
+            group.traverse( child => {
+
+                if ( !child.isMesh ) {
+                    return
+                }
+
+                const geometry = child.geometry
+                if ( !geometry ) {
+                    return
+                }
+
+                const geometryHelper     = new Itee.LineSegments(
+                    new Itee.EdgesGeometry( child.geometry ),
+                    new Itee.LineBasicMaterial( { color: _color } )
+                )
+                geometryHelper.modifiers = [
+                    {
+                        type:    'button',
+                        value:   'X',
+                        onClick: this.removeObject( geometryHelper )
+                    }
+                ]
+
+                geometryHelper.name = `${child.name}_Geometrie`
+
+                geometriesHelperGroup.add( geometryHelper )
+
+            } )
+
+        },
+
+        showGroupCenter () {
+            'use strict'
+
+            const group      = this.scene.getObjectByName( 'Données' ).children[ 0 ]
+            const position   = group.getWorldPosition( group.position.clone() )
+            const axesHelper = new Itee.AxesHelper( 100 )
+            axesHelper.position.set( position.x, position.y, position.z )
+            axesHelper.name = 'Centre du groupe'
+
+            let helpGroup = this.scene.getObjectByName( 'Aides' )
+            if ( !helpGroup ) {
+
+                helpGroup      = new Itee.Group()
+                helpGroup.name = "Aides"
+                this.scene.add( helpGroup )
+
+            }
+
+            let barycenterHelperGroup = helpGroup.getObjectByName( 'Centres' )
+            if ( !barycenterHelperGroup ) {
+
+                barycenterHelperGroup           = new Itee.Group()
+                barycenterHelperGroup.name      = "Centres"
+                barycenterHelperGroup.modifiers = [
+                    {
+                        type:    'checkbox',
+                        value:   'checked',
+                        onClick: this.toggleVisibilityOf( barycenterHelperGroup )
+                    },
+                    {
+                        type:     'range',
+                        onChange: this.updateOpacityOf( barycenterHelperGroup )
+                    },
+                    {
+                        type:    'button',
+                        value:   'X',
+                        onClick: this.removeObject( barycenterHelperGroup )
+                    }
+                ]
+                helpGroup.add( barycenterHelperGroup )
+
+            }
+
+            barycenterHelperGroup.add( axesHelper )
+
+        },
+
+        showMeshesBarycenter () {
+            'use strict'
+
+            const group            = this.scene.getObjectByName( 'Données' ).children[ 0 ]
+            const children         = group.children
+            const numberOfChildren = children.length || 1
+            const barycenter       = children.map( child => {return child.getWorldPosition( child.position.clone() )} )
+                                             .reduce( ( a, b ) => { return new Itee.Vector3().addVectors( a, b )} )
+                                             .divideScalar( numberOfChildren )
+
+            const axesHelper = new Itee.AxesHelper( 75 )
+            axesHelper.position.set( barycenter.x, barycenter.y, barycenter.z )
+            axesHelper.name = 'Barycentre des meshes'
+
+            let helpGroup = this.scene.getObjectByName( 'Aides' )
+            if ( !helpGroup ) {
+
+                helpGroup      = new Itee.Group()
+                helpGroup.name = "Aides"
+                this.scene.add( helpGroup )
+
+            }
+
+            let barycenterHelperGroup = helpGroup.getObjectByName( 'Centres' )
+            if ( !barycenterHelperGroup ) {
+
+                barycenterHelperGroup           = new Itee.Group()
+                barycenterHelperGroup.name      = "Centres"
+                barycenterHelperGroup.modifiers = [
+                    {
+                        type:    'checkbox',
+                        value:   'checked',
+                        onClick: this.toggleVisibilityOf( barycenterHelperGroup )
+                    },
+                    {
+                        type:     'range',
+                        onChange: this.updateOpacityOf( barycenterHelperGroup )
+                    },
+                    {
+                        type:    'button',
+                        value:   'X',
+                        onClick: this.removeObject( barycenterHelperGroup )
+                    }
+                ]
+                helpGroup.add( barycenterHelperGroup )
+
+            }
+
+            barycenterHelperGroup.add( axesHelper )
+
+        },
+
+        showGeometriesBarycenter () {
+            'use strict'
+
+            const group            = this.scene.getObjectByName( 'Données' ).children[ 0 ]
+            const children         = group.children
+            const numberOfChildren = children.length || 1
+            const barycenter       = children.map( child => {
+
+                                                 if ( !child.geometry.boundingBox ) {
+                                                     child.geometry.computeBoundingBox()
+                                                 }
+
+                                                 return child.geometry.boundingBox.getCenter()
+
+                                             } )
+                                             .reduce( ( a, b ) => { return new Itee.Vector3().addVectors( a, b )} )
+                                             .divideScalar( numberOfChildren )
+
+            const axesHelper = new Itee.AxesHelper( 50 )
+            axesHelper.position.set( barycenter.x, barycenter.y, barycenter.z )
+            axesHelper.name = 'Barycentre des geométries'
+
+            let helpGroup = this.scene.getObjectByName( 'Aides' )
+            if ( !helpGroup ) {
+
+                helpGroup      = new Itee.Group()
+                helpGroup.name = "Aides"
+                this.scene.add( helpGroup )
+
+            }
+
+            let barycenterHelperGroup = helpGroup.getObjectByName( 'Centres' )
+            if ( !barycenterHelperGroup ) {
+
+                barycenterHelperGroup           = new Itee.Group()
+                barycenterHelperGroup.name      = "Centres"
+                barycenterHelperGroup.modifiers = [
+                    {
+                        type:    'checkbox',
+                        value:   'checked',
+                        onClick: this.toggleVisibilityOf( barycenterHelperGroup )
+                    },
+                    {
+                        type:     'range',
+                        onChange: this.updateOpacityOf( barycenterHelperGroup )
+                    },
+                    {
+                        type:    'button',
+                        value:   'X',
+                        onClick: this.removeObject( barycenterHelperGroup )
+                    }
+                ]
+                helpGroup.add( barycenterHelperGroup )
+
+            }
+
+            barycenterHelperGroup.add( axesHelper )
+
+        },
+
+        ////////
+
+        setMeshesToBarycenter () {
+            'use strict'
+
+        },
+
+        setGroupToCenter () {
+            'use strict'
+
+            const group = this.scene.getObjectByName( 'Données' ).children[ 0 ]
+            group.position.set( 0, 0, 0 )
+            group.updateMatrix()
+
+        },
+
+        setMeshesToGroupCenter () {
+            'use strict'
+
+            const group            = this.scene.getObjectByName( 'Données' ).children[ 0 ]
+            const groupPosition    = group.position
+            const children         = group.children
+            const numberOfChildren = children.length || 1
+            const barycenter       = children.map( child => {return child.position} )
+                                             .reduce( ( a, b ) => { return new Itee.Vector3().addVectors( a, b )} )
+                                             .divideScalar( numberOfChildren )
+
+            const subVector = new Itee.Vector3().subVectors( barycenter, groupPosition )
+
+            group.traverse( child => {
+
+                if ( child.uuid === group.uuid ) {
+                    return
+                }
+
+                child.position.x -= subVector.x
+                child.position.y -= subVector.y
+                child.position.z -= subVector.z
+                child.updateMatrix()
+
+            } )
+
+        },
+
+        setGroupPositionToChildrenMeshBarycenter () {
+            'use strict'
+
+            const group            = this.scene.getObjectByName( 'Données' ).children[ 0 ]
+            const groupPosition    = group.position
+            const children         = group.children
+            const numberOfChildren = children.length || 1
+            const barycenter       = children.map( child => {return child.position} )
+                                             .reduce( ( a, b ) => { return new Itee.Vector3().addVectors( a, b )} )
+                                             .divideScalar( numberOfChildren )
+
+            const subVector = new Itee.Vector3().subVectors( barycenter, groupPosition )
+
+            group.traverse( child => {
+
+                if ( child.uuid === group.uuid ) {
+                    return
+                }
+
+                child.position.x -= subVector.x
+                child.position.y -= subVector.y
+                child.position.z -= subVector.z
+                child.updateMatrix()
+
+            } )
+
+            group.position.set( barycenter.x, barycenter.y, barycenter.z )
+            group.updateMatrix()
+
+        },
+
+        setGroupPositionToChildrenGeometryBarycenter () {
+            'use strict'
+
+            const groupToUpdate    = this.scene.getObjectByName( 'Données' ).children[ 0 ]
+            const children         = groupToUpdate.children
+            const numberOfChildren = children.length || 1
+            const barycenter       = children.map( child => {
+
+                                                 if ( !child.geometry.boundingBox ) {
+                                                     child.geometry.computeBoundingBox()
+                                                 }
+
+                                                 return child.geometry.boundingBox.getCenter()
+
+                                             } )
+                                             .reduce( ( a, b ) => { return new Itee.Vector3().addVectors( a, b )} )
+                                             .divideScalar( numberOfChildren )
+
+            const negatedBarycenter = barycenter.clone().negate()
+
+            groupToUpdate.position.set( barycenter.x, barycenter.y, barycenter.z )
+            groupToUpdate.updateMatrix()
+
+            groupToUpdate.traverse( child => {
+
+                if ( child.uuid === groupToUpdate.uuid ) {
+                    return
+                }
+
+                child.position.set( negatedBarycenter.x, negatedBarycenter.y, negatedBarycenter.z )
+                child.updateMatrix()
+
+            } )
+
+        },
+
+        /////////
+
+        rotateGeometries () {
+            'use strict'
+
+            const group = this.scene.getObjectByName( 'Données' ).children[ 0 ]
+            group.traverse( child => {
+
+                if ( !child.isMesh ) {
+                    return
+                }
+
+                child.geometry.rotateX( Itee.degreesToRadians( 90 ) )
+
+            } )
+
+        },
+
+        recenterGeometriesChildren () {
+            'use strict'
+
+            // Recenter buffergeometry in world center
+            const group = this.scene.getObjectByName( 'Données' ).children[ 0 ]
+            group.traverse( child => {
+
+                if ( !child.isMesh ) {
+                    return
+                }
+
+                const center         = child.geometry.center()
+                const meshBarycenter = center.negate()
+
+                child.position.set( meshBarycenter.x, meshBarycenter.y, meshBarycenter.z )
+                child.updateMatrix()
+
+            } )
+
+        },
+
+        /////////
+
+        applyRotationToGeometries () {
+            'use strict'
+
+            const group = this.scene.getObjectByName( 'Données' ).children[ 0 ]
+            group.traverse( child => {
+
+                if ( !child.isMesh ) {
+                    return
+                }
+
+                const rotateX = Itee.degreesToRadians( this.geometries.rotate.x )
+                const rotateY = Itee.degreesToRadians( this.geometries.rotate.y )
+                const rotateZ = Itee.degreesToRadians( this.geometries.rotate.z )
+                child.geometry.rotateX( rotateX )
+                child.geometry.rotateY( rotateY )
+                child.geometry.rotateZ( rotateZ )
+
+            } )
+
+        },
+
+        applyTranslationToGeometries () {
+            'use strict'
+
+            const group = this.scene.getObjectByName( 'Données' ).children[ 0 ]
+            group.traverse( child => {
+
+                if ( !child.isMesh ) {
+                    return
+                }
+
+                const translateX = this.geometries.translate.x
+                const translateY = this.geometries.translate.y
+                const translateZ = this.geometries.translate.z
+                child.geometry.translate( translateX, translateY, translateZ )
+
+            } )
+
+        },
+
+        applyRotationToMeshes () {
+            'use strict'
+
+            const group = this.scene.getObjectByName( 'Données' ).children[ 0 ]
+
+            const rotateX = Itee.degreesToRadians( this.meshes.rotate.x )
+            const rotateY = Itee.degreesToRadians( this.meshes.rotate.y )
+            const rotateZ = Itee.degreesToRadians( this.meshes.rotate.z )
+            group.rotateX( rotateX )
+            group.rotateY( rotateY )
+            group.rotateZ( rotateZ )
+
+            group.updateMatrix()
+
+        },
+
+        applyTranslationToMeshes () {
+            'use strict'
+
+            const group = this.scene.getObjectByName( 'Données' ).children[ 0 ]
+
+            const translateX = this.meshes.translate.x
+            const translateY = this.meshes.translate.y
+            const translateZ = this.meshes.translate.z
+            group.translateX( translateX )
+            group.translateY( translateY )
+            group.translateZ( translateZ )
+
+            group.updateMatrix()
+
+        },
+
+        //// // VIEWPORT
+
+        toggleViewportStats () {
+            'use strict'
+
+            this.viewport.showStats = !this.viewport.showStats
+
+        },
+
+        toggleSelectionMode () {
+            'use strict'
+
+            this.viewport.isRaycastable = !this.viewport.isRaycastable
+
+        },
+
+        onSelectionDataChange ( key, value ) {
+
+            let _key     = key
+            let _value   = value
+            let _element = this.selectedObject
+
+            // Care: the order of assignement is important here !
+            while ( _value.key ) {
+                _element = _element[ _key ]
+                _key     = _value.key
+                _value   = _value.value
+            }
+
+            _element[ _key ] = _value
+
+        },
+
+        //// Pointers
+
+        enablePointer () {
+
+            if ( !this.pointer ) {
+                return
+            }
+
+            this.pointer.visible = true
+
+        },
+
+        updatePointer ( point, face ) {
+
+            if ( !this.pointer || !point ) {
+                return
+            }
+
+            //Todo: scale sphere in squared distance to intersect origin and camera position
+            if ( this.pointer.name === 'Plan' ) {
+
+                //                                const arrowHelper = new Itee.ArrowHelper( face.normal, point, 1, 0x123456 )
+                //                                this.scene.add( arrowHelper )
+
+                const direction       = new Itee.Vector3().addVectors( point, face.normal )
+                const div             = direction.clone().normalize().divideScalar( 10 )
+                const offsetPosition  = point.clone().add( div )
+                const offsetDirection = direction.clone().add( div )
+                this.pointer.position.set( offsetPosition.x, offsetPosition.y, offsetPosition.z )
+                this.pointer.lookAt( offsetDirection )
+                //                                this.pointer.position.set( point.x, point.y, point.z )
+                //                                this.pointer.lookAt( direction )
+                //                                this.pointer.rotateX(Itee.degreesToRadians(90))
+
+            } else {
+                this.pointer.position.set( point.x, point.y, point.z )
+            }
+
+        },
+
+        disablePointer () {
+
+            if ( !this.pointer ) {
+                return
+            }
+
+            this.pointer.visible = false
+
+        },
+
+        // Viewport selection
+
+        setSelectionMode () {
+            'use strict'
+
+            this.action                 = 'selection'
+            this.pointer                = this.scene.getObjectByName( 'Environement' ).getObjectByName( 'Pointers' ).getObjectByName( 'Sphère' )
+            this.viewport.isRaycastable = !this.viewport.isRaycastable
+        },
+
+        setClippingSelectionMode () {
+            'use strict'
+
+            this.action                 = 'clippingSelection'
+            this.pointer                = this.scene.getObjectByName( 'Environement' ).getObjectByName( 'Pointers' ).getObjectByName( 'Plan' )
+            this.viewport.isRaycastable = !this.viewport.isRaycastable
+        },
+
+        // Listener
+
+        onIntersect ( intersect ) {
+
+            if ( intersect ) {
+
+                this.updatePointer( intersect.point, intersect.face )
+                this._updateIntersected( intersect.object )
+
+            } else {
+
+                this.disablePointer()
+                this._clearPreviousIntersected()
+
+            }
+
+        },
+
+        onSelect ( intersect ) {
+
+            if ( intersect ) {
+
+                switch ( this.action ) {
+
+                    case 'selection':
+                        this._updateSelected( intersect.object )
+                        break
+
+                    case 'clippingSelection':
+                        this._addClippingPlan( intersect.point, intersect.face )
+                        break
+
+                    default:
+                        throw new RangeError( `Invalid action: ${this.action}` )
+                        break
+
+                }
+
+            } else {
+
+            }
+
+        },
+
+        onDeselect () {
+
+            if ( !this.selected.object ) { return }
+
+            if ( this.selected.object.material ) {
+
+                this._resetOriginalMaterialOf( this.selected )
+
+            }
+
+            this._releaseReferenceFrom( this.selected )
+
+        },
+
+        _addClippingPlan ( point, face ) {
+
+            const self = this
+
+            let envGroup = this.scene.getObjectByName( 'Environement' )
+            if ( !envGroup ) {
+
+                envGroup      = new Itee.Group()
+                envGroup.name = "Environement"
+                this.scene.add( envGroup )
+
+            }
+
+            let modifiersGroup = this.scene.getObjectByName( 'Modificateurs' )
+            if ( !modifiersGroup ) {
+
+                modifiersGroup      = new Itee.Group()
+                modifiersGroup.name = "Geometries"
+                envGroup.add( modifiersGroup )
+
+            }
+
+            const normal          = face.normal.clone()
+            const subClippinPlane = new Itee.Plane( normal, 0 )
+
+            let projectedPoint = new Itee.Vector3( 0, 0, 0 )
+            subClippinPlane.projectPoint( point, projectedPoint )
+
+            const orthogonalDistanceToOrigin = point.distanceTo( projectedPoint ) - 0.1
+
+            const clippinPlane = new Itee.Plane( face.normal, -orthogonalDistanceToOrigin )
+
+            const clippingPlaneIndex = this.renderer.clippingPlanes.length
+
+            const helper     = new Itee.PlaneHelper( clippinPlane, 1000, 0xffffff )
+            helper.name      = `Plan de coupe n°${clippingPlaneIndex}`
+            helper.visible   = false
+            helper.modifiers = [
                 {
-                    type:    'checkbox',
-                    value:   'checked',
-                    onClick: this.toggleVisibilityOf( aidesGroup )
-                },
-                {
-                    type:     'range',
-                    onChange: this.updateOpacityOf( aidesGroup )
+                    type:    'button',
+                    value:   'X',
+                    onClick: function () {
+                        'use strict'
+
+                        const _clippingPLanes     = self.renderer.clippingPlanes
+                        const _clippingPlaneIndex = clippingPlaneIndex
+                        let _element              = helper
+
+                        return function removeModifierHandler () {
+
+                            _clippingPLanes.splice( _clippingPlaneIndex )
+
+                            _element.parent.remove( _element )
+
+                            const geometry = _element.geometry
+                            if ( geometry ) {
+                                geometry.dispose()
+                            }
+
+                            const materials = _element.material
+                            if ( materials ) {
+
+                                if ( Array.isArray( materials ) ) {
+                                    for ( let i = 0, n = materials.length ; i < n ; i++ ) {
+                                        materials[ i ].dispose()
+                                    }
+                                } else {
+                                    materials.dispose()
+                                }
+
+                            }
+
+                            _element = undefined
+
+                        }
+
+                    }
                 }
             ]
-            this.viewport.scene.add( aidesGroup )
-        }
 
-        // Ambiant light
-        const ambientLight     = new Itee.AmbientLight( 0x777777 )
-        ambientLight.name      = 'AmbientLight'
-        ambientLight.onClick   = this.selectObject( ambientLight )
-        ambientLight.modifiers = [
-            {
-                type:    'checkbox',
-                value:   'checked',
-                onClick: this.toggleVisibilityOf( ambientLight )
-            },
-            {
-                type:     'range',
-                onChange: this.updateOpacityOf( ambientLight )
+            modifiersGroup.add( helper )
+
+            this.renderer.clippingPlanes.push( clippinPlane )
+
+        },
+
+        _updateIntersected ( object ) {
+
+            if ( !object || (object.type === 'Group' || object.type === 'Scene') ) {
+                return
             }
-        ]
-        aidesGroup.add( ambientLight )
 
-        /// Hemi light
-        //        const hemiLight = new Itee.HemisphereLight( 0xffffff, 0xffffff, 0.8 )
-        //        hemiLight.color.setHSL( 0.6, 1, 0.6 )
-        //        hemiLight.groundColor.setHSL( 0.095, 1, 0.75 )
-        //        hemiLight.position.set( -100, 400, 50 )
-        //        envGroup.add( hemiLight )
+            if ( !this.intersected.object ) {
 
-        //        const hemiLightHelper = new Itee.HemisphereLightHelper( hemiLight, 100 )
-        //        envGroup.add( hemiLightHelper )
+                this._keepReferenceOf( object, this.intersected )
 
-        /// dir light
-        //        const dirLight = new Itee.DirectionalLight( 0xffffff, 1 )
-        //        dirLight.color.setHSL( 0.1, 1, 0.95 )
-        //        dirLight.position.set( -100, 175, 50 )
-        //        dirLight.target.set( -100, 0, -50 )
-        //        dirLight.castShadow            = true
-        //        dirLight.shadow.mapSize.width  = 2048
-        //        dirLight.shadow.mapSize.height = 2048
-        //        envGroup.add( dirLight )
-        //
-        //        const dirLightHeper = new Itee.DirectionalLightHelper( dirLight, 10 )
-        //        envGroup.add( dirLightHeper )
+            } else {
 
-        const gridHelper     = new Itee.GridHelper( 200, 20 )
-        gridHelper.name      = 'Grid'
-        gridHelper.onClick   = this.selectObject( gridHelper )
-        gridHelper.modifiers = [
-            {
-                type:    'checkbox',
-                value:   'checked',
-                onClick: this.toggleVisibilityOf( gridHelper )
-            },
-            {
-                type:     'range',
-                onChange: this.updateOpacityOf( gridHelper )
+                if ( this.intersected.object.uuid !== object.uuid ) {
+
+                    this._clearPreviousIntersected()
+                    this._keepReferenceOf( object, this.intersected )
+
+                }
+
             }
-        ]
-        aidesGroup.add( gridHelper )
+
+        },
+
+        _updateSelected ( object ) {
+
+            if ( object && (object.type === 'Group' || object.type === 'Scene') ) {
+                return
+            }
+
+            if ( !this.selected.object ) {
+
+                if ( this.intersected.object ) {
+                    this._clearPreviousIntersected()
+                }
+
+                this._keepReferenceOf( object, this.selected )
+
+            } else {
+
+                if ( this.selected.object.uuid !== this.intersected.object.uuid ) {
+
+                    this.onDeselect()
+
+                    if ( this.intersected.object ) {
+                        this._clearPreviousIntersected()
+                    }
+
+                    this._keepReferenceOf( object, this.selected )
+
+                }
+
+            }
+
+        },
+
+        _keepReferenceOf ( objectToRef, refObject ) {
+
+            refObject.object           = objectToRef
+            refObject.originalMaterial = objectToRef.material
+            refObject.object.material  = this._cloneMaterials( objectToRef.material )
+
+        },
+
+        _cloneMaterials ( materials ) {
+
+            if ( !materials ) {
+                return
+            }
+
+            if ( Array.isArray( materials ) ) {
+
+                const cloneMaterials = []
+                for ( let i = 0, n = materials.length ; i < n ; i++ ) {
+
+                    const material = materials[ i ]
+                    // Fix wrong cloning with undefined
+                    if ( material.userData === undefined ) {
+                        material.userData = {}
+                    }
+
+                    let cloneMaterial = material.clone()
+                    cloneMaterial.color.set( 0x00c8ff ) //0xfa9600
+                    cloneMaterials.push( cloneMaterial )
+
+                }
+                return cloneMaterials
+
+            } else {
+
+                // Fix wrong cloning with undefined
+                if ( materials.userData === undefined ) {
+                    materials.userData = {}
+                }
+
+                const cloneMaterial = materials.clone()
+                cloneMaterial.color.set( 0x00c8ff ) //0xfa9600
+                return cloneMaterial
+
+            }
+
+        },
+
+        _clearPreviousIntersected () {
+
+            if ( this.intersected.object ) {
+
+                if ( this.intersected.object.material ) {
+
+                    this._releaseMaterials( this.intersected.object.material )
+                    this.intersected.object.material = this.intersected.originalMaterial
+
+                }
+
+                this._releaseReferenceFrom( this.intersected )
+
+            }
+
+        },
+
+        _releaseReferenceFrom ( refObject ) {
+
+            refObject.originalMaterial = undefined
+            refObject.object           = undefined
+
+        },
+
+        _resetOriginalMaterialOf ( refObject ) {
+
+            this._releaseMaterials( refObject.object.material )
+            refObject.object.material = refObject.originalMaterial
+
+        },
+
+        _releaseMaterials ( materials ) {
+
+            if ( !materials ) {
+                return
+            }
+
+            if ( Array.isArray( materials ) ) {
+                for ( let i = 0, n = materials.length ; i < n ; i++ ) {
+                    materials[ i ].dispose()
+                }
+            } else {
+                materials.dispose()
+            }
+
+        },
+
     }
 }
 
@@ -2995,7 +4308,7 @@ const NotFound = {
 // MAIN APP //
 //////////////
 
-var TConfigParameters = {
+var IteeConfig = {
     launchingSite: '#itee-application-root',
     routes:        [
         {
@@ -3025,54 +4338,6 @@ var TConfigParameters = {
                 {
                     path:      '/editor',
                     component: EditorPage
-                },
-                {
-                    path:      '/users',
-                    component: UsersPage,
-                    props:     {
-                        users: fakeUsersData
-                    },
-                    children:  [
-                        {
-                            path:      ':userId',
-                            component: User,
-                            props:     ( route ) => {
-                                'use strict'
-
-                                const user = fakeUsersData.find( user => user.id === route.params.userId )
-
-                                return {
-                                    user
-                                }
-
-                            },
-                            children:  [
-                                {
-                                    path:      '',
-                                    component: UserHome
-                                },
-                                {
-                                    path:      'profile',
-                                    component: UserProfile
-                                },
-                                {
-                                    path:      'posts',
-                                    component: UserPosts,
-                                    props:     ( route ) => ({ baseRoute: '/users/' + route.params.userId + '/posts' }),
-                                    children:  [
-                                        {
-                                            path:      ':postId',
-                                            component: UserPost
-                                        }
-                                    ]
-                                },
-                                {
-                                    path:     '*',
-                                    redirect: NotFound
-                                }
-                            ]
-                        }
-                    ]
                 },
                 {
                     path:      '*',
