@@ -11272,18 +11272,12 @@ OBJLoader.prototype = {
 
                     // 0                  1      2      3
                     // ["v 1.0 2.0 3.0", "1.0", "2.0", "3.0"]
-
-//                    state.vertices.push(
-//                        parseFloat( result[ 1 ] ),
-//                        parseFloat( result[ 2 ] ),
-//                        parseFloat( result[ 3 ] )
-//                    );
-//
                     state.vertices.push(
-                        parseFloat( result[ 1 ] ) - 600200,
-                        parseFloat( result[ 2 ] ) - 131400,
-                        parseFloat( result[ 3 ] ) - 60
+                        parseFloat( result[ 1 ] ),
+                        parseFloat( result[ 2 ] ),
+                        parseFloat( result[ 3 ] )
                     );
+
 
                 } else if ( lineSecondChar === 'n' && ( result = this.regexp.normal_pattern.exec( line ) ) !== null ) {
 
