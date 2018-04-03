@@ -9,7 +9,10 @@
 
 const I     = require( 'i-return' )
 const path  = require( 'path' )
-const THREE = require( 'three' )
+
+const THREE = require( '../../node_modules/threejs-full-es6/builds/Three.cjs' )
+//const THREE = require( 'threejs-full-es6' )
+//const THREE = require( 'three' )
 
 const AscFile = require( './AscFile' )
 

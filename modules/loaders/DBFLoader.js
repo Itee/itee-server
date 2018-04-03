@@ -14,7 +14,9 @@
  */
 
 /* eslint-env browser */
-const THREE    = require( 'three' )
+const THREE = require( '../../node_modules/threejs-full-es6/builds/Three.cjs' )
+//const THREE = require( 'threejs-full-es6' )
+//const THREE    = require( 'three' )
 
 //import { FileLoader } from '../../node_modules/threejs-full-es6/sources/loaders/FileLoader'
 //import { DefaultLoadingManager } from '../../node_modules/threejs-full-es6/sources/loaders/LoadingManager'

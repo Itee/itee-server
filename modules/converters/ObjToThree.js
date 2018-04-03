@@ -9,7 +9,9 @@
  */
 
 const FileToThreeBase = require( './FileToThreeBase' )
-const ObjLoader           = require( '../loaders/ObjLoader' )
+//const ObjLoader           = require( '../loaders/ObjLoader' )
+const THREE = require( '../../node_modules/threejs-full-es6/builds/Three.cjs' )
+//const THREE = require( 'threejs-full-es6' )
 
 ////
 
@@ -26,7 +28,8 @@ class MtlToThree extends FileToThreeBase {
 
         try {
 
-            const loader    = new ObjLoader()
+            const loader    = new THREE.OBJLoader()
+//            const loader    = new ObjLoader()
             const threeData = loader.parse( this._fileData )
             onSuccess( threeData )
 

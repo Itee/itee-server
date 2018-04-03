@@ -16,14 +16,9 @@
  */
 
 /* eslint-env browser */
-const THREE    = require( 'three' )
-
-//import { FileLoader } from '../../node_modules/threejs-full-es6/sources/loaders/FileLoader'
-//import { DefaultLoadingManager } from '../../node_modules/threejs-full-es6/sources/loaders/LoadingManager'
-//import { Vector3 } from '../../node_modules/threejs-full-es6/sources/math/Vector3'
-//import { Shape } from '../../node_modules/threejs-full-es6/sources/core/Shape'
-
-//import { DefaultLogger as TLogger } from '../Loggers/TLogger'
+const THREE = require( '../../node_modules/threejs-full-es6/builds/Three.cjs' )
+//const THREE = require( 'threejs-full-es6' )
+//const THREE    = require( 'three' )
 
 function TLogger () {
 
