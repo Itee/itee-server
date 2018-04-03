@@ -41,7 +41,7 @@ router
 
         const pathToFile = path.join( __dirname, '../..', '/views/index.pug' )
         const config     = request.query.config || 'undefined'
-        const urlParams  = getURLParams( request.query )
+        const query      = request.query.query || null
 
         fs.stat(
             pathToFile,
@@ -53,8 +53,8 @@ router
                         .render(
                             'index.pug',
                             {
-                                config:    config,
-                                urlParams: urlParams
+                                _config_: config,
+                                _query_:  query
                             }
                         )
 
