@@ -178,18 +178,71 @@ class ThreeToMongoDB {
             return
         }
 
+        const self = this
+
         this._parse(
             data,
             ( childrenIds ) => {
 
-                Objects3DModelBase.findOneAndUpdate( { _id: parentId }, { $push: { children: childrenIds } }, ( error, data ) => {
+                self._clearCache()
+                Objects3DModelBase.findOneAndUpdate( { _id: parentId }, { $push: { children: childrenIds } }, ( error, rootObject ) => {
 
                     if ( error ) {
                         onError( error )
                     } else if ( !data ) {
                         onError( 'Unable to retrieve parent object !!!' )
                     } else {
-                        onSuccess( `${childrenIds} with parent ${parentId}` )
+
+                        const rootId = rootObject.id
+
+                        // Update Children with parent id
+                        if ( typeof childrenIds === 'string' ) {
+
+                            Objects3DModelBase.update( { _id: childrenIds }, { $set: { parent: rootId } }, ( error, success ) => {
+
+                                if ( error ) {
+                                    onError( errors )
+                                } else {
+                                    onSuccess( rootId )
+                                }
+
+                            } )
+
+                        } else if ( Array.isArray( childrenIds ) ) {
+
+                            const numberOfChildren = childrenIds.length
+                            let endUpdates         = 0
+
+                            for ( let childIndex = 0 ; childIndex < numberOfChildren ; childIndex++ ) {
+
+                                let childId = childrenIds[ childIndex ]
+
+                                Objects3DModelBase.update( { _id: childId }, { $set: { parent: rootId } }, ( error, success ) => {
+
+                                    if ( error ) {
+                                        errors.push( error )
+                                    }
+
+                                    endUpdates++
+                                    if ( endUpdates < numberOfChildren ) {
+                                        return
+                                    }
+
+                                    if ( errors.length > 0 ) {
+                                        onError( errors )
+                                    } else {
+                                        onSuccess( rootId )
+                                    }
+
+                                } )
+
+                            }
+
+                        } else {
+                            // This case should never happen...
+                            onSuccess( rootId )
+                        }
+
                     }
 
                 } )
@@ -3057,6 +3110,7 @@ class ThreeToMongoDB {
                        .then( savedObject => {
 
                            const objectId = savedObject.id
+                           //                           console.log('Save object: ' + objectId)
 
                            // Add object id to cache
                            //                               self._objectCache[ savedObject.uuid ] = objectId
