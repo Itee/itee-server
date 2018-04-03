@@ -125,7 +125,7 @@ class FilesToDatabase {
                 this._checkEndOfReturns( response, [
                     {
                         title:   'Succées',
-                        message: `Sauvegarder avec l'identifiant: ${success}`
+                        message: `Sauvegarder sous l'identifiant ${success}`
                     }
                 ] )
             },
@@ -236,8 +236,6 @@ class FilesToDatabase {
     }
 
     _saveJson ( file, parameters, response ) {
-
-        const self = this
 
         this._jsonToThree.convert(
             file,
@@ -361,63 +359,63 @@ class FilesToDatabase {
                             group.add( mesh )
 
                         }
-
-
-                        // rotateGeometries
-                        group.traverse( child => {
-
-                            if ( child.uuid === group.uuid ) {
-                                return
-                            }
-
-                            child.geometry.rotateX( THREE.Math.degToRad(90))
-                            child.geometry.rotateZ( THREE.Math.degToRad(180))
-
-                        } )
-
-                        // Recenter buffergeometry in world center and keep trace of original geometry barycenter
-                        const barycentersList  = []
-                        group.traverse( child => {
-
-                            if ( child.uuid === group.uuid ) {
-                                return
-                            }
-
-                            const center         = child.geometry.center()
-                            const meshBarycenter = center.negate()
-
-                            barycentersList.push( meshBarycenter )
-
-                            child.position.set( meshBarycenter.x, meshBarycenter.y, meshBarycenter.z )
-                            child.updateMatrix()
-
-                        } )
-
-                        // setGroupPositionToChildrenMeshBarycenter
-                        const groupPosition    = group.position
-                        const children         = group.children
-                        const numberOfChildren = children.length || 1
-                        const barycenter       = children.map( child => {return child.position} )
-                                                         .reduce( ( a, b ) => { return new THREE.Vector3().addVectors( a, b )} )
-                                                         .divideScalar( numberOfChildren )
-
-                        const subVector = new THREE.Vector3().subVectors( barycenter, groupPosition )
-
-                        group.traverse( child => {
-
-                            if ( child.uuid === group.uuid ) {
-                                return
-                            }
-
-                            child.position.x -= subVector.x
-                            child.position.y -= subVector.y
-                            child.position.z -= subVector.z
-                            child.updateMatrix()
-
-                        } )
-
-                        group.position.set( barycenter.x, barycenter.y, barycenter.z )
-                        group.updateMatrix()
+//
+//
+//                        // rotateGeometries
+//                        group.traverse( child => {
+//
+//                            if ( child.uuid === group.uuid ) {
+//                                return
+//                            }
+//
+//                            child.geometry.rotateX( THREE.Math.degToRad(90))
+//                            child.geometry.rotateZ( THREE.Math.degToRad(180))
+//
+//                        } )
+//
+//                        // Recenter buffergeometry in world center and keep trace of original geometry barycenter
+//                        const barycentersList  = []
+//                        group.traverse( child => {
+//
+//                            if ( child.uuid === group.uuid ) {
+//                                return
+//                            }
+//
+//                            const center         = child.geometry.center()
+//                            const meshBarycenter = center.negate()
+//
+//                            barycentersList.push( meshBarycenter )
+//
+//                            child.position.set( meshBarycenter.x, meshBarycenter.y, meshBarycenter.z )
+//                            child.updateMatrix()
+//
+//                        } )
+//
+//                        // setGroupPositionToChildrenMeshBarycenter
+//                        const groupPosition    = group.position
+//                        const children         = group.children
+//                        const numberOfChildren = children.length || 1
+//                        const barycenter       = children.map( child => {return child.position} )
+//                                                         .reduce( ( a, b ) => { return new THREE.Vector3().addVectors( a, b )} )
+//                                                         .divideScalar( numberOfChildren )
+//
+//                        const subVector = new THREE.Vector3().subVectors( barycenter, groupPosition )
+//
+//                        group.traverse( child => {
+//
+//                            if ( child.uuid === group.uuid ) {
+//                                return
+//                            }
+//
+//                            child.position.x -= subVector.x
+//                            child.position.y -= subVector.y
+//                            child.position.z -= subVector.z
+//                            child.updateMatrix()
+//
+//                        } )
+//
+//                        group.position.set( barycenter.x, barycenter.y, barycenter.z )
+//                        group.updateMatrix()
 
                         // setGroupToCenter
 //                        group.position.set( 0, 0, 0 )
