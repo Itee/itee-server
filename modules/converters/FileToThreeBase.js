@@ -246,6 +246,10 @@ FileToThreeBase.prototype._dumpFileInMemoryAs = function ( dumpType, file, param
 
         }
 
+        fileReadStream.unpipe()
+        fileReadStream.close()
+        memoryWriteStream.end()
+
     } )
 
     fileReadStream.pipe( memoryWriteStream )
