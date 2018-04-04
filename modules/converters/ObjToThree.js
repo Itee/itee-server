@@ -30,6 +30,10 @@ class MtlToThree extends FileToThreeBase {
 
             const loader    = new THREE.OBJLoader()
 //            const loader    = new ObjLoader()
+
+            if(parameters && parameters.materials){
+                loader.setMaterials( parameters.materials )
+            }
             const threeData = loader.parse( this._fileData )
             onSuccess( threeData )
 
