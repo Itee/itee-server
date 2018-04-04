@@ -53,7 +53,7 @@
     "serve-favicon": "^2.5.0",
     "serve-static": "^1.13.2",
     "three": "^0.91.0",
-    "threejs-full-es6": "^5.0.3"
+    "threejs-full-es6": "^5.0.6"
   },
   "devDependencies": {
     "babel-core": "^6.26.0",
