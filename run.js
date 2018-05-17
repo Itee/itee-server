@@ -97,30 +97,17 @@ var server = require( './server/HttpServer.js' )( application, config.server )
 // ////////////////////////////////////
 // //////////// PROCESS ///////////////
 // ////////////////////////////////////
-process.on( 'SIGTERM', function () {
+process.on( 'SIGTERM', shutDown )
+process.on( 'SIGINT', shutDown )
 
-    server.close( function () {
+function shutDown() {
 
-        console.log( 'Closed out remaining connections.' )
-
-        // Close db connections, etc.
-        database.connection.close( function () {
-            console.log( 'Fermeture de la connexion à la base de données dût à la fermeture de l\'application !' )
-            process.exit( 0 )
-        } )
-
-    } )
-
-} )
-
-process.on( 'SIGINT', function () {
-
-    server.close( function () {
+    server.close( () => {
 
         console.log( 'Closed out remaining connections.' )
 
         // Close db connections, etc.
-        database.connection.close( function () {
+        database.connection.close( () => {
 
             console.log( 'Fermeture de la connexion à la base de données dût à la fermeture de l\'application !' )
             process.exit( 0 )
