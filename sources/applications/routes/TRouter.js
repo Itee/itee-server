@@ -54,13 +54,15 @@ module.exports = function routing ( app ) {
     //
     //    } )
 
+    // Services
+    // Todo: buildServiceFor( 'Foo' )
     app.use( '/', require( './index/index.js' ) )
     app.use( '/docs', require( './docs/docs.js' ) )
     app.use( '/resources', require( './resources/resources.js' ) )
     app.use( '/downloads', require( './downloads/downloads.js' ) )
-    app.use( '/views', require( './views/views.js' )( env ) )
     app.use( '/uploads', require( './uploads/uploads.js' ) )
 
+    // DB Access
     app.use( '/users', buildRouteFor( 'User' ) )
     app.use( '/companies', buildRouteFor( 'Company' ) )
     app.use( '/objects', buildRouteFor( 'Objects3D' ) )
