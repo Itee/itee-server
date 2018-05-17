@@ -52,7 +52,7 @@ module.exports = function ( config ) {
     app.set( 'view engine', config.view_engine )
     app.set( 'jsonp callback name', config.jsonp_callback_name )
     app.set( 'json replacer', config.jsonp_replacer )
-    app.set( 'json spaces', config.jsonp_spaces )
+    app.set( 'json spaces', config.jsonp_spaces );
     (config.trust_proxy) ? app.enable( 'trust proxy' ) : app.disabled( 'trust proxy' );
     (config.case_sensitive_routing) ? app.enable( 'case sensitive routing' ) : app.disabled( 'case sensitive routing' );
     (config.strict_routing) ? app.enable( 'strict routing' ) : app.disabled( 'strict routing' );
