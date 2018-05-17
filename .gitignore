@@ -16,3 +16,4 @@ resources/javascript/application*
 resources/models/
 resources/textures/
 
+/utils/
