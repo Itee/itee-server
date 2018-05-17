@@ -14,7 +14,7 @@ const express    = require( '../../node_modules/express' )
 const router     = express.Router( { mergeParams: true } )
 const path       = require( 'path' )
 const fs         = require( 'fs' )
-const FilesToDatabase = require( '../../modules/files/FilesToDatabase.js' )
+const FilesToDatabase = require( '../../databases/converters/FilesToDatabase.js' )
 
 const filesToDatabase = new FilesToDatabase()
 

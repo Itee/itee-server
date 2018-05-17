@@ -9,11 +9,9 @@
  */
 
 const FileToThreeBase = require( './FileToThreeBase' )
-const ShpLoader       = require( '../loaders/SHPLoader' )
+const DbfLoader       = require( '../../applications/loaders/DBFLoader' )
 
-////
-
-class ShpToThree extends FileToThreeBase {
+class DbfToThree extends FileToThreeBase {
 
     constructor () {
         super( arguments )
@@ -23,7 +21,7 @@ class ShpToThree extends FileToThreeBase {
 
         try {
 
-            const loader    = new ShpLoader()
+            const loader    = new DbfLoader()
             const threeData = loader.parse( this._fileData )
             onSuccess( threeData )
 
@@ -37,4 +35,4 @@ class ShpToThree extends FileToThreeBase {
 
 }
 
-module.exports = ShpToThree
+module.exports = DbfToThree

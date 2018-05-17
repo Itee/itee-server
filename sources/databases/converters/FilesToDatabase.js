@@ -16,14 +16,14 @@ const THREE = require( '../../node_modules/threejs-full-es6/builds/Three.cjs' )
 
 const AscFile = require( './AscFile' )
 
-const JsonToThree = require( '../converters/JsonToThree' )
-const ShpToThree  = require( '../converters/ShpToThree' )
-const DbfToThree  = require( '../converters/DbfToThree' )
-const MtlToThree  = require( '../converters/MtlToThree' )
-const ObjToThree  = require( '../converters/ObjToThree' )
-const Obj2ToThree = require( '../converters/Obj2ToThree' )
+const JsonToThree = require( './JsonToThree' )
+const ShpToThree  = require( './ShpToThree' )
+const DbfToThree  = require( './DbfToThree' )
+const MtlToThree  = require( './MtlToThree' )
+const ObjToThree  = require( './ObjToThree' )
+const Obj2ToThree = require( './Obj2ToThree' )
 
-const ThreeToMongoDB = require( '../converters/ThreeToMongoDB' )
+const ThreeToMongoDB = require( './ThreeToMongoDB' )
 
 const FileFormat = Object.freeze( {
     Asc:  '.asc',
