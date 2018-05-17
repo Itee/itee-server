@@ -17,7 +17,7 @@ const router = require( 'express' ).Router( { mergeParams: true } )
 router
     .get( '', function ( request, response, next ) {
 
-        const pathToFile = path.join( __dirname, '../..', '/views/404.html' )
+        const pathToFile = path.join( __dirname, '../../../../', '/resources/views/', '404.html' )
 
         fs.stat(
             pathToFile,

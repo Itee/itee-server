@@ -47,7 +47,7 @@ module.exports = function ( env ) {
             const config     = request.query.config || 'undefined'
             const urlParams  = getURLParams( request.query )
             const extension  = view.split( "." )[ 1 ]
-            const pathToFile = path.join( __dirname, '../..', '/views/', view )
+            const pathToFile = path.join( __dirname, '../../', '/resources/views/', view )
 
             console.log( view );
             console.log( config );

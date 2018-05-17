@@ -38,7 +38,7 @@ function getURLParams ( query ) {
 router
     .get( '', ( request, response, next ) => {
 
-        const pathToFile = path.join( __dirname, '../..', '/views/index.pug' )
+        const pathToFile = path.join( __dirname, '../../../../resources/views/', 'index.pug' )
         const config     = request.query.config || 'undefined'
         const query      = request.query.query || null
 
