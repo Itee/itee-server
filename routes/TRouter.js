@@ -7,7 +7,7 @@
  * @description Main entry point to extend application routes
  */
 
-const buildRouteFor = require( './route_builder' )
+const buildRouteFor = require( './TRouteBuilder' )
 
 /**
  * This module add routes to the server.
