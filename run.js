@@ -85,11 +85,6 @@ var database = require( './sources/databases/TDatabase.js' )( config.database )
 var application = require( './sources/applications/TServerApplication' )( config.application )
 
 // ////////////////////////////////////
-// //////////// ROUTES ////////////////
-// ////////////////////////////////////
-require( './sources/routes/TRouter' )( application )
-
-// ////////////////////////////////////
 // ////////// SERVER HTTP /////////////
 // ////////////////////////////////////
 var server = require( './sources/server/HttpServer.js' )( application, config.server )
