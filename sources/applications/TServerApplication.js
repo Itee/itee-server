@@ -85,6 +85,11 @@ module.exports = function ( config ) {
     app.use( errorHandler() )
     app.use( favicon( middlewareConfig.favicon.path ) )
 
+    // ////////////////////////////////////
+    // //////////// ROUTES ////////////////
+    // ////////////////////////////////////
+    require( './routes/TRouter' )( app )
+
     // //// END OF APPLICATION //////
     return app
 
