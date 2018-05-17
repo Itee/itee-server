@@ -21,18 +21,15 @@
  *
  */
 
-const express        = require( 'express' )
-const busBoy         = require( 'express-busboy' )
-const webSocket      = require( 'express-ws' )
-const fs             = require( 'fs' )
-const morgan         = require( 'morgan' )
-const rfs            = require( 'rotating-file-stream' )
-const errorHandler   = require( 'errorhandler' )
-const bodyParser     = require( 'body-parser' )
-const methodOverride = require( 'method-override' )
-const resource       = require( 'express-resource' )
-const favicon        = require( 'serve-favicon' )
-const path           = require( 'path' )
+const fs           = require( 'fs' )
+const path         = require( 'path' )
+const express      = require( 'express' )
+const busBoy       = require( 'express-busboy' )
+const webSocket    = require( 'express-ws' )
+const morgan       = require( 'morgan' )
+const rfs          = require( 'rotating-file-stream' )
+const errorHandler = require( 'errorhandler' )
+const favicon      = require( 'serve-favicon' )
 
 /**
  * Setup the web server application
@@ -42,59 +39,51 @@ const path           = require( 'path' )
  */
 module.exports = function ( config ) {
 
-
-
     // //////////////////////////////
     // /////// APPLICATION //////////
     // //////////////////////////////
 
     let app = express()
-
-    // //////////////////////////////
-    // //////// EXTENSIONS //////////
-    // //////////////////////////////
-    busBoy.extend( app, config.bus_boy )
-    webSocket( app )
-
-    // ////////// APPLICATION CONFIG ////////////
-    const env = config.env
-    app.set( 'env', env )
-    app.set( 'hostName', config[ env ].hostname )
-    app.set( 'port', config[ env ].port )
-    app.set( 'db uri', config[ env ].db_uri )
-    app.set( 'views', config[ env ].views )
-    app.set( 'view engine', config[ env ].view_engine )
-    app.set( 'jsonp callback name', config[ env ].jsonp_callback_name )
-    app.set( 'json replacer', config[ env ].jsonp_replacer )
-    app.set( 'json spaces', config[ env ].jsonp_spaces );
-    (config[ env ].trust_proxy) ? app.enable( 'trust proxy' ) : app.disabled( 'trust proxy' );
-    (config[ env ].case_sensitive_routing) ? app.enable( 'case sensitive routing' ) : app.disabled( 'case sensitive routing' );
-    (config[ env ].strict_routing) ? app.enable( 'strict routing' ) : app.disabled( 'strict routing' );
-    (config[ env ].view_cache) ? app.enable( 'view cache' ) : app.disabled( 'view cache' );
+    app.set( 'env', config.env )
+    app.set( 'hostName', config.hostname )
+    app.set( 'port', config.port )
+    app.set( 'db uri', config.db_uri )
+    app.set( 'views', config.views )
+    app.set( 'view engine', config.view_engine )
+    app.set( 'jsonp callback name', config.jsonp_callback_name )
+    app.set( 'json replacer', config.jsonp_replacer )
+    app.set( 'json spaces', config.jsonp_spaces )
+    (config.trust_proxy) ? app.enable( 'trust proxy' ) : app.disabled( 'trust proxy' );
+    (config.case_sensitive_routing) ? app.enable( 'case sensitive routing' ) : app.disabled( 'case sensitive routing' );
+    (config.strict_routing) ? app.enable( 'strict routing' ) : app.disabled( 'strict routing' );
+    (config.view_cache) ? app.enable( 'view cache' ) : app.disabled( 'view cache' );
 
     // ////////// CONNECT MIDDLEWARE //////////////
-    const logFilePath  = config[ env ].path_to_log
-    const logDirectory = path.dirname( logFilePath )
+    const middlewareConfig = config.middlewares
 
-    // Ensure log directory exists
-    fs.existsSync( logDirectory ) || fs.mkdirSync( logDirectory )
+    busBoy.extend( app, middlewareConfig.busBoy )
+
+    webSocket( app )
 
     // create a rotating write stream
-    const accessLogStream = rfs( 'access.log', {
-        interval: '1d', // rotate daily
-        path:     logDirectory
-    } )
+    const accessLogStream = rfs( middlewareConfig.morgan.fileName, {
+        interval: middlewareConfig.morgan.interval, // rotate daily
+        path:     (() => {
 
+            const logFilePath  = middlewareConfig.morgan.directoryPath
+            const logDirectory = path.dirname( logFilePath )
+
+            // Ensure log directory exists
+            fs.existsSync( logDirectory ) || fs.mkdirSync( logDirectory )
+
+            return logDirectory
+
+        })()
+    } )
     app.use( morgan( 'combined', { stream: accessLogStream } ) )
 
     app.use( errorHandler() )
-    app.use( favicon( config[ env ].path_to_favicon ) )
-    //    app.use( bodyParser.urlencoded( {
-    //        extended: true,
-    //        limit:    '5mb'
-    //    } ) );
-    //    app.use( bodyParser.json( { limit: '5mb' } ) );
-    app.use( methodOverride( '_method' ) )
+    app.use( favicon( middlewareConfig.favicon.path ) )
 
     // //// END OF APPLICATION //////
     return app
