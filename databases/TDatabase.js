@@ -9,12 +9,12 @@
  * local schema and finally apply the ReconnectDatabase module.
  *
  */
-const fs                       = require( 'fs' )
-const path                     = require( 'path' )
-const mongooseDouble           = require( 'mongoose-double' )
-const autoReconnect            = require( './TAutoReconnect' )
+const fs             = require( 'fs' )
+const path           = require( 'path' )
+const mongooseDouble = require( 'mongoose-double' )
+const autoReconnect  = require( './TAutoReconnect' )
 const { isFunction } = require( './validators/Validator' )
-let mongoose                   = require( 'mongoose' )
+let mongoose         = require( 'mongoose' )
 
 /**
  * Just an override of 'fs.existsSync' with more explicit name
