@@ -7,6 +7,8 @@
  * @description This module allow server to auto reconnect to the database.
  */
 
+
+
 /**
  * The module
  * @param mongoose - The database to connect
