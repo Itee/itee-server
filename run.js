@@ -51,7 +51,7 @@
  * @description The main entry point for running node server.
  */
 
-console.log( 'Start Node Server ' + process.version + '\n' )
+console.log( `Start Node Server ${process.version}` )
 console.time( 'Server launch time' )
 
 // /////////////////////////////
@@ -116,4 +116,4 @@ function shutDown() {
 
     } )
 
-} )
+}
