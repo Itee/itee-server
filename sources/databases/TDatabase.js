@@ -13,7 +13,7 @@ const fs             = require( 'fs' )
 const path           = require( 'path' )
 const mongooseDouble = require( 'mongoose-double' )
 const autoReconnect  = require( './TAutoReconnect' )
-const { isFunction } = require( './validators/Validator' )
+const { isFunction } = require( '../validators/Validator' )
 let mongoose         = require( 'mongoose' )
 
 /**

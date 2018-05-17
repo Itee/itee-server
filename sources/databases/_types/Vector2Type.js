@@ -8,7 +8,7 @@
  *
  */
 
-const { isNullOrUndefined, isNotNumber, isNotObject } = require( '../validators/Validator' )
+const { isNullOrUndefined, isNotNumber, isNotObject } = require( '../../validators/Validator' )
 
 function registerSchemaTypeFor ( Mongoose ) {
     'use strict'
