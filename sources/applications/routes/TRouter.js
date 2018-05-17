@@ -17,7 +17,6 @@ const buildRouteFor = require( './TRouteBuilder' )
  */
 module.exports = function routing ( app ) {
 
-    var env = app.get( 'env' )
     //TODO: allow external route to be loaded from here
     //TODO: Use _config to allow/disallow some predefined routes (like uploads for example) in function of the server type wanted
 
