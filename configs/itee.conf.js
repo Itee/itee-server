@@ -39,9 +39,9 @@ function CreateIteeConfiguration ( process ) {
             strict_routing: (isProduction) ? false : false,
 
             // view cache Enables view template compilation caching, enabled in production by default
-            view_cache:  (isProduction) ? true : false,
+            view_cache:  (isProduction) ? false : false,
             view_engine: (isProduction) ? 'pug' : 'pug',
-            views:       (isProduction) ? path.join( __dirname, '..', 'views' ) : path.join( __dirname, '..', 'views' ),
+            views:       (isProduction) ? path.join( __dirname, '../resources/', 'views' ) : path.join( __dirname, '../resources/', 'views' ),
 
             // jsonp callback name Changes the default callback name of ?callback=
             jsonp_callback_name: (isProduction) ? 'callbackJson' : 'callbackJson',
