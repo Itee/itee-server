@@ -12,7 +12,7 @@
  */
 const path = require( 'path' )
 const fs   = require( 'fs' )
-let router = require( '../../node_modules/express' ).Router( { mergeParams: true } )
+const router = require( 'express' ).Router( { mergeParams: true } )
 
 router
     .get( '', function ( request, response, next ) {

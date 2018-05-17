@@ -10,8 +10,7 @@
 /*
  * MODULES
  */
-var express = require( '../../node_modules/express' )
-var router  = express.Router( { mergeParams: true } )
+var router = require( 'express' ).Router( { mergeParams: true } )
 var path    = require( 'path' )
 var fs      = require( 'fs' )
 

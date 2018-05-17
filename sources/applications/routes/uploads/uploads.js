@@ -10,8 +10,7 @@
 /*
  * MODULES
  */
-const express    = require( '../../node_modules/express' )
-const router     = express.Router( { mergeParams: true } )
+var router = require( 'express' ).Router( { mergeParams: true } )
 const path       = require( 'path' )
 const fs         = require( 'fs' )
 const FilesToDatabase = require( '../../databases/converters/FilesToDatabase.js' )

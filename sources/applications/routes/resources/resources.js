@@ -10,9 +10,9 @@
 /**
  * @external The express router module
  */
-var router = require( '../../node_modules/express' ).Router( { mergeParams: true } )
-var path   = require( 'path' )
-var fs     = require( 'fs' )
+const router = require( 'express' ).Router( { mergeParams: true } )
+const path   = require( 'path' )
+const fs     = require( 'fs' )
 
 router
     .get( '/:file(*)', function ( request, response, next ) {
