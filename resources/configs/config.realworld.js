@@ -38,7 +38,7 @@ const AppPage = {
             
         </TContainer>
     `,
-    data:     function () {
+    data () {
         return {
             appbar: {
                 viewerMenuItemIsActive:   true,
@@ -174,7 +174,11 @@ const ViewerPage = {
         <TToolBar>
             <TToolItem icon="hand-pointer" tooltip="Sélection" :isActive="toolbar.selectIsActive" :onClick="()=>{updateActiveToolItems('select')}" />
             <TToolItem icon="wifi" tooltip="Rayon X" :isActive="toolbar.xRayIsActive" :onClick="()=>{updateActiveToolItems('xRay')}" />
-            <TToolItem icon="cut" tooltip="Outil de découpe" :isActive="toolbar.clippingIsActive" :onClick="()=>{updateActiveToolItems('clipping')}" />
+			<TToolDropDown popAt="bottomLeft" tooltip="Outil de découpe" icon="cut" :isActive="toolbar.clippingIsActive">
+                <TToolItem icon="long-arrow-alt-down" label="Hauteur" tooltip="Effectuer une coupe dans la hauteur" :isActive="toolbar.verticalClippingIsActive" :onClick="()=>{updateActiveToolItems('verticalClipping')}" />
+                <TToolItem icon="long-arrow-alt-right" label="Largeur" tooltip="Effectuer une coupe dans la largeur" :isActive="toolbar.horizontalClippingIsActive" :onClick="()=>{updateActiveToolItems('horizontalClipping')}" />
+                <TToolItem icon="expand-arrows-alt" label="Libre" tooltip="Effectuer une coupe omnidirectionnel" :isActive="toolbar.freeClippingIsActive" :onClick="()=>{updateActiveToolItems('freeClipping')}" />
+            </TToolDropDown>
             <TToolDropDown popAt="bottomLeft" icon="crosshairs" tooltip="Outils de mesure" :isActive="toolbar.measureIsActive" >
                 <TToolItem icon="mars" label="Segment" tooltip="Prendre une distance entre un point A et un point B" :onClick="()=>{updateActiveToolItems('measure')}" onClickData="segment" />
                 <TToolItem class="disabled" icon="share-alt" label="PolyLigne" tooltip="Prendre des distances entre plusieurs points qui se suivent" />
@@ -270,7 +274,6 @@ const ViewerPage = {
 							
     </TContainerVertical>
     `,
-    props:    [ 'foobar' ],
     data () {
 
         return {
@@ -280,13 +283,16 @@ const ViewerPage = {
             },
 
             toolbar: {
-                selectIsActive:   false,
-                xRayIsActive:     false,
-                clippingIsActive: false,
-                measureIsActive:  false,
-                shadowIsActive:   false,
-                statsIsActive:    false,
-                renderIsActive:   true,
+                selectIsActive:             false,
+                xRayIsActive:               false,
+                clippingIsActive:           false,
+                verticalClippingIsActive:   false,
+                horizontalClippingIsActive: false,
+                freeClippingIsActive:       false,
+                measureIsActive:            false,
+                shadowIsActive:             false,
+                statsIsActive:              false,
+                renderIsActive:             true,
             },
 
             // Viewport
@@ -376,12 +382,6 @@ const ViewerPage = {
         }
 
     },
-    beforeCreate () {
-        'use strict'
-
-        console.log( 'beforeCreate' )
-
-    },
     created () {
         'use strict'
 
@@ -393,45 +393,6 @@ const ViewerPage = {
         this._initDatas( _externalOptions )
 
         console.log( 'created' )
-
-    },
-    beforeMount () {
-        'use strict'
-
-        console.log( 'beforeMount' )
-
-    },
-    mounted () {
-        'use strict'
-
-        //        this.setViewportCameraOfType ( 'perspective' )
-        //        this.setViewportControlOfType ( 'orbit' )
-
-        console.log( 'mounted' )
-
-    },
-    beforeUpdate () {
-        'use strict'
-
-        //        console.log('beforeUpdate')
-
-    },
-    updated () {
-        'use strict'
-
-        //        console.log('updated')
-
-    },
-    beforeDestroy () {
-        'use strict'
-
-        console.log( 'beforeDestroy' )
-
-    },
-    destroyed () {
-        'use strict'
-
-        console.log( 'destroyed' )
 
     },
     methods:  {
@@ -886,6 +847,11 @@ const ViewerPage = {
                 self.onError
             )
 
+            const trackingCounter = {
+                geometries: {},
+                materials:  {}
+            }
+
             function companyOnSuccess ( companies ) {
 
                 const sitesGroup = new Itee.Group()
@@ -945,7 +911,19 @@ const ViewerPage = {
 
                                 let objectsIds = category.children
 
-                                populateChildren( categoryGroup, objectsIds )
+                                const numberOfChildernToRetrive = objectsIds.length
+                                let numberOfRetrievedChildren   = 0
+
+                                populateChildren( categoryGroup, objectsIds, ( numberOfObjects ) => {
+
+                                    numberOfRetrievedChildren += numberOfObjects
+                                    if ( numberOfRetrievedChildren < numberOfChildernToRetrive ) {
+                                        return
+                                    }
+
+                                    endFetch()
+
+                                } )
 
                             } )
 
@@ -955,448 +933,19 @@ const ViewerPage = {
 
                 }
 
-            }
+                function endFetch () {
 
-            //            function fetchObjects ( query, callback ) {
-            //
-            //                self.objectsManager.read(
-            //                    query,
-            //                    callback,
-            //                    self.onProgress,
-            //                    self.onError
-            //                )
-            //
-            //            }
-            //
-            //            function dispatchObjects ( objects, rootId, callback ) {
-            //
-            //                if ( Array.isArray( objects ) ) {
-            //                    if ( objects.length > 1 ) {
-            //                        populateSome( objects, rootId, callback )
-            //                    } else if ( objects.length === 1 ) {
-            //                        populateOne( objects[ 0 ], rootId, callback )
-            //                    } else {
-            //                        console.error( `No objects retrived for ${rootId}` )
-            //                    }
-            //                } else {
-            //                    populateOne( objects, rootId, callback )
-            //                }
-            //
-            //            }
-            //
-            //            function populateOne ( object, rootId, callback ) {
-            //
-            //                if ( object.isGroup || object.type === 'Group' || object.type === 'Scene' ) {
-            //
-            //                    object.modifiers = [
-            //                        {
-            //                            type:    'checkbox',
-            //                            value:   'checked',
-            //                            onClick: self.toggleVisibilityOf( object )
-            //                        },
-            //                        {
-            //                            type:     'range',
-            //                            onChange: self.updateOpacityOf( object )
-            //                        }
-            //                    ]
-            //
-            //                    searchFamilly( object, rootId, callback )
-            //
-            //                } else {
-            //
-            //                    const geometriesId = object.geometry
-            //                    const materialsIds = object.material
-            //
-            //                    self.geometriesManager.read(
-            //                        geometriesId,
-            //                        geometry => {
-            //
-            //                            self.materialsManager.read(
-            //                                materialsIds,
-            //                                materials => {
-            //
-            //                                    object.geometry      = geometry
-            //                                    object.material      = materials
-            //                                    object.isRaycastable = true
-            //
-            //                                    searchFamilly( object, rootId, callback )
-            //
-            //                                },
-            //                                self.onProgress,
-            //                                self.onError
-            //                            )
-            //
-            //                        },
-            //                        self.onProgress,
-            //                        self.onError
-            //                    )
-            //
-            //                }
-            //
-            //            }
-            //
-            //            function populateSome ( objects, rootId, callback ) {
-            //
-            //                const geometriesIds = objects.map( object => object.geometry ).filter( ( value, index, self ) => {
-            //                    return self.indexOf( value ) === index
-            //                } )
-            //
-            //                const materialsArray       = objects.map( object => object.material )
-            //                const concatMaterialsArray = [].concat.apply( [], materialsArray )
-            //                const materialsIds         = concatMaterialsArray.filter( ( value, index, self ) => {
-            //                    return self.indexOf( value ) === index
-            //                } )
-            //
-            //                self.geometriesManager.read(
-            //                    geometriesIds,
-            //                    geometries => {
-            //
-            //                        self.materialsManager.read(
-            //                            materialsIds,
-            //                            materials => {
-            //
-            //                                const numberOfObjects     = objects.length
-            //                                let numberOfFilledObjects = 0
-            //
-            //                                for ( let objectIndex = 0 ; objectIndex < numberOfObjects ; objectIndex++ ) {
-            //
-            //                                    let object = objects[ objectIndex ]
-            //
-            //                                    // Set geometry
-            //                                    object.geometry = geometries[ object.geometry ]
-            //
-            //                                    // Set materials
-            //                                    const materialIds = object.material
-            //                                    object.material   = []
-            //                                    for ( let materialIndex = 0, numberOfMaterial = materialIds.length ; materialIndex < numberOfMaterial ; materialIndex++ ) {
-            //                                        object.material.push( materials[ materialIds[ materialIndex ] ] )
-            //                                    }
-            //
-            //                                    // Apply modifiers
-            //                                    object.modifiers     = [
-            //                                        {
-            //                                            type:    'checkbox',
-            //                                            value:   'checked',
-            //                                            onClick: self.toggleVisibilityOf( object )
-            //                                        },
-            //                                        {
-            //                                            type:     'range',
-            //                                            onChange: self.updateOpacityOf( object )
-            //                                        },
-            //                                        {
-            //                                            type:    'button',
-            //                                            value:   'Voir',
-            //                                            onClick: self.lookAtObject( object )
-            //                                        }
-            //                                    ]
-            //                                    object.isRaycastable = true
-            //
-            //                                    // This should never return an ancestor due to root id
-            //                                    // But could fill children
-            //                                    searchFamilly( object, rootId, ( objectFilled ) => {
-            //
-            //                                        numberOfFilledObjects++
-            //
-            //                                        if ( numberOfFilledObjects < numberOfObjects ) {
-            //                                            return
-            //                                        }
-            //
-            //                                        callback( objects )
-            //
-            //                                    } )
-            //
-            //                                }
-            //
-            //                            },
-            //                            self.onProgress,
-            //                            self.onError
-            //                        )
-            //
-            //                    },
-            //                    self.onProgress,
-            //                    self.onError
-            //                )
-            //
-            //            }
-            //
-            //            function searchFamilly ( object, rootId, callback ) {
-            //
-            //                const childrenIds  = object.children
-            //                const haveChildren = ( childrenIds && childrenIds.length > 0 )
-            //                const parentId     = object.parent
-            //                const haveParent   = ( parentId && parentId !== rootId )
-            //
-            //                if ( haveParent && haveChildren ) {
-            //
-            //                    // Have children and ancestor
-            //                    object.parent   = null
-            //                    object.children = []
-            //                    populateChildren( object, childrenIds, () => {
-            //
-            //                        // After parent retrieve children get the ancestor
-            //                        populateParent( object, parentId, ( grandParent ) => {
-            //
-            //                            // We got the grand parent, return it
-            //                            callback( grandParent )
-            //
-            //                        } )
-            //
-            //                    } )
-            //
-            //                } else if ( haveParent && !haveChildren ) {
-            //
-            //                    // Have only an ancestor got it
-            //                    object.parent = null
-            //                    populateParent( object, parentId, ( grandParent ) => {
-            //
-            //                        // We got the grand parent, return it
-            //                        callback( grandParent )
-            //
-            //                    } )
-            //
-            //                } else if ( !haveParent && haveChildren ) {
-            //
-            //                    // Is top level element with children
-            //                    object.children = []
-            //                    populateChildren( object, childrenIds, () => {
-            //
-            //                        // After parent retrieve children return
-            //                        callback( object )
-            //
-            //                    } )
-            //
-            //                } else {
-            //
-            //                    // Is top level element withour children
-            //                    callback( object )
-            //
-            //                }
-            //
-            //            }
-            //
-            //            /////////
-            //
-            //            function populateParent ( child, parentId, callback ) {
-            //
-            //                self.objectsManager.read(
-            //                    parentId,
-            //                    objects => {
-            //
-            //                        const parentObject = objects[ 0 ]
-            //
-            //                        if ( child ) {
-            //                            child.parent = parentObject
-            //                        }
-            //
-            //                        if ( parentObject.isGroup || parentObject.type === 'Group' || parentObject.type === 'Scene' ) {
-            //
-            //                            parentObject.modifiers = [
-            //                                {
-            //                                    type:    'checkbox',
-            //                                    value:   'checked',
-            //                                    onClick: self.toggleVisibilityOf( parentObject )
-            //                                },
-            //                                {
-            //                                    type:     'range',
-            //                                    onChange: self.updateOpacityOf( parentObject )
-            //                                }
-            //                            ]
-            //
-            //                            routeObject( parentObject, parentId, callback )
-            //
-            //                        } else {
-            //
-            //                            const geometriesId = parentObject.geometry
-            //                            const materialsIds = parentObject.material
-            //
-            //                            self.geometriesManager.read(
-            //                                geometriesId,
-            //                                geometry => {
-            //
-            //                                    self.materialsManager.read(
-            //                                        materialsIds,
-            //                                        materials => {
-            //
-            //                                            parentObject.geometry      = geometry
-            //                                            parentObject.material      = materials
-            //                                            parentObject.isRaycastable = true
-            //
-            //                                            routeObject( parentObject, parentId, callback )
-            //
-            //                                        },
-            //                                        self.onProgress,
-            //                                        self.onError
-            //                                    )
-            //
-            //                                },
-            //                                self.onProgress,
-            //                                self.onError
-            //                            )
-            //
-            //                        }
-            //
-            //                        function routeObject ( object, rootId, callback ) {
-            //
-            //                            const childrenIds  = object.children
-            //                            const haveChildren = ( childrenIds && childrenIds.length > 0 )
-            //                            const parentId     = object.parent
-            //                            const haveParent   = ( parentId && parentId !== rootId )
-            //
-            //                            if ( haveParent && haveChildren ) {
-            //
-            //                                // Have children and ancestor
-            //                                object.parent   = null
-            //                                object.children = []
-            //                                populateChildren( object, childrenIds, () => {
-            //
-            //                                    // After parent retrieve children get the ancestor
-            //
-            //                                    populateParent( object, parentId, ( grandParent ) => {
-            //
-            //                                        // We got the grand parent, return it
-            //                                        callback( grandParent )
-            //
-            //                                    } )
-            //
-            //                                } )
-            //
-            //                            } else if ( haveParent && !haveChildren ) {
-            //
-            //                                // Have only an ancestor got it
-            //                                object.parent = null
-            //                                populateParent( object, parentId, ( grandParent ) => {
-            //
-            //                                    // We got the grand parent, return it
-            //                                    callback( grandParent )
-            //
-            //                                } )
-            //
-            //                            } else if ( !haveParent && haveChildren ) {
-            //
-            //                                // Is top level element with children
-            //                                object.children = []
-            //                                populateChildren( object, childrenIds, () => {
-            //
-            //                                    // After parent retrieve children return
-            //                                    callback( object )
-            //
-            //                                } )
-            //
-            //                            } else {
-            //
-            //                                // Is top level element withour children
-            //                                callback( object )
-            //
-            //                            }
-            //
-            //                        }
-            //
-            //                    },
-            //                    self.onProgress,
-            //                    self.onError
-            //                )
-            //            }
-            //
-            //            function populateChildren ( parent, childrenIds, callback ) {
-            //
-            //                self.objectsManager.read(
-            //                    childrenIds,
-            //                    objects => {
-            //
-            //                        const groupsObjects = []
-            //                        const meshesObjects = []
-            //
-            //                        for ( let objI = 0, numObj = objects.length ; objI < numObj ; objI++ ) {
-            //                            let obj = objects[ objI ]
-            //
-            //                            if ( obj.isGroup || obj.type === 'Group' || obj.type === 'Scene' ) {
-            //                                groupsObjects.push( obj )
-            //                            } else {
-            //                                meshesObjects.push( obj )
-            //                            }
-            //
-            //                        }
-            //
-            //                        const geometriesIds = meshesObjects.map( object => object.geometry ).filter( ( value, index, self ) => {
-            //                            return self.indexOf( value ) === index
-            //                        } )
-            //
-            //                        const materialsArray       = meshesObjects.map( object => object.material )
-            //                        const concatMaterialsArray = [].concat.apply( [], materialsArray )
-            //                        const materialsIds         = concatMaterialsArray.filter( ( value, index, self ) => {
-            //                            return self.indexOf( value ) === index
-            //                        } )
-            //
-            //                        self.geometriesManager.read(
-            //                            geometriesIds,
-            //                            geometries => {
-            //
-            //                                self.materialsManager.read(
-            //                                    materialsIds,
-            //                                    materials => {
-            //
-            //                                        let haveChildren = false
-            //                                        for ( let objectIndex = 0, numberOfObjects = objects.length ; objectIndex < numberOfObjects ; objectIndex++ ) {
-            //
-            //                                            let object = objects[ objectIndex ]
-            //
-            //                                            if ( object.children.length > 0 ) {
-            //                                                haveChildren = true
-            //                                                populateChildren( object, object.children, callback )
-            //                                            }
-            //
-            //                                            object.geometry = geometries[ object.geometry ]
-            //
-            //                                            const materialIds = object.material
-            //                                            object.material   = []
-            //                                            for ( let materialIndex = 0, numberOfMaterial = materialIds.length ; materialIndex < numberOfMaterial ; materialIndex++ ) {
-            //                                                object.material.push( materials[ materialIds[ materialIndex ] ] )
-            //                                            }
-            //
-            //                                            object.modifiers = [
-            //                                                {
-            //                                                    type:    'checkbox',
-            //                                                    value:   'checked',
-            //                                                    onClick: self.toggleVisibilityOf( object )
-            //                                                },
-            //                                                {
-            //                                                    type:     'range',
-            //                                                    onChange: self.updateOpacityOf( object )
-            //                                                },
-            //                                                {
-            //                                                    type:    'button',
-            //                                                    value:   'Voir',
-            //                                                    onClick: self.lookAtObject( object )
-            //                                                }
-            //                                            ]
-            //
-            //                                            object.isRaycastable = true
-            //
-            //                                            object.parent = null
-            //                                            parent.add( object )
-            //
-            //                                        }
-            //
-            //                                        if ( !haveChildren ) {
-            //                                            callback()
-            //                                        }
-            //
-            //                                    },
-            //                                    self.onProgress,
-            //                                    self.onError
-            //                                )
-            //
-            //                            },
-            //                            self.onProgress,
-            //                            self.onError
-            //                        )
-            //
-            //                    },
-            //                    self.onProgress,
-            //                    self.onError
-            //                )
-            //
-            //            }
+
+                    // Special case to refresh treeview that cannot listen on scene
+                    self.viewport.needCacheUpdate               = true
+                    self.viewport.needCameraFitWorldBoundingBox = true
+                    self.tree.needUpdate                        = !self.tree.needUpdate
+
+                    console.log( trackingCounter )
+
+                }
+
+            }
 
             function populate ( collectionName, childrenIds, parentGroup, callback ) {
 
@@ -1467,125 +1016,149 @@ const ViewerPage = {
                                     materialsIds,
                                     materials => {
 
-                                        for ( let objectIndex = 0, numberOfObjects = objects.length ; objectIndex < numberOfObjects ; objectIndex++ ) {
+                                        const numberOfObjects = objects.length
+                                        let numberOfReturns   = 0
+                                        for ( let objectIndex = 0 ; objectIndex < numberOfObjects ; objectIndex++ ) {
 
-                                            if ( objects[ objectIndex ].children.length > 0 ) {
-                                                populateChildren( objects[ objectIndex ], objects[ objectIndex ].children, () => {
+                                            const object      = objects[ objectIndex ]
+                                            const geometryId  = object.geometry
+                                            const materialIds = object.material
 
-                                                    objects[ objectIndex ].geometry = geometries[ objects[ objectIndex ].geometry ]
+                                            if ( !trackingCounter.geometries[ geometryId ] ) {
+                                                trackingCounter.geometries[ geometryId ] = 0
+                                            }
+                                            trackingCounter.geometries[ geometryId ] += 1
+                                            if ( Array.isArray( materialIds ) ) {
+                                                for ( let materialIndex = 0, numberOfMaterial = materialIds.length ; materialIndex < numberOfMaterial ; materialIndex++ ) {
+                                                    if ( !trackingCounter.materials[ materialIds[ materialIndex ] ] ) {
+                                                        trackingCounter.materials[ materialIds[ materialIndex ] ] = 0
+                                                    }
+                                                    trackingCounter.materials[ materialIds[ materialIndex ] ] += 1
+                                                }
+                                            } else {
+                                                if ( !trackingCounter.materials[ materialIds ] ) {
+                                                    trackingCounter.materials[ materialIds ] = 0
+                                                }
+                                                trackingCounter.materials[ materialIds ] += 1
+                                            }
 
-                                                    const materialIds               = objects[ objectIndex ].material
+                                            if ( object.children.length > 0 ) {
 
-                                                    if (Array.isArray(materialIds)) {
+                                                populateChildren( object, object.children, () => {
 
-                                                        if (materialIds.length === 1) {
+                                                    object.geometry = geometries[ geometryId ]
 
-                                                            objects[ objectIndex ].material = materials[ materialIds[ 0 ] ]
+                                                    if ( Array.isArray( materialIds ) ) {
+
+                                                        if ( materialIds.length === 1 ) {
+
+                                                            object.material = materials[ materialIds[ 0 ] ]
 
                                                         } else {
 
-                                                            objects[ objectIndex ].material = []
+                                                            object.material = []
                                                             for ( let materialIndex = 0, numberOfMaterial = materialIds.length ; materialIndex < numberOfMaterial ; materialIndex++ ) {
-                                                                objects[ objectIndex ].material.push( materials[ materialIds[ materialIndex ] ] )
+                                                                object.material.push( materials[ materialIds[ materialIndex ] ] )
                                                             }
 
                                                         }
 
                                                     } else {
-                                                        objects[ objectIndex ].material = materials[ materialIds ]
+                                                        object.material = materials[ materialIds ]
                                                     }
 
                                                     // Check for object without any materials
-                                                    if ( objects[ objectIndex ].material.length === 0 ) {
+                                                    if ( object.material.length === 0 ) {
 
-                                                        objects[ objectIndex ].material.push( new Itee.MeshBasicMaterial( { side: Itee.DoubleSide } ) )
+                                                        object.material.push( new Itee.MeshBasicMaterial( { side: Itee.DoubleSide } ) )
 
                                                     }
 
-                                                    objects[ objectIndex ].parent = null
+                                                    object.parent = null
 
-                                                    objects[ objectIndex ].modifiers = [
+                                                    object.modifiers = [
                                                         {
                                                             type:    'checkbox',
                                                             value:   'checked',
-                                                            onClick: self.toggleVisibilityOf( objects[ objectIndex ] )
+                                                            onClick: self.toggleVisibilityOf( object )
                                                         },
                                                         {
                                                             type:     'range',
-                                                            onChange: self.updateOpacityOf( objects[ objectIndex ] )
+                                                            onChange: self.updateOpacityOf( object )
                                                         },
                                                         {
                                                             type:    'button',
                                                             value:   'Voir',
-                                                            onClick: self.lookAtObject( objects[ objectIndex ] )
+                                                            onClick: self.lookAtObject( object )
                                                         }
                                                     ]
 
-                                                    objects[ objectIndex ].isRaycastable = true
+                                                    object.isRaycastable = true
+
+                                                    checkEndOfReturns()
 
                                                 } )
 
                                             } else {
 
-                                                objects[ objectIndex ].geometry = geometries[ objects[ objectIndex ].geometry ]
+                                                object.geometry = geometries[ geometryId ]
 
-                                                const materialIds               = objects[ objectIndex ].material
-                                                if (Array.isArray(materialIds)) {
+                                                if ( Array.isArray( materialIds ) ) {
 
-                                                    if (materialIds.length === 1) {
+                                                    if ( materialIds.length === 1 ) {
 
-                                                        objects[ objectIndex ].material = materials[ materialIds[ 0 ] ]
+                                                        object.material = materials[ materialIds[ 0 ] ]
 
                                                     } else {
 
-                                                        objects[ objectIndex ].material = []
+                                                        object.material = []
                                                         for ( let materialIndex = 0, numberOfMaterial = materialIds.length ; materialIndex < numberOfMaterial ; materialIndex++ ) {
-                                                            objects[ objectIndex ].material.push( materials[ materialIds[ materialIndex ] ] )
+                                                            object.material.push( materials[ materialIds[ materialIndex ] ] )
                                                         }
 
                                                     }
 
                                                 } else {
-                                                    objects[ objectIndex ].material = materials[ materialIds ]
+                                                    object.material = materials[ materialIds ]
                                                 }
 
+                                                object.parent = null
 
-                                                objects[ objectIndex ].parent = null
-
-                                                objects[ objectIndex ].modifiers = [
+                                                object.modifiers = [
                                                     {
                                                         type:    'checkbox',
                                                         value:   'checked',
-                                                        onClick: self.toggleVisibilityOf( objects[ objectIndex ] )
+                                                        onClick: self.toggleVisibilityOf( object )
                                                     },
                                                     {
                                                         type:     'range',
-                                                        onChange: self.updateOpacityOf( objects[ objectIndex ] )
+                                                        onChange: self.updateOpacityOf( object )
                                                     },
                                                     {
                                                         type:    'button',
                                                         value:   'Voir',
-                                                        onClick: self.lookAtObject( objects[ objectIndex ] )
+                                                        onClick: self.lookAtObject( object )
                                                     }
                                                 ]
 
-                                                objects[ objectIndex ].isRaycastable = true
+                                                object.isRaycastable = true
 
-                                                parentGroup.add( objects[ objectIndex ] )
+                                                parentGroup.add( object )
 
+                                                checkEndOfReturns()
                                             }
 
                                         }
 
-                                        // Special case to refresh treeview that cannot listen on scene
-                                        self.viewport.needCacheUpdate = true
+                                        function checkEndOfReturns () {
 
-                                        if ( needRecentering ) {
-                                            self.viewport.needCameraFitWorldBoundingBox = true
-                                            needRecentering                             = false
+                                            numberOfReturns++
+                                            if ( numberOfReturns < numberOfObjects ) {
+                                                return
+                                            }
+                                            callback( numberOfObjects )
+
                                         }
-
-                                        self.tree.needUpdate = !self.tree.needUpdate
 
                                     },
                                     self.onProgress,
@@ -1619,7 +1192,7 @@ const ViewerPage = {
                     }
 
                     if ( this.toolbar.clippingIsActive ) {
-                        this.disableClipping()
+                        this.disableFreeClipping()
                         this.toolbar.clippingIsActive = false
                     }
 
@@ -1646,7 +1219,7 @@ const ViewerPage = {
                     }
 
                     if ( this.toolbar.clippingIsActive ) {
-                        this.disableClipping()
+                        this.disableFreeClipping()
                         this.toolbar.clippingIsActive = false
                     }
 
@@ -1666,7 +1239,9 @@ const ViewerPage = {
 
                     break
 
-                case 'clipping':
+                case 'verticalClipping':
+                case 'horizontalClipping':
+                case 'freeClipping':
                     if ( this.toolbar.selectIsActive ) {
                         this.disableSelection()
                         this.toolbar.selectIsActive = false
@@ -1684,13 +1259,42 @@ const ViewerPage = {
 
                     ///
 
-                    this.toolbar.clippingIsActive = !this.toolbar.clippingIsActive
-                    if ( this.toolbar.clippingIsActive ) {
-                        this.enableClipping()
-                    } else {
-                        this.disableClipping()
+                    switch ( itemName ) {
+
+                        case 'verticalClipping':
+                            this.toolbar.verticalClippingIsActive = !this.toolbar.verticalClippingIsActive
+                            if ( this.toolbar.verticalClippingIsActive ) {
+                                this.enableVerticalClipping()
+                            } else {
+                                this.disableVerticalClipping()
+                            }
+                            break
+
+                        case 'horizontalClipping':
+                            this.toolbar.horizontalClippingIsActive = !this.toolbar.horizontalClippingIsActive
+                            if ( this.toolbar.horizontalClippingIsActive ) {
+                                this.enableHorizontalClipping()
+                            } else {
+                                this.disableHorizontalClipping()
+                            }
+                            break
+
+                        case 'freeClipping':
+                            this.toolbar.freeClippingIsActive = !this.toolbar.freeClippingIsActive
+                            if ( this.toolbar.freeClippingIsActive ) {
+                                this.enableFreeClipping()
+                            } else {
+                                this.disableFreeClipping()
+                            }
+                            break
+
+                        default:
+                            throw new RangeError( `Invalid clipping parameter: ${itemName}` )
+                            break
+
                     }
 
+                    this.toolbar.clippingIsActive = ( this.toolbar.verticalClippingIsActive || this.toolbar.horizontalClippingIsActive || this.toolbar.freeClippingIsActive )
                     break
 
                 case 'measure':
@@ -1705,7 +1309,7 @@ const ViewerPage = {
                     }
 
                     if ( this.toolbar.clippingIsActive ) {
-                        this.disableClipping()
+                        this.disableFreeClipping()
                         this.toolbar.clippingIsActive = false
                     }
 
@@ -1944,7 +1548,96 @@ const ViewerPage = {
         },
 
         // Clipping
-        enableClipping () {
+        enableVerticalClipping () {
+            'use strict'
+
+            //Todo: map on global bounding box
+            //            this.scene.traverse()
+
+            const point  = new Itee.Vector3( 0, 0, 0 )
+            const normal = new Itee.Vector3( 0, -1, 0 )
+            this._addClippingPlan( point, normal, 'Coupe vertical', 2.1 )
+
+        },
+        disableVerticalClipping () {
+            'use strict'
+
+            const clippingPlanes        = this.renderer.clippingPlanes
+            const verticalClippingPlane = this.scene.getObjectByName( 'Environement' ).getObjectByName( 'Modificateurs' ).getObjectByName( 'Coupe vertical' )
+            if ( !verticalClippingPlane ) {
+                return
+            }
+
+            clippingPlanes.splice( clippingPlanes.indexOf( verticalClippingPlane ), 1 )
+            verticalClippingPlane.parent.remove( verticalClippingPlane )
+
+            const geometry = verticalClippingPlane.geometry
+            if ( geometry ) {
+                geometry.dispose()
+            }
+
+            const materials = verticalClippingPlane.material
+            if ( materials ) {
+
+                if ( Array.isArray( materials ) ) {
+                    for ( let i = 0, n = materials.length ; i < n ; i++ ) {
+                        materials[ i ].dispose()
+                    }
+                } else {
+                    materials.dispose()
+                }
+
+            }
+
+            // Special case to refresh treeview that cannot listen on scene
+            this.tree.needUpdate = !this.tree.needUpdate
+
+        },
+
+        enableHorizontalClipping () {
+            'use strict'
+
+            const point  = new Itee.Vector3( 0, 0, 0 )
+            const normal = new Itee.Vector3( 1, 0, 0 )
+            this._addClippingPlan( point, normal, 'Coupe horizontal', 10 )
+
+        },
+        disableHorizontalClipping () {
+            'use strict'
+
+            const clippingPlanes          = this.renderer.clippingPlanes
+            const horizontalClippingPlane = this.scene.getObjectByName( 'Environement' ).getObjectByName( 'Modificateurs' ).getObjectByName( 'Coupe horizontal' )
+            if ( !horizontalClippingPlane ) {
+                return
+            }
+
+            clippingPlanes.splice( clippingPlanes.indexOf( horizontalClippingPlane ), 1 )
+            horizontalClippingPlane.parent.remove( horizontalClippingPlane )
+
+            const geometry = horizontalClippingPlane.geometry
+            if ( geometry ) {
+                geometry.dispose()
+            }
+
+            const materials = horizontalClippingPlane.material
+            if ( materials ) {
+
+                if ( Array.isArray( materials ) ) {
+                    for ( let i = 0, n = materials.length ; i < n ; i++ ) {
+                        materials[ i ].dispose()
+                    }
+                } else {
+                    materials.dispose()
+                }
+
+            }
+
+            // Special case to refresh treeview that cannot listen on scene
+            this.tree.needUpdate = !this.tree.needUpdate
+
+        },
+
+        enableFreeClipping () {
             'use strict'
 
             this.setCursorOfType( 'hand' )
@@ -1953,8 +1646,7 @@ const ViewerPage = {
             this.viewport.isRaycastable = true
 
         },
-
-        disableClipping () {
+        disableFreeClipping () {
             'use strict'
 
             this.viewport.isRaycastable = false
@@ -2496,7 +2188,7 @@ const ViewerPage = {
                         break
 
                     case 'clippingSelection':
-                        this._addClippingPlan( intersect.point, intersect.face )
+                        this._addClippingPlan( intersect.point, intersect.face.normal )
                         break
 
                     default:
@@ -2525,9 +2217,11 @@ const ViewerPage = {
 
         },
 
-        _addClippingPlan ( point, face ) {
+        _addClippingPlan ( point, normal, name, sensibilityCoefficient ) {
 
             const self = this
+
+            const _sensibilityCoefficient = sensibilityCoefficient || 1
 
             let envGroup = this.scene.getObjectByName( 'Environement' )
             if ( !envGroup ) {
@@ -2547,20 +2241,19 @@ const ViewerPage = {
 
             }
 
-            const normal          = face.normal.clone()
-            const subClippinPlane = new Itee.Plane( normal, 0 )
+            const subClippinPlane = new Itee.Plane( normal.clone(), 0 )
 
             let projectedPoint = new Itee.Vector3( 0, 0, 0 )
             subClippinPlane.projectPoint( point, projectedPoint )
 
             const orthogonalDistanceToOrigin = point.distanceTo( projectedPoint ) - 0.1
 
-            const clippingPlane      = new Itee.Plane( face.normal, -orthogonalDistanceToOrigin )
+            const clippingPlane      = new Itee.Plane( normal.clone(), -orthogonalDistanceToOrigin )
             const clippingPlaneIndex = this.renderer.clippingPlanes.length
             clippingPlane.id         = clippingPlaneIndex
 
             const helper     = new Itee.PlaneHelper( clippingPlane, 1000, 0xffffff )
-            helper.name      = `Plan de coupe n°${clippingPlaneIndex}`
+            helper.name      = name || `Plan de coupe n°${clippingPlaneIndex}`
             helper.visible   = false
             helper.modifiers = [
                 {
@@ -2572,7 +2265,7 @@ const ViewerPage = {
 
                         return function ( changeEvent ) {
 
-                            const centeredValue     = changeEvent.target.valueAsNumber - 50
+                            const centeredValue     = (changeEvent.target.valueAsNumber - 50) * _sensibilityCoefficient
                             _clippingPlane.constant = centeredValue
 
                         }
@@ -3756,11 +3449,11 @@ const EditorPage = {
 
                 _self.selectedObject = _object
 
-//                if ( _selected ) {
-//                    _self.onSelect( {object: _object} )
-//                } else {
-//                    _self.onDeselect()
-//                }
+                //                if ( _selected ) {
+                //                    _self.onSelect( {object: _object} )
+                //                } else {
+                //                    _self.onDeselect()
+                //                }
 
             }
 
@@ -4506,7 +4199,7 @@ const EditorPage = {
                         break
 
                     case 'clippingSelection':
-                        this._addClippingPlan( intersect.point, intersect.face )
+                        this._addClippingPlan( intersect.point, intersect.face.normal )
                         break
 
                     default:
@@ -4535,7 +4228,7 @@ const EditorPage = {
 
         },
 
-        _addClippingPlan ( point, face ) {
+        _addClippingPlan ( point, normal ) {
 
             const self = this
 
@@ -4557,35 +4250,51 @@ const EditorPage = {
 
             }
 
-            const normal          = face.normal.clone()
-            const subClippinPlane = new Itee.Plane( normal, 0 )
+            const subClippinPlane = new Itee.Plane( normal.clone(), 0 )
 
             let projectedPoint = new Itee.Vector3( 0, 0, 0 )
             subClippinPlane.projectPoint( point, projectedPoint )
 
             const orthogonalDistanceToOrigin = point.distanceTo( projectedPoint ) - 0.1
 
-            const clippinPlane = new Itee.Plane( face.normal, -orthogonalDistanceToOrigin )
-
+            const clippingPlane      = new Itee.Plane( normal.clone(), -orthogonalDistanceToOrigin )
             const clippingPlaneIndex = this.renderer.clippingPlanes.length
+            clippingPlane.id         = clippingPlaneIndex
 
-            const helper     = new Itee.PlaneHelper( clippinPlane, 1000, 0xffffff )
+            const helper     = new Itee.PlaneHelper( clippingPlane, 1000, 0xffffff )
             helper.name      = `Plan de coupe n°${clippingPlaneIndex}`
             helper.visible   = false
             helper.modifiers = [
                 {
-                    type:    'button',
-                    value:   'X',
-                    onClick: function () {
+                    type:     'range',
+                    onChange: (function () {
                         'use strict'
 
-                        const _clippingPLanes     = self.renderer.clippingPlanes
-                        const _clippingPlaneIndex = clippingPlaneIndex
-                        let _element              = helper
+                        const _clippingPlane = clippingPlane
+
+                        return function ( changeEvent ) {
+
+                            const centeredValue     = changeEvent.target.valueAsNumber - 50
+                            _clippingPlane.constant = centeredValue
+
+                        }
+
+                    })()
+                },
+                {
+                    type:    'button',
+                    value:   'X',
+                    onClick: (function () {
+                        'use strict'
+
+                        const _self         = self
+                        let _clippingPlanes = _self.renderer.clippingPlanes
+                        let _clippingPlane  = clippingPlane
+                        let _element        = helper
 
                         return function removeModifierHandler () {
 
-                            _clippingPLanes.splice( _clippingPlaneIndex )
+                            _clippingPlanes.splice( _clippingPlanes.indexOf( _clippingPlane ), 1 )
 
                             _element.parent.remove( _element )
 
@@ -4609,15 +4318,21 @@ const EditorPage = {
 
                             _element = undefined
 
+                            // Special case to refresh treeview that cannot listen on scene
+                            _self.tree.needUpdate = !_self.tree.needUpdate
+
                         }
 
-                    }
+                    })()
                 }
             ]
 
             modifiersGroup.add( helper )
 
-            this.renderer.clippingPlanes.push( clippinPlane )
+            this.renderer.clippingPlanes.push( clippingPlane )
+
+            // Special case to refresh treeview that cannot listen on scene
+            self.tree.needUpdate = !self.tree.needUpdate
 
         },
 
@@ -5744,6 +5459,7 @@ const DatabasePage = {
         
             <div id="accordion" class="container">
                 <div class="list-group">
+                
                     <div v-for="(values, key) in collections" class="list-group-item" v-on:click="onToggleContent">
                         <label>{{key}}</label>
                         <span class="badge badge-primary badge-pill">{{values.length}}</span>
@@ -5789,8 +5505,9 @@ const DatabasePage = {
                                 </div>
                             </div>
                         </div>
-                    </div>             
-                </div>      
+                    </div>
+                    
+                </div>
             </div>
            
 <!-- Modals -->
@@ -5989,6 +5706,10 @@ const DatabasePage = {
             self.dbManager.basePath = `/${key}`
             self.dbManager.read( query || {}, datas => {
 
+                if(!datas) {
+                    return
+                }
+
                 if ( multiParts ) {
 
                     for ( let i = 0, n = datas.length ; i < n ; i++ ) {
@@ -6108,7 +5829,35 @@ const DatabasePage = {
             const selectedElement       = this.collections[ key ].find( element => { return element._id === selectedId } )
             this.selectedElement[ key ] = selectedElement
 
-            if ( key === 'scenes' ) {
+            if ( key === 'companies' ) {
+
+                this.read( 'objects', selectedElement.sites, () => {
+
+                    const geometriesIds = this.collections[ 'objects' ].map( object => object.geometry ).filter( ( value, index, self ) => {
+                        return self.indexOf( value ) === index
+                    } )
+
+                    this.read( 'geometries', geometriesIds, () => {
+
+                        console.log( 'Geometries fetched !' )
+
+                    } )
+
+                    const materialsArray       = this.collections[ 'objects' ].map( object => object.material )
+                    const concatMaterialsArray = [].concat.apply( [], materialsArray )
+                    const materialsIds         = concatMaterialsArray.filter( ( value, index, self ) => {
+                        return self.indexOf( value ) === index
+                    } )
+
+                    this.read( 'materials', materialsIds, () => {
+
+                        console.log( 'Materials fetched !' )
+
+                    } )
+
+                } )
+
+            } else if ( key === 'objects' ) {
 
                 this.read( 'objects', selectedElement.children, () => {
 
@@ -6145,7 +5894,22 @@ const DatabasePage = {
 
             console.log( 'onCreate' )
 
-            this.create( key, this.schemas[ key ].inputs, this.read.bind( this, key ) )
+            const inputs = this.schemas[ key ].inputs
+            const creationData = {}
+
+            for ( let key in inputs ) {
+
+                const value = inputs[key]
+                if( typeof value === 'string' && value === "" ) {
+                    continue
+                }
+
+                creationData[key] = value
+
+            }
+
+
+            this.create( key, creationData, this.read.bind( this, key ) )
             this.toggleModalVisibility( `modal-${key}` )
 
         },
@@ -6229,11 +5993,11 @@ const DatabasePage = {
 
         this.read( 'users' )
         this.read( 'companies' )
-        this.read( 'objects' )
-        this.read( 'curves' )
-        this.read( 'geometries' )
-        this.read( 'materials' )
-        this.read( 'textures' )
+        //        this.read( 'objects' )
+        //        this.read( 'curves' )
+        //        this.read( 'geometries' )
+        //        this.read( 'materials' )
+        //        this.read( 'textures' )
 
     }
 }
