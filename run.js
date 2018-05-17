@@ -77,22 +77,22 @@ console.log( '\n' )
 // ////////////////////////////////////
 // ////////// DATABASE ////////////////
 // ////////////////////////////////////
-var database = require( './databases/TDatabase.js' )( config.database )
+var database = require( './sources/databases/TDatabase.js' )( config.database )
 
 // ////////////////////////////////////
 // ////////// APPLICATION /////////////
 // ////////////////////////////////////
-var application = require( './applications/TServerApplication' )( config.application )
+var application = require( './sources/applications/TServerApplication' )( config.application )
 
 // ////////////////////////////////////
 // //////////// ROUTES ////////////////
 // ////////////////////////////////////
-require( './routes/TRouter' )( application )
+require( './sources/routes/TRouter' )( application )
 
 // ////////////////////////////////////
 // ////////// SERVER HTTP /////////////
 // ////////////////////////////////////
-var server = require( './server/HttpServer.js' )( application, config.server )
+var server = require( './sources/server/HttpServer.js' )( application, config.server )
 
 // ////////////////////////////////////
 // //////////// PROCESS ///////////////
