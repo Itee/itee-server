@@ -13,7 +13,7 @@ const fs             = require( 'fs' )
 const path           = require( 'path' )
 const mongooseDouble = require( 'mongoose-double' )
 const autoReconnect  = require( './TAutoReconnect' )
-const { isFunction } = require( '../validators/Validator' )
+const { isFunction } = require( 'itee-validators' )
 let mongoose         = require( 'mongoose' )
 
 /**
@@ -119,7 +119,7 @@ function _getFilesPathsUnder ( filePaths ) {
  * @param mongoose - The mongoose driver database to extend
  * @returns {*} - The extended mongoose driver
  */
-module.exports = function SchemaRegister ( config ) {
+function TMongooseSchemaRegistrator ( config ) {
 
     /*
      * IMPORT MONGOOSE PLUGINS
@@ -237,4 +237,7 @@ module.exports = function SchemaRegister ( config ) {
     mongoose = autoReconnect( mongoose, config )
 
     return mongoose
+
 }
+
+module.exports = TMongooseSchemaRegistrator

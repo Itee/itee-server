@@ -9,27 +9,21 @@
  */
 
 const FileToThreeBase = require( './FileToThreeBase' )
-//const MtlLoader           = require( '../loaders/MtlLoader' )
-const THREE = require( '../../../node_modules/threejs-full-es6/builds/Three.cjs' )
-//const THREE = require( 'threejs-full-es6' )
+const ShpLoader       = require( '../../../applications/loaders/SHPLoader' )
 
 ////
 
-class MtlToThree extends FileToThreeBase {
+class ShpToThree extends FileToThreeBase {
 
     constructor () {
-
         super( arguments )
-        this.dumpType = 'string'
-
     }
 
     _convert ( parameters, onSuccess, onProgress, onError ) {
 
         try {
 
-            const loader    = new THREE.MTLLoader()
-//            const loader    = new MtlLoader()
+            const loader    = new ShpLoader()
             const threeData = loader.parse( this._fileData )
             onSuccess( threeData )
 
@@ -43,4 +37,4 @@ class MtlToThree extends FileToThreeBase {
 
 }
 
-module.exports = MtlToThree
+module.exports = ShpToThree

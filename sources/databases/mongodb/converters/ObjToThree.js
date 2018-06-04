@@ -9,19 +9,31 @@
  */
 
 const FileToThreeBase = require( './FileToThreeBase' )
-const DbfLoader       = require( '../../applications/loaders/DBFLoader' )
+//const ObjLoader           = require( '../loaders/ObjLoader' )
+const THREE = require( '../../../../node_modules/threejs-full-es6/builds/Three.cjs' )
+//const THREE = require( 'threejs-full-es6' )
 
-class DbfToThree extends FileToThreeBase {
+////
+
+class MtlToThree extends FileToThreeBase {
 
     constructor () {
+
         super( arguments )
+        this.dumpType = 'string'
+
     }
 
     _convert ( parameters, onSuccess, onProgress, onError ) {
 
         try {
 
-            const loader    = new DbfLoader()
+            const loader    = new THREE.OBJLoader()
+//            const loader    = new ObjLoader()
+
+            if(parameters && parameters.materials){
+                loader.setMaterials( parameters.materials )
+            }
             const threeData = loader.parse( this._fileData )
             onSuccess( threeData )
 
@@ -35,4 +47,4 @@ class DbfToThree extends FileToThreeBase {
 
 }
 
-module.exports = DbfToThree
+module.exports = MtlToThree
