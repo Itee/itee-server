@@ -57,13 +57,13 @@ function CreateIteeConfiguration ( process ) {
 
                 busBoy: {
                     upload:        true,
-                    path:          '/path/to/save/files',
+//                    path:          '/path/to/save/files',
                     allowedPath:   /^\/uploads$/,
-                    mimeTypeLimit: [
-                        'application/javascript',
-                        'image/jpeg',
-                        'image/png'
-                    ]
+//                    mimeTypeLimit: [
+//                        'application/javascript',
+//                        'image/jpeg',
+//                        'image/png'
+//                    ]
                 },
 
                 morgan: {
