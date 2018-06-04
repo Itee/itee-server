@@ -230,7 +230,7 @@ const ViewerPage = {
             <TTree 
                 slot="left" 
                 :items="scene.children"
-                :maxDeepLevel="4"
+                :maxDeepLevel="9"
                 :needUpdate="tree.needUpdate"
             ></TTree>
             <TViewport3D
@@ -251,22 +251,22 @@ const ViewerPage = {
             <TProgress v-if="progressBar.isVisible" :isVisible="progressBar.isVisible" v-bind:done=progressBar.done v-bind:todo=progressBar.todo style="width:100%; margin: 0 15px;"></TProgress>
         </TFooter>
             
-        <div v-on:click="onToggleModalVisibility('userDataModal')" id="userDataModal" class="modal fade" tabindex="-1" role="dialog" aria-labelledby="exampleModalCenterTitle" aria-hidden="true">
+        <div v-on:click="toggleModalVisibility('userDataModal')" id="userDataModal" class="modal fade" tabindex="-1" role="dialog" aria-labelledby="exampleModalCenterTitle" aria-hidden="true">
             <div class="modal-dialog modal-dialog-centered modal-lg" role="document">
                 <div v-on:click.stop class="modal-content">
                     <div class="modal-header">
                         <h5 class="modal-title" id="exampleModalLongTitle">{{userDataModal.title}}</h5>
-                        <button type="button" class="close" data-dismiss="modal" aria-label="Close" v-on:click.stop="onToggleModalVisibility('userDataModal')">
+                        <button type="button" class="close" data-dismiss="modal" aria-label="Close" v-on:click.stop="toggleModalVisibility('userDataModal')">
                             <span aria-hidden="true">&times;</span>
                         </button>
                     </div>
                     <div class="modal-body">
 
-                        <TInputObject v-if="selected.object" :label="selected.object.name" :value="selected.object" :filter="userDataModal.filter" />
+                        <TInputObject v-if="selectedClone" :label="selectedClone.name" :value="selectedClone" :filter="userDataModal.filter" />
 
                     </div>
                     <div class="modal-footer">
-                        <button type="button" class="btn btn-primary" v-on:click.stop="onToggleModalVisibility('userDataModal')">Ok</button>
+                        <button type="button" class="btn btn-primary" v-on:click.stop="toggleModalVisibility('userDataModal')">Ok</button>
                     </div>
                 </div>
             </div>
@@ -325,14 +325,6 @@ const ViewerPage = {
                 needCacheUpdate:               false,
                 needCameraFitWorldBoundingBox: false
             },
-            intersected: {
-                object:           undefined,
-                originalMaterial: undefined
-            },
-            selected:    {
-                object:           undefined,
-                originalMaterial: undefined
-            },
             measures:    {
                 ab: {
                     currentGroup: undefined,
@@ -342,6 +334,10 @@ const ViewerPage = {
                 }
             },
             pointer:     undefined,
+
+            foobar: "baz",
+
+            selectedClone:    undefined,
 
             // Modal
             userDataModal: {
@@ -354,12 +350,7 @@ const ViewerPage = {
                     }
 
                     if (
-                        key === 'uuid' ||
                         key === 'name' ||
-                        key === 'position' ||
-                        key === 'rotation' ||
-                        key === 'scale' ||
-                        key === 'layers' ||
                         key === 'userData'
                     ) {
                         return true
@@ -552,6 +543,14 @@ const ViewerPage = {
                 antialias:              true,
                 logarithmicDepthBuffer: true
             } )
+            this.intersected = {
+                object:           undefined,
+                originalMaterial: undefined
+            }
+            this.selected = {
+                object:           undefined,
+                originalMaterial: undefined
+            }
 
         },
 
@@ -623,6 +622,8 @@ const ViewerPage = {
             //                        dirLight.shadow.camera.bottom  = -frustum
             //                        dirLight.shadow.camera.near    = 1
             //                        dirLight.shadow.camera.far     = 500
+            this.applyModifiers( directionalLight, [ 'remove' ] )
+
             lightGroup.add( directionalLight )
 
             //                        const dirLightHelper = new Itee.DirectionalLightHelper( dirLight, 10 )
@@ -643,68 +644,28 @@ const ViewerPage = {
             let gridGroup = parentGroup.getObjectByName( 'Grilles' )
             if ( !gridGroup ) {
 
-                gridGroup           = new Itee.Group()
-                gridGroup.name      = "Grilles"
-                gridGroup.modifiers = [
-                    {
-                        type:    'checkbox',
-                        value:   'checked',
-                        onClick: this.toggleVisibilityOf( gridGroup )
-                    },
-                    {
-                        type:     'range',
-                        onChange: this.updateOpacityOf( gridGroup )
-                    }
-                ]
+                gridGroup      = new Itee.Group()
+                gridGroup.name = "Grilles"
+                this.applyModifiers( gridGroup, [ 'toggleVisibility', 'opacity' ] )
                 parentGroup.add( gridGroup )
 
             }
 
             /// XZ
 
-            const gridHelperXZ_1     = new Itee.GridHelper( 20, 20 )
-            gridHelperXZ_1.name      = "Grille XZ - Mètrique"
-            gridHelperXZ_1.modifiers = [
-                {
-                    type:    'checkbox',
-                    value:   'checked',
-                    onClick: this.toggleVisibilityOf( gridHelperXZ_1 )
-                },
-                {
-                    type:     'range',
-                    onChange: this.updateOpacityOf( gridHelperXZ_1 )
-                }
-            ]
+            const gridHelperXZ_1 = new Itee.GridHelper( 20, 20 )
+            gridHelperXZ_1.name  = "Grille XZ - Mètrique"
+            this.applyModifiers( gridHelperXZ_1, [ 'toggleVisibility', 'opacity' ] )
             gridGroup.add( gridHelperXZ_1 )
 
-            const gridHelperXZ_10     = new Itee.GridHelper( 200, 20 )
-            gridHelperXZ_10.name      = "Grille XZ - Décamètrique"
-            gridHelperXZ_10.modifiers = [
-                {
-                    type:    'checkbox',
-                    value:   'checked',
-                    onClick: this.toggleVisibilityOf( gridHelperXZ_10 )
-                },
-                {
-                    type:     'range',
-                    onChange: this.updateOpacityOf( gridHelperXZ_10 )
-                }
-            ]
+            const gridHelperXZ_10 = new Itee.GridHelper( 200, 20 )
+            gridHelperXZ_10.name  = "Grille XZ - Décamètrique"
+            this.applyModifiers( gridHelperXZ_10, [ 'toggleVisibility', 'opacity' ] )
             gridGroup.add( gridHelperXZ_10 )
 
-            const gridHelperXZ_100     = new Itee.GridHelper( 2000, 20 )
-            gridHelperXZ_100.name      = "Grille XZ - Hectomètrique"
-            gridHelperXZ_100.modifiers = [
-                {
-                    type:    'checkbox',
-                    value:   'checked',
-                    onClick: this.toggleVisibilityOf( gridHelperXZ_100 )
-                },
-                {
-                    type:     'range',
-                    onChange: this.updateOpacityOf( gridHelperXZ_100 )
-                }
-            ]
+            const gridHelperXZ_100 = new Itee.GridHelper( 2000, 20 )
+            gridHelperXZ_100.name  = "Grille XZ - Hectomètrique"
+            this.applyModifiers( gridHelperXZ_100, [ 'toggleVisibility', 'opacity' ] )
             gridGroup.add( gridHelperXZ_100 )
 
             /// XY
@@ -810,7 +771,7 @@ const ViewerPage = {
             'use strict'
 
             const _parameters = parameters || {
-                companyId: {}
+                companyId: '5b07f0ae5b5bf56470e07de6' //'5abb2eab3dae751becf8aed3',
             }
 
             this._initDatabaseManagers()
@@ -823,9 +784,15 @@ const ViewerPage = {
 
             this.dbManager          = new Itee.TDataBaseManager()
             this.dbManager.basePath = '/companies'
+
             this.objectsManager     = new Itee.TObjectsManager()
+            this.objectsManager.bunchSize = 2000
+
             this.geometriesManager  = new Itee.TGeometriesManager()
+//            this.geometriesManager.bunchSize = 2000
+
             this.materialsManager   = new Itee.TMaterialsManager()
+//            this.materialsManager.bunchSize = 2000
 
         },
 
@@ -833,153 +800,496 @@ const ViewerPage = {
             'use strict'
 
             const self = this
-            //            const sitesGroup = new Itee.Group()
-            //            sitesGroup.name  = "Sites"
-            //            this.scene.add( sitesGroup )
 
-            //            this.setCursorOfType( 'progress' )
+            const collection = parameters.collection
+            const query      = parameters.query
 
-            self.dbManager.read(
-                {},
-                //                parameters.companyId,
-                companyOnSuccess.bind( this ),
-                self.onProgress,
-                self.onError
-            )
+            let sitesGroup = this.scene.getObjectByName( 'Sites' )
+            if ( !sitesGroup ) {
 
-            const trackingCounter = {
-                geometries: {},
-                materials:  {}
-            }
-
-            function companyOnSuccess ( companies ) {
-
-                const sitesGroup = new Itee.Group()
-                sitesGroup.name  = "Sites"
+                sitesGroup      = new Itee.Group()
+                sitesGroup.name = "Sites"
                 this.scene.add( sitesGroup )
 
-                const companyId = companies[ 0 ]._id
+            }
 
-                if ( parameters.collection && parameters.query ) {
+            if ( collection === "companies" ) {
 
-                    let _query = undefined
-                    if ( parameters.query._id ) {
-                        _query = parameters.query._id
-                    } else {
-                        _query = query
-                    }
+                self.dbManager.read(
+                    query,
+                    ( companies ) => {
 
-                    fetchObjects( _query, ( objects ) => {
+                        let sites = undefined
+                        for ( let key in companies ) {
+                            sites = companies[key].sites
+                        }
 
-                        dispatchObjects( objects, companyId, ( ancestor ) => {
+                        fetchObjects( sites, ( objectData ) => {
 
-                            self.resetDefaultCursor()
-                            self.tree.needUpdate                        = !self.tree.needUpdate
-                            self.viewport.needCacheUpdate               = true
-                            self.viewport.needCameraFitWorldBoundingBox = true
+                            for ( let key in objectData ) {
 
-                            sitesGroup.add( parent )
+                                populateOne( objectData[key], ( object ) => {
+
+                                    lookAtObject( object )
+                                    searchFamilly( object, sitesGroup, ( parent ) => {
+
+                                        onFetchEnd()
+
+                                    } )
+
+                                } )
+
+                            }
 
                         } )
 
-                    } )
+                    },
+                    self.onProgress,
+                    self.onError
+                )
 
-                    //                    populateParent( null, _query, ( parent ) => {
-                    //
-                    //                        self.resetDefaultCursor()
-                    //                        self.tree.needUpdate                        = !self.tree.needUpdate
-                    //                        self.viewport.needCacheUpdate               = true
-                    //                        self.viewport.needCameraFitWorldBoundingBox = true
-                    //
-                    //                        sitesGroup.add( parent )
-                    //
-                    //                    } )
+            } else if ( collection === "objects" ) {
 
-                } else {
+                fetchObjects( query, ( objectData ) => {
 
-                    let sitesIds = companies[ 0 ].sites
+                    for ( let key in objectData ) {
 
-                    populate( 'objects', sitesIds, sitesGroup, ( site, siteGroup ) => {
+                        populateOne( objectData[key], ( object ) => {
 
-                        let buildingsIds = site.children
+                            lookAtObject( object )
+                            searchFamilly( object, sitesGroup, ( parent ) => {
 
-                        populate( 'objects', buildingsIds, siteGroup, ( building, buildingGroup ) => {
-
-                            let categoriesIds = building.children
-
-                            populate( 'objects', categoriesIds, buildingGroup, ( category, categoryGroup ) => {
-
-                                let objectsIds = category.children
-
-                                const numberOfChildernToRetrive = objectsIds.length
-                                let numberOfRetrievedChildren   = 0
-
-                                populateChildren( categoryGroup, objectsIds, ( numberOfObjects ) => {
-
-                                    numberOfRetrievedChildren += numberOfObjects
-                                    if ( numberOfRetrievedChildren < numberOfChildernToRetrive ) {
-                                        return
-                                    }
-
-                                    endFetch()
-
-                                } )
+                                onFetchEnd()
 
                             } )
 
                         } )
 
-                    } )
+                    }
 
-                }
+                } )
 
-                function endFetch () {
+            } else {
 
+                console.error('Invalid parameters !')
 
-                    // Special case to refresh treeview that cannot listen on scene
-                    self.viewport.needCacheUpdate               = true
-                    self.viewport.needCameraFitWorldBoundingBox = true
-                    self.tree.needUpdate                        = !self.tree.needUpdate
+            }
 
-                    console.log( trackingCounter )
+//            const TreeScanning = Object.freeze({
+//                ChildrenOnly: 1,
+//                AncestorOnly: 0,
+//                AncestorAndChildren: 2,
+//            })
+
+            function lookAtObject ( object ) {
+
+                if ( object.isMesh ) {
+
+                    if ( !object.geometry.boundingSphere ) {
+                        object.geometry.computeBoundingSphere()
+                    }
+
+                    const objectPosition       = object.position
+                    const objectBoundingSphere = object.geometry.boundingSphere
+                    const radius               = objectBoundingSphere.radius * 2
+                    const target               = new Itee.Vector3().add( objectPosition, objectBoundingSphere.center )
+                    const position             = new Itee.Vector3( radius, radius, radius ).add( target )
+
+                    self.viewport.camera = {
+                        type:     'perspective',
+                        position: position,
+                        target:   target
+                    }
 
                 }
 
             }
 
-            function populate ( collectionName, childrenIds, parentGroup, callback ) {
+            function fetchObjects ( query, callback ) {
 
-                self.dbManager.basePath = `/${collectionName}`
-                self.dbManager.read(
-                    childrenIds,
-                    children => {
+                self.objectsManager.read(
+                    query,
+                    callback,
+                    self.onProgress,
+                    self.onError
+                )
 
-                        let child = undefined
-                        for ( let i = 0, n = children.length ; i < n ; i++ ) {
-                            child = children[ i ]
+            }
 
-                            const group     = new Itee.Group()
-                            group.name      = child.name
-                            group.modifiers = [
-                                {
-                                    type:    'checkbox',
-                                    value:   'checked',
-                                    onClick: self.toggleVisibilityOf( group )
-                                },
-                                {
-                                    type:     'range',
-                                    onChange: self.updateOpacityOf( group )
-                                },
-                                {
-                                    type:    'button',
-                                    value:   'X',
-                                    onClick: self.removeObject( group )
+            function onFetchEnd () {
+
+                self.resetDefaultCursor()
+
+                // Special case to refresh treeview that cannot listen on scene
+                self.viewport.needCacheUpdate = true
+                self.viewport.needCameraFitWorldBoundingBox = true
+
+                self.tree.needUpdate          = !self.tree.needUpdate
+
+            }
+
+            function searchFamilly ( object, root, callback ) {
+
+                const childrenObj  = object.children.filter( child => { return (typeof child !== 'string' ) } )
+                const childrenIds  = object.children.filter( child => { return (typeof child === 'string' ) } )
+                const haveChildren = ( childrenIds && childrenIds.length > 0 )
+
+                const parentId   = object.parent
+                const haveParent = ( parentId !== null && parentId !== undefined && typeof parentId === 'string' )
+
+                if ( haveParent && haveChildren ) {
+
+                    // Have children and ancestor
+                    object.parent   = null
+                    object.children = childrenObj
+
+                    // Assign to root element
+                    root.add( object )
+
+                    populateChildren( object, childrenIds, () => {
+
+                        // After parent retrieve children get the ancestor
+                        populateParent( [ object ], parentId, ( parent ) => {
+
+                            // Recursive family search against parent
+                            searchFamilly( parent, root, callback )
+
+                        } )
+
+                    } )
+
+                } else if ( haveParent && !haveChildren ) {
+
+                    // Have only an ancestor got it
+                    object.parent = null
+
+                    // Assign to root element before reassign to his real parent
+                    root.add( object )
+
+                    populateParent( [ object ], parentId, ( parent ) => {
+
+                        // Recursive family search against parent
+                        searchFamilly( parent, root, callback )
+
+                    } )
+
+                } else if ( !haveParent && haveChildren ) {
+                    // It is a top level element without children
+
+                    // Assign to root element
+                    root.add( object )
+
+                    object.children = childrenObj
+                    populateChildren( object, childrenIds, () => {
+
+                        // After parent retrieve children return
+                        callback( object )
+
+                    } )
+
+                } else {
+                    // It is a top level element without parent or children
+
+                    // Assign to root element
+                    root.add( object )
+
+                    callback( object )
+
+                }
+
+            }
+
+            function populateOne ( object, callback ) {
+
+                if ( object.isGroup || object.type === 'Group' || object.type === 'Scene' ) {
+
+                    self.applyModifiers( object, [ 'toggleVisibility', 'toggleChildrenVisibility', 'opacity' ] )
+
+                    callback( object )
+
+                } else {
+
+                    self.applyModifiers( object, [ 'toggleVisibility', 'opacity', 'lookAt' ] )
+                    object.isRaycastable = true
+
+                    callback( object )
+
+                }
+
+            }
+
+            function populateParent ( children, parentId, callback ) {
+
+                self.objectsManager.read(
+                    parentId,
+                    objects => {
+
+                        let parent = undefined
+                        for ( let key in objects ) {
+                            parent = objects[key]
+                        }
+
+                        if ( parent.isGroup || parent.type === 'Group' || parent.type === 'Scene' ) {
+
+                            self.applyModifiers( parent, [ 'toggleVisibility', 'toggleChildrenVisibility', 'opacity' ] )
+
+                        } else {
+
+                            parent.isRaycastable = true
+
+                        }
+
+                        // Update child reference
+                        if ( children ) {
+
+                            for ( let childIndex = 0, numberOfChildren = children.length ; childIndex < numberOfChildren ; childIndex++ ) {
+
+                                if ( typeof children[ childIndex ].parent === 'string' ) {
+                                    children[ childIndex ].parent = null
                                 }
-                            ]
 
-                            callback( child, group )
+                                const childPosition = parent.children.indexOf( children[ childIndex ]._id )
+                                parent.children.splice( childPosition, 1 )
+                                parent.add( children[ childIndex ] )
+                            }
 
-                            parentGroup.add( group )
+                        }
+
+                        callback( parent )
+
+                    },
+                    self.onProgress,
+                    self.onError
+                )
+            }
+
+            function populateChildren ( parent, childrenIds, callback ) {
+
+                if ( !parent ) {
+                    console.error( 'Invalid argument: parent can\'t be null or undefined' )
+                }
+
+                const numberOfChildrenToPopulate = childrenIds.length
+                if ( numberOfChildrenToPopulate === 0 ) {
+                    callback()
+                    return
+                }
+
+                if ( parent.layers.mask > 0 ) {
+                    callback()
+                    return
+                }
+
+                let numberOfPopulatedChildren = 0
+
+                self.objectsManager.read(
+                    childrenIds,
+                    objects => {
+
+                        const groupsObjects = []
+                        let haveGroups      = false
+
+                        const meshesObjects = []
+                        let haveMeshes      = false
+
+                        // Dispatch by categories
+                        for ( let key in objects ) {
+//                        for ( let objI = 0, numObj = objects.length ; objI < numObj ; objI++ ) {
+                            let obj = objects[ key ]
+
+                            if ( obj.isGroup || obj.type === 'Group' || obj.type === 'Scene' ) {
+                                groupsObjects.push( obj )
+                                haveGroups = true
+                            } else {
+                                meshesObjects.push( obj )
+                                haveMeshes = true
+                            }
+
+                        }
+
+                        // Fill Groups
+                        if ( haveGroups && haveMeshes ) {
+
+                            fillGroups( groupsObjects )
+                            fillMeshes( meshesObjects )
+
+                        } else if ( haveGroups && !haveMeshes ) {
+
+                            fillGroups( groupsObjects )
+
+                        } else if ( !haveGroups && haveMeshes ) {
+
+                            fillMeshes( meshesObjects )
+
+                        } else {
+
+                            callback()
+
+                        }
+
+                        function fillGroups ( groups ) {
+
+                            for ( let groupIndex = 0, numberOfGroups = groups.length ; groupIndex < numberOfGroups ; groupIndex++ ) {
+
+                                let group = groups[ groupIndex ]
+
+                                if ( group.layers.mask > 0 ) {
+
+                                    group.modifiers = [
+                                        {
+                                            type:    'icon',
+                                            icon:    'download',
+                                            onClick: (function encloseLazyLoading () {
+
+                                                const _group       = group
+                                                const _childrenIds = group.children
+
+                                                return function lazyLoadingPopulate () {
+
+                                                    _group.layers.mask = 0
+
+                                                    populateChildren( _group, _childrenIds, function () {
+
+                                                        _group.modifiers = [
+                                                            {
+                                                                type:    'checkicon',
+                                                                iconOn:  'eye',
+                                                                iconOff: 'eye-slash',
+                                                                value:   _group.visible,
+                                                                onClick: self.toggleVisibilityOf( _group )
+                                                            },
+                                                            {
+                                                                type:    'icon',
+                                                                icon:    'low-vision',
+                                                                onClick: self.makeVisibleAllChildrenOf( group )
+                                                            }
+                                                        ]
+
+                                                        self.viewport.needCacheUpdate = true
+                                                        self.tree.needUpdate = !self.tree.needUpdate
+
+                                                    } )
+
+                                                }
+
+                                            })()
+                                        }
+                                    ]
+
+                                } else {
+
+                                    self.applyModifiers( group, [ 'toggleVisibility', 'toggleChildrenVisibility', 'opacity' ] )
+
+                                }
+
+                                // Reset children to empty array before fill it
+                                const subChildrenIds = group.children
+                                group.children       = []
+
+                                // Assign to parent first
+                                group.parent = null
+                                parent.add( group )
+
+                                // then Populate children
+                                populateChildren( group, subChildrenIds, checkPopulateEnd )
+
+                            }
+
+                        }
+
+                        function fillMeshes ( meshes ) {
+
+                            for ( let key in meshes ) {
+
+                                const object      = meshes[ key ]
+                                self.applyModifiers( object, [ 'toggleVisibility', 'opacity', 'lookAt' ] )
+
+                                object.isRaycastable = true
+
+                                // Reset children to empty array before fill it
+                                const subChildrenIds = object.children
+                                object.children      = []
+
+                                // Assign to parent first
+
+                                /////////////////////////////////
+
+                                if ( parent.name !== "Locaux" ) {
+
+                                    const objectName = object.name
+                                    const splits     = objectName.split( ' - ' )
+                                    let subParent    = parent
+
+                                    if ( splits.length > 0 ) {
+
+                                        for ( let splitIndex = 0, numberOfSplits = splits.length ; splitIndex < numberOfSplits ; splitIndex++ ) {
+
+                                            let subGroupName = splits[ splitIndex ].trim()
+
+                                            let subGroup = subParent.getObjectByName( subGroupName )
+                                            if ( subGroupName.length > 0 && !subGroup ) {
+
+                                                subGroup      = new Itee.Group()
+                                                subGroup.name = subGroupName
+                                                self.applyModifiers( subGroup, [ 'toggleVisibility', 'toggleChildrenVisibility', 'opacity' ] )
+
+                                                subParent.add( subGroup )
+
+                                            }
+
+                                            subParent = subGroup
+
+                                        }
+
+                                        if ( subParent && subParent.type !== 'Scene' ) {
+
+                                            object.name   = object._id
+                                            object.parent = null
+
+                                            subParent.add( object )
+
+                                        } else {
+                                            //todo: alert unkowngroup
+                                        }
+
+                                    } else {
+
+                                        object.parent = null
+
+                                        parent.add( object )
+
+                                    }
+
+                                } else {
+
+                                    object.parent = null
+
+                                    parent.add( object )
+
+                                }
+
+                                // OR
+
+                                //                                            object.parent = null
+                                //                                            parent.add( object )
+
+                                /////////////////////////////////
+
+                                // then Populate children
+                                populateChildren( object, subChildrenIds, checkPopulateEnd )
+
+                            }
+
+                        }
+
+                        function checkPopulateEnd () {
+
+                            numberOfPopulatedChildren++
+                            if ( numberOfPopulatedChildren < numberOfChildrenToPopulate ) {
+                                return
+                            }
+
+                            callback()
 
                         }
 
@@ -990,192 +1300,18 @@ const ViewerPage = {
 
             }
 
-            function populateChildren ( parentGroup, childrenIds, callback ) {
+        },
 
-                var needRecentering = false
+        /// Cursor
+        setCursorOfType ( type ) {
+            'use strict'
+            document.body.style.cursor = type
+        },
 
-                self.objectsManager.read(
-                    childrenIds,
-                    objects => {
+        resetDefaultCursor () {
+            'use strict'
 
-                        const geometriesIds = objects.map( object => object.geometry ).filter( ( value, index, self ) => {
-                            return self.indexOf( value ) === index
-                        } )
-
-                        const materialsArray       = objects.map( object => object.material )
-                        const concatMaterialsArray = [].concat.apply( [], materialsArray )
-                        const materialsIds         = concatMaterialsArray.filter( ( value, index, self ) => {
-                            return self.indexOf( value ) === index
-                        } )
-
-                        self.geometriesManager.read(
-                            geometriesIds,
-                            geometries => {
-
-                                self.materialsManager.read(
-                                    materialsIds,
-                                    materials => {
-
-                                        const numberOfObjects = objects.length
-                                        let numberOfReturns   = 0
-                                        for ( let objectIndex = 0 ; objectIndex < numberOfObjects ; objectIndex++ ) {
-
-                                            const object      = objects[ objectIndex ]
-                                            const geometryId  = object.geometry
-                                            const materialIds = object.material
-
-                                            if ( !trackingCounter.geometries[ geometryId ] ) {
-                                                trackingCounter.geometries[ geometryId ] = 0
-                                            }
-                                            trackingCounter.geometries[ geometryId ] += 1
-                                            if ( Array.isArray( materialIds ) ) {
-                                                for ( let materialIndex = 0, numberOfMaterial = materialIds.length ; materialIndex < numberOfMaterial ; materialIndex++ ) {
-                                                    if ( !trackingCounter.materials[ materialIds[ materialIndex ] ] ) {
-                                                        trackingCounter.materials[ materialIds[ materialIndex ] ] = 0
-                                                    }
-                                                    trackingCounter.materials[ materialIds[ materialIndex ] ] += 1
-                                                }
-                                            } else {
-                                                if ( !trackingCounter.materials[ materialIds ] ) {
-                                                    trackingCounter.materials[ materialIds ] = 0
-                                                }
-                                                trackingCounter.materials[ materialIds ] += 1
-                                            }
-
-                                            if ( object.children.length > 0 ) {
-
-                                                populateChildren( object, object.children, () => {
-
-                                                    object.geometry = geometries[ geometryId ]
-
-                                                    if ( Array.isArray( materialIds ) ) {
-
-                                                        if ( materialIds.length === 1 ) {
-
-                                                            object.material = materials[ materialIds[ 0 ] ]
-
-                                                        } else {
-
-                                                            object.material = []
-                                                            for ( let materialIndex = 0, numberOfMaterial = materialIds.length ; materialIndex < numberOfMaterial ; materialIndex++ ) {
-                                                                object.material.push( materials[ materialIds[ materialIndex ] ] )
-                                                            }
-
-                                                        }
-
-                                                    } else {
-                                                        object.material = materials[ materialIds ]
-                                                    }
-
-                                                    // Check for object without any materials
-                                                    if ( object.material.length === 0 ) {
-
-                                                        object.material.push( new Itee.MeshBasicMaterial( { side: Itee.DoubleSide } ) )
-
-                                                    }
-
-                                                    object.parent = null
-
-                                                    object.modifiers = [
-                                                        {
-                                                            type:    'checkbox',
-                                                            value:   'checked',
-                                                            onClick: self.toggleVisibilityOf( object )
-                                                        },
-                                                        {
-                                                            type:     'range',
-                                                            onChange: self.updateOpacityOf( object )
-                                                        },
-                                                        {
-                                                            type:    'button',
-                                                            value:   'Voir',
-                                                            onClick: self.lookAtObject( object )
-                                                        }
-                                                    ]
-
-                                                    object.isRaycastable = true
-
-                                                    checkEndOfReturns()
-
-                                                } )
-
-                                            } else {
-
-                                                object.geometry = geometries[ geometryId ]
-
-                                                if ( Array.isArray( materialIds ) ) {
-
-                                                    if ( materialIds.length === 1 ) {
-
-                                                        object.material = materials[ materialIds[ 0 ] ]
-
-                                                    } else {
-
-                                                        object.material = []
-                                                        for ( let materialIndex = 0, numberOfMaterial = materialIds.length ; materialIndex < numberOfMaterial ; materialIndex++ ) {
-                                                            object.material.push( materials[ materialIds[ materialIndex ] ] )
-                                                        }
-
-                                                    }
-
-                                                } else {
-                                                    object.material = materials[ materialIds ]
-                                                }
-
-                                                object.parent = null
-
-                                                object.modifiers = [
-                                                    {
-                                                        type:    'checkbox',
-                                                        value:   'checked',
-                                                        onClick: self.toggleVisibilityOf( object )
-                                                    },
-                                                    {
-                                                        type:     'range',
-                                                        onChange: self.updateOpacityOf( object )
-                                                    },
-                                                    {
-                                                        type:    'button',
-                                                        value:   'Voir',
-                                                        onClick: self.lookAtObject( object )
-                                                    }
-                                                ]
-
-                                                object.isRaycastable = true
-
-                                                parentGroup.add( object )
-
-                                                checkEndOfReturns()
-                                            }
-
-                                        }
-
-                                        function checkEndOfReturns () {
-
-                                            numberOfReturns++
-                                            if ( numberOfReturns < numberOfObjects ) {
-                                                return
-                                            }
-                                            callback( numberOfObjects )
-
-                                        }
-
-                                    },
-                                    self.onProgress,
-                                    self.onError
-                                )
-
-                            },
-                            self.onProgress,
-                            self.onError
-                        )
-
-                    },
-                    self.onProgress,
-                    self.onError
-                )
-
-            }
+            document.body.style.cursor = 'auto'
 
         },
 
@@ -1359,42 +1495,7 @@ const ViewerPage = {
 
         },
 
-        //// Modal
-
-        onToggleModalVisibility ( modalId ) {
-            'use strict'
-
-            const modal = document.getElementById( modalId )
-            if ( modal ) {
-
-                if ( modal.className === 'modal fade' ) {
-                    modal.className             = 'modal fade show'
-                    modal.style.display         = 'block'
-                    modal.style.backgroundColor = '#f9f9f980'
-                } else {
-                    modal.className     = 'modal fade'
-                    modal.style.display = 'none'
-                }
-
-            }
-
-        },
-
-        /// Cursor
-        setCursorOfType ( type ) {
-            'use strict'
-            document.body.style.cursor = type
-        },
-
-        resetDefaultCursor () {
-            'use strict'
-
-            document.body.style.cursor = 'auto'
-
-        },
-
-        //// Pointers
-
+        //// 3D Pointers
         enablePointer ( pointerType ) {
 
             if ( !pointerType || pointerType.length === 0 ) {
@@ -1462,7 +1563,25 @@ const ViewerPage = {
 
         },
 
-        //// Viewport stuff
+        //// Modal
+        toggleModalVisibility ( modalId ) {
+            'use strict'
+
+            const modal = document.getElementById( modalId )
+            if ( modal ) {
+
+                if ( modal.className === 'modal fade' ) {
+                    modal.className             = 'modal fade show'
+                    modal.style.display         = 'block'
+                    modal.style.backgroundColor = '#f9f9f980'
+                } else {
+                    modal.className     = 'modal fade'
+                    modal.style.display = 'none'
+                }
+
+            }
+
+        },
 
         // Select
         enableSelection () {
@@ -1559,6 +1678,7 @@ const ViewerPage = {
             this._addClippingPlan( point, normal, 'Coupe vertical', 2.1 )
 
         },
+
         disableVerticalClipping () {
             'use strict'
 
@@ -1602,6 +1722,7 @@ const ViewerPage = {
             this._addClippingPlan( point, normal, 'Coupe horizontal', 10 )
 
         },
+
         disableHorizontalClipping () {
             'use strict'
 
@@ -1646,6 +1767,7 @@ const ViewerPage = {
             this.viewport.isRaycastable = true
 
         },
+
         disableFreeClipping () {
             'use strict'
 
@@ -1679,24 +1801,9 @@ const ViewerPage = {
             let measuresABGroup = measuresGroup.getObjectByName( 'Mesures AB' )
             if ( !measuresABGroup ) {
 
-                measuresABGroup           = new Itee.Group()
-                measuresABGroup.name      = 'Mesures AB'
-                measuresABGroup.modifiers = [
-                    {
-                        type:    'checkbox',
-                        value:   'checked',
-                        onClick: this.toggleVisibilityOf( measuresABGroup )
-                    },
-                    {
-                        type:     'range',
-                        onChange: this.updateOpacityOf( measuresABGroup )
-                    },
-                    {
-                        type:    'button',
-                        value:   'X',
-                        onClick: this.removeObject( measuresABGroup )
-                    }
-                ]
+                measuresABGroup      = new Itee.Group()
+                measuresABGroup.name = 'Mesures AB'
+                this.applyModifiers( measuresABGroup, [ 'toggleVisibility', 'opacity', 'remove' ] )
                 measuresGroup.add( measuresABGroup )
                 this.tree.needUpdate = !this.tree.needUpdate
 
@@ -1738,25 +1845,11 @@ const ViewerPage = {
             let currentGroup = this.measures.ab.currentGroup
             if ( !currentGroup ) {
 
-                const measuresABGroup            = this.scene.getObjectByName( 'Mesures' ).getObjectByName( 'Mesures AB' )
-                let currentMeasuresABGroup       = new Itee.Group()
-                currentMeasuresABGroup.name      = `${measuresABGroup.children.length}`
-                currentMeasuresABGroup.modifiers = [
-                    {
-                        type:    'checkbox',
-                        value:   'checked',
-                        onClick: this.toggleVisibilityOf( measuresABGroup )
-                    },
-                    {
-                        type:     'range',
-                        onChange: this.updateOpacityOf( measuresABGroup )
-                    },
-                    {
-                        type:    'button',
-                        value:   'X',
-                        onClick: this.removeObject( measuresABGroup )
-                    }
-                ]
+                const measuresABGroup       = this.scene.getObjectByName( 'Mesures' ).getObjectByName( 'Mesures AB' )
+                let currentMeasuresABGroup  = new Itee.Group()
+                currentMeasuresABGroup.name = `${measuresABGroup.children.length}`
+                this.applyModifiers( currentMeasuresABGroup, [ 'toggleVisibility', 'opacity', 'remove' ] )
+
                 measuresABGroup.add( currentMeasuresABGroup )
                 this.tree.needUpdate = !this.tree.needUpdate
 
@@ -2180,7 +2273,7 @@ const ViewerPage = {
 
                     case 'selection':
                         this._updateSelected( intersect.object )
-                        this.onToggleModalVisibility( 'userDataModal' )
+                        this.toggleModalVisibility( 'userDataModal' )
                         break
 
                     case 'measureAB':
@@ -2217,11 +2310,9 @@ const ViewerPage = {
 
         },
 
-        _addClippingPlan ( point, normal, name, sensibilityCoefficient ) {
+        _addClippingPlan ( point, normal, name, sensibility ) {
 
             const self = this
-
-            const _sensibilityCoefficient = sensibilityCoefficient || 1
 
             let envGroup = this.scene.getObjectByName( 'Environement' )
             if ( !envGroup ) {
@@ -2252,72 +2343,13 @@ const ViewerPage = {
             const clippingPlaneIndex = this.renderer.clippingPlanes.length
             clippingPlane.id         = clippingPlaneIndex
 
-            const helper     = new Itee.PlaneHelper( clippingPlane, 1000, 0xffffff )
-            helper.name      = name || `Plan de coupe n°${clippingPlaneIndex}`
-            helper.visible   = false
-            helper.modifiers = [
-                {
-                    type:     'range',
-                    onChange: (function () {
-                        'use strict'
-
-                        const _clippingPlane = clippingPlane
-
-                        return function ( changeEvent ) {
-
-                            const centeredValue     = (changeEvent.target.valueAsNumber - 50) * _sensibilityCoefficient
-                            _clippingPlane.constant = centeredValue
-
-                        }
-
-                    })()
-                },
-                {
-                    type:    'button',
-                    value:   'X',
-                    onClick: (function () {
-                        'use strict'
-
-                        const _self         = self
-                        let _clippingPlanes = _self.renderer.clippingPlanes
-                        let _clippingPlane  = clippingPlane
-                        let _element        = helper
-
-                        return function removeModifierHandler () {
-
-                            _clippingPlanes.splice( _clippingPlanes.indexOf( _clippingPlane ), 1 )
-
-                            _element.parent.remove( _element )
-
-                            const geometry = _element.geometry
-                            if ( geometry ) {
-                                geometry.dispose()
-                            }
-
-                            const materials = _element.material
-                            if ( materials ) {
-
-                                if ( Array.isArray( materials ) ) {
-                                    for ( let i = 0, n = materials.length ; i < n ; i++ ) {
-                                        materials[ i ].dispose()
-                                    }
-                                } else {
-                                    materials.dispose()
-                                }
-
-                            }
-
-                            _element = undefined
-
-                            // Special case to refresh treeview that cannot listen on scene
-                            _self.tree.needUpdate = !_self.tree.needUpdate
-
-                        }
-
-                    })()
-                }
-            ]
-
+            const helper   = new Itee.PlaneHelper( clippingPlane, 1000, 0xffffff )
+            helper.name    = name || `Plan de coupe n°${clippingPlaneIndex}`
+            helper.visible = false
+            self.applyModifiers( helper, [ 'updateClipping', 'removeClipping' ], {
+                clippingPlane,
+                sensibility
+            } )
             modifiersGroup.add( helper )
 
             this.renderer.clippingPlanes.push( clippingPlane )
@@ -2328,6 +2360,7 @@ const ViewerPage = {
         },
 
         _updateIntersected ( object ) {
+
 
             if ( !object || (object.type === 'Group' || object.type === 'Scene') ) {
                 return
@@ -2363,18 +2396,21 @@ const ViewerPage = {
                 }
 
                 this._keepReferenceOf( object, this.selected )
+                this.selectedClone = object.clone()
 
             } else {
 
                 if ( this.selected.object.uuid !== this.intersected.object.uuid ) {
 
                     this.onDeselect()
+                    this.selectedClone = null
 
                     if ( this.intersected.object ) {
                         this._clearPreviousIntersected()
                     }
 
                     this._keepReferenceOf( object, this.selected )
+                    this.selectedClone = object.clone()
 
                 }
 
@@ -2477,6 +2513,98 @@ const ViewerPage = {
         },
 
         /// Tree modifiers
+        applyModifiers ( object, modifiersNames, modifiersDatas ) {
+
+            const self = this
+
+            let modifiers = []
+
+            for ( let modifierIndex = 0, numberOfModifiers = modifiersNames.length ; modifierIndex < numberOfModifiers ; modifierIndex++ ) {
+
+                switch ( modifiersNames[ modifierIndex ] ) {
+
+                    case 'lazyPopulate':
+                        modifiers.push( {
+                            type: 'icon',
+                            icon: 'download'
+                        } )
+                        break
+
+                    case 'toggleVisibility':
+                        modifiers.push( {
+                            type:    'checkicon',
+                            iconOn:  'eye',
+                            iconOff: 'eye-slash',
+                            value:   object.visible,
+                            onClick: self.toggleVisibilityOf( object )
+                        } )
+                        break
+
+                    case 'toggleChildrenVisibility':
+                        modifiers.push( {
+                            type:    'icon',
+                            icon:    'low-vision',
+                            onClick: self.makeVisibleAllChildrenOf( object )
+                        } )
+                        break
+
+                    case 'opacity':
+                        modifiers.push( {
+                            type:     'range',
+                            display:  'select',
+                            onChange: self.updateOpacityOf( object )
+                        } )
+                        break
+
+                    case 'lookAt':
+                        modifiers.push( {
+                            type:    'icon',
+                            display: 'select',
+                            icon:    'search',
+                            onClick: self.lookAtObject( object )
+                        } )
+                        break
+
+                    case 'remove':
+                        modifiers.push( {
+                            type:    'icon',
+                            display: 'select',
+                            icon:    'times',
+                            onClick: self.removeObject( object )
+                        } )
+                        break
+
+                    case 'parentUp':
+                        modifiers.push( {
+                            type:    'icon',
+                            display: 'select',
+                            icon:    'times',
+                            onClick: self.parentUp( object )
+                        } )
+                        break
+
+                    case 'updateClipping':
+                        modifiers.push( {
+                            type:     'range',
+                            onChange: self.updateClippingPlane( modifiersDatas.clippingPlane, modifiersDatas.sensibility )
+                        } )
+                        break
+
+                    case 'removeClipping':
+                        modifiers.push( {
+                            type:    'icon',
+                            icon:    'times',
+                            onClick: self.removeClippingPlane.call(self, modifiersDatas.clippingPlane, object )
+                        } )
+                        break
+                }
+
+            }
+
+            object.modifiers = modifiers
+
+        },
+
         selectObject ( object ) {
             'use strict'
 
@@ -2506,6 +2634,28 @@ const ViewerPage = {
 
             return function toggleVisibility () {
                 _object.visible                = !_object.visible
+                _object.modifiers[ 0 ].value   = _object.visible
+                _self.tree.needUpdate          = !_self.tree.needUpdate
+                _self.viewport.needCacheUpdate = true
+            }
+
+        },
+
+        makeVisibleAllChildrenOf ( object ) {
+
+            const _self             = this
+            const _object           = object
+            let _childrenVisibility = _object.visible
+
+            return function toggleVisibility () {
+
+                _childrenVisibility = !_childrenVisibility
+                _object.traverse( function ( children ) {
+                    children.visible              = _childrenVisibility
+                    children.modifiers[ 0 ].value = _childrenVisibility
+                } )
+
+                _self.tree.needUpdate          = !_self.tree.needUpdate
                 _self.viewport.needCacheUpdate = true
             }
 
@@ -2622,6 +2772,92 @@ const ViewerPage = {
 
         },
 
+        updateClippingPlane ( clippingPlane, sensibility ) {
+
+            const _clippingPlane = clippingPlane
+            const _sensibility   = sensibility || 1
+
+            return function ( changeEvent ) {
+
+                const centeredValue     = (changeEvent.target.valueAsNumber - 50) * _sensibility
+                _clippingPlane.constant = centeredValue
+
+            }
+
+        },
+
+        removeClippingPlane ( clippingPlane, helper ) {
+
+            const _self         = this
+            let _clippingPlanes = _self.renderer.clippingPlanes
+            let _clippingPlane  = clippingPlane
+            let _element        = helper
+
+            return function removeModifierHandler () {
+
+                _clippingPlanes.splice( _clippingPlanes.indexOf( _clippingPlane ), 1 )
+
+                _element.parent.remove( _element )
+
+                const geometry = _element.geometry
+                if ( geometry ) {
+                    geometry.dispose()
+                }
+
+                const materials = _element.material
+                if ( materials ) {
+
+                    if ( Array.isArray( materials ) ) {
+                        for ( let i = 0, n = materials.length ; i < n ; i++ ) {
+                            materials[ i ].dispose()
+                        }
+                    } else {
+                        materials.dispose()
+                    }
+
+                }
+
+                _element = undefined
+
+                // Special case to refresh treeview that cannot listen on scene
+                _self.tree.needUpdate = !_self.tree.needUpdate
+
+            }
+
+        },
+
+        parentUp ( object ) {
+            'use strict'
+
+            const _object = object
+
+            return function () {
+
+                const grandParent = _object.parent.parent
+                if ( grandParent ) {
+                    grandParent.add( object )
+                }
+
+            }
+
+        },
+
+        parentDown ( object ) {
+            'use strict'
+
+            const _object = object
+
+            return function () {
+
+                const brothers = _object.parent.children
+                if ( brothers ) {
+                    brothers[ 0 ].add( object )
+                }
+
+            }
+
+        },
+
         ////
 
         onProgress ( progressEvent ) {
@@ -2672,7 +2908,7 @@ const EditorPage = {
                 <TToolItem label="OBJ" tooltip="Download" :onClick="()=>{download('obj')}" />
             </TToolDropDown>
             <TDivider orientation="vertical" />
-            <TToolItem icon="hand-pointer" tooltip="Sélection" :onClick=setSelectionMode />
+            <TToolItem icon="hand-pointer" tooltip="Sélection" :isActive="toolbar.selectIsActive" :onClick="()=>{updateActiveToolItems('select')}" />
             <TToolItem icon="minus" tooltip="Supprimer tous les chargements" :onClick=clearDataGroup />
             <TDivider orientation="vertical" />
             <TToolItem icon="chart-bar" tooltip="Afficher les statistiques webgl" :onClick=toggleViewportStats />
@@ -2705,6 +2941,8 @@ const EditorPage = {
                             <button type="button" class="btn btn-outline-primary btn-block" v-on:click.stop="showGroupCenter">Voir le centre du groupe</button>
                             <button type="button" class="btn btn-outline-primary btn-block" v-on:click.stop="showMeshesBarycenter">Voir le barycentre des meshes</button>
                             <button type="button" class="btn btn-outline-primary btn-block" v-on:click.stop="showGeometriesBarycenter">Voir le barycentre des geometries</button>
+                            <button type="button" class="btn btn-outline-primary btn-block" v-on:click.stop="showFaceNormals">Voir les normals des faces</button>
+                            <button type="button" class="btn btn-outline-primary btn-block" v-on:click.stop="showVertexNormals">Voir les normals des vertexes</button>
                         </div>
                     </div>    
                     
@@ -2871,6 +3109,19 @@ const EditorPage = {
                 needUpdate: false
             },
 
+            toolbar: {
+                selectIsActive:             false,
+                xRayIsActive:               false,
+                clippingIsActive:           false,
+                verticalClippingIsActive:   false,
+                horizontalClippingIsActive: false,
+                freeClippingIsActive:       false,
+                measureIsActive:            false,
+                shadowIsActive:             false,
+                statsIsActive:              false,
+                renderIsActive:             true,
+            },
+
             // Viewport
             viewport:    {
                 scene:                         undefined,
@@ -2898,14 +3149,6 @@ const EditorPage = {
                 allowDecimate:                 true,
                 needCameraFitWorldBoundingBox: false,
                 needCacheUpdate:               false
-            },
-            intersected: {
-                object:           undefined,
-                originalMaterial: undefined
-            },
-            selected:    {
-                object:           undefined,
-                originalMaterial: undefined
             },
             pointer:     undefined,
 
@@ -3004,6 +3247,14 @@ const EditorPage = {
                 antialias:              true,
                 logarithmicDepthBuffer: true
             } )
+            this.intersected = {
+                object:           undefined,
+                originalMaterial: undefined
+            }
+            this.selected = {
+                object:           undefined,
+                originalMaterial: undefined
+            }
 
         },
 
@@ -3075,6 +3326,8 @@ const EditorPage = {
             //                        dirLight.shadow.camera.bottom  = -frustum
             //                        dirLight.shadow.camera.near    = 1
             //                        dirLight.shadow.camera.far     = 500
+            this.applyModifiers( directionalLight, [ 'remove' ] )
+
             lightGroup.add( directionalLight )
 
             //                        const dirLightHelper = new Itee.DirectionalLightHelper( dirLight, 10 )
@@ -3095,68 +3348,28 @@ const EditorPage = {
             let gridGroup = parentGroup.getObjectByName( 'Grilles' )
             if ( !gridGroup ) {
 
-                gridGroup           = new Itee.Group()
-                gridGroup.name      = "Grilles"
-                gridGroup.modifiers = [
-                    {
-                        type:    'checkbox',
-                        value:   'checked',
-                        onClick: this.toggleVisibilityOf( gridGroup )
-                    },
-                    {
-                        type:     'range',
-                        onChange: this.updateOpacityOf( gridGroup )
-                    }
-                ]
+                gridGroup      = new Itee.Group()
+                gridGroup.name = "Grilles"
+                this.applyModifiers( gridGroup, [ 'toggleVisibility', 'opacity' ] )
                 parentGroup.add( gridGroup )
 
             }
 
             /// XZ
 
-            const gridHelperXZ_1     = new Itee.GridHelper( 20, 20 )
-            gridHelperXZ_1.name      = "Grille XZ - Mètrique"
-            gridHelperXZ_1.modifiers = [
-                {
-                    type:    'checkbox',
-                    value:   'checked',
-                    onClick: this.toggleVisibilityOf( gridHelperXZ_1 )
-                },
-                {
-                    type:     'range',
-                    onChange: this.updateOpacityOf( gridHelperXZ_1 )
-                }
-            ]
+            const gridHelperXZ_1 = new Itee.GridHelper( 20, 20 )
+            gridHelperXZ_1.name  = "Grille XZ - Mètrique"
+            this.applyModifiers( gridHelperXZ_1, [ 'toggleVisibility', 'opacity' ] )
             gridGroup.add( gridHelperXZ_1 )
 
-            const gridHelperXZ_10     = new Itee.GridHelper( 200, 20 )
-            gridHelperXZ_10.name      = "Grille XZ - Décamètrique"
-            gridHelperXZ_10.modifiers = [
-                {
-                    type:    'checkbox',
-                    value:   'checked',
-                    onClick: this.toggleVisibilityOf( gridHelperXZ_10 )
-                },
-                {
-                    type:     'range',
-                    onChange: this.updateOpacityOf( gridHelperXZ_10 )
-                }
-            ]
+            const gridHelperXZ_10 = new Itee.GridHelper( 200, 20 )
+            gridHelperXZ_10.name  = "Grille XZ - Décamètrique"
+            this.applyModifiers( gridHelperXZ_10, [ 'toggleVisibility', 'opacity' ] )
             gridGroup.add( gridHelperXZ_10 )
 
-            const gridHelperXZ_100     = new Itee.GridHelper( 2000, 20 )
-            gridHelperXZ_100.name      = "Grille XZ - Hectomètrique"
-            gridHelperXZ_100.modifiers = [
-                {
-                    type:    'checkbox',
-                    value:   'checked',
-                    onClick: this.toggleVisibilityOf( gridHelperXZ_100 )
-                },
-                {
-                    type:     'range',
-                    onChange: this.updateOpacityOf( gridHelperXZ_100 )
-                }
-            ]
+            const gridHelperXZ_100 = new Itee.GridHelper( 2000, 20 )
+            gridHelperXZ_100.name  = "Grille XZ - Hectomètrique"
+            this.applyModifiers( gridHelperXZ_100, [ 'toggleVisibility', 'opacity' ] )
             gridGroup.add( gridHelperXZ_100 )
 
             /// XY
@@ -3284,8 +3497,211 @@ const EditorPage = {
 
         },
 
-        /// MODALS
+        //// ToolBar
+        updateActiveToolItems ( itemName ) {
+            'use strict'
 
+            switch ( itemName ) {
+
+                case 'select':
+                    if ( this.toolbar.xRayIsActive ) {
+                        this.disableXRay()
+                        this.toolbar.xRayIsActive = false
+                    }
+
+                    if ( this.toolbar.clippingIsActive ) {
+                        this.disableFreeClipping()
+                        this.toolbar.clippingIsActive = false
+                    }
+
+                    if ( this.toolbar.measureIsActive ) {
+                        this.disableMeasure()
+                        this.toolbar.measureIsActive = false
+                    }
+
+                    ///
+
+                    this.toolbar.selectIsActive = !this.toolbar.selectIsActive
+                    if ( this.toolbar.selectIsActive ) {
+                        this.enableSelection()
+                    } else {
+                        this.disableSelection()
+                    }
+
+                    break
+
+                case 'xRay':
+                    if ( this.toolbar.selectIsActive ) {
+                        this.disableSelection()
+                        this.toolbar.selectIsActive = false
+                    }
+
+                    if ( this.toolbar.clippingIsActive ) {
+                        this.disableFreeClipping()
+                        this.toolbar.clippingIsActive = false
+                    }
+
+                    if ( this.toolbar.measureIsActive ) {
+                        this.disableMeasure()
+                        this.toolbar.measureIsActive = false
+                    }
+
+                    ///
+
+                    this.toolbar.xRayIsActive = !this.toolbar.xRayIsActive
+                    if ( this.toolbar.xRayIsActive ) {
+                        this.enableXRay()
+                    } else {
+                        this.disableXRay()
+                    }
+
+                    break
+
+                case 'verticalClipping':
+                case 'horizontalClipping':
+                case 'freeClipping':
+                    if ( this.toolbar.selectIsActive ) {
+                        this.disableSelection()
+                        this.toolbar.selectIsActive = false
+                    }
+
+                    if ( this.toolbar.xRayIsActive ) {
+                        this.disableXRay()
+                        this.toolbar.xRayIsActive = false
+                    }
+
+                    if ( this.toolbar.measureIsActive ) {
+                        this.disableMeasure()
+                        this.toolbar.measureIsActive = false
+                    }
+
+                    ///
+
+                    switch ( itemName ) {
+
+                        case 'verticalClipping':
+                            this.toolbar.verticalClippingIsActive = !this.toolbar.verticalClippingIsActive
+                            if ( this.toolbar.verticalClippingIsActive ) {
+                                this.enableVerticalClipping()
+                            } else {
+                                this.disableVerticalClipping()
+                            }
+                            break
+
+                        case 'horizontalClipping':
+                            this.toolbar.horizontalClippingIsActive = !this.toolbar.horizontalClippingIsActive
+                            if ( this.toolbar.horizontalClippingIsActive ) {
+                                this.enableHorizontalClipping()
+                            } else {
+                                this.disableHorizontalClipping()
+                            }
+                            break
+
+                        case 'freeClipping':
+                            this.toolbar.freeClippingIsActive = !this.toolbar.freeClippingIsActive
+                            if ( this.toolbar.freeClippingIsActive ) {
+                                this.enableFreeClipping()
+                            } else {
+                                this.disableFreeClipping()
+                            }
+                            break
+
+                        default:
+                            throw new RangeError( `Invalid clipping parameter: ${itemName}` )
+                            break
+
+                    }
+
+                    this.toolbar.clippingIsActive = ( this.toolbar.verticalClippingIsActive || this.toolbar.horizontalClippingIsActive || this.toolbar.freeClippingIsActive )
+                    break
+
+                case 'measure':
+                    if ( this.toolbar.selectIsActive ) {
+                        this.disableSelection()
+                        this.toolbar.selectIsActive = false
+                    }
+
+                    if ( this.toolbar.xRayIsActive ) {
+                        this.disableXRay()
+                        this.toolbar.xRayIsActive = false
+                    }
+
+                    if ( this.toolbar.clippingIsActive ) {
+                        this.disableFreeClipping()
+                        this.toolbar.clippingIsActive = false
+                    }
+
+                    ///
+
+                    this.toolbar.measureIsActive = true
+                    if ( this.toolbar.measureIsActive ) {
+                        this.enableMeasure()
+                    } else {
+                        this.disableMeasure()
+                    }
+
+                    break
+
+                case 'shadow':
+                    this.toolbar.shadowIsActive = !this.toolbar.shadowIsActive
+                    if ( this.toolbar.shadowIsActive ) {
+                        this.enableShadow()
+                    } else {
+                        this.disableShadow()
+                    }
+                    break
+
+                case 'stats':
+                    this.toolbar.statsIsActive = !this.toolbar.statsIsActive
+                    if ( this.toolbar.statsIsActive ) {
+                        this.enableStats()
+                    } else {
+                        this.disableStats()
+                    }
+                    break
+
+                case 'render':
+                    this.toolbar.renderIsActive = !this.toolbar.renderIsActive
+                    if ( this.toolbar.renderIsActive ) {
+                        this.enableRender()
+                    } else {
+                        this.disableRender()
+                    }
+                    break
+
+                default:
+                    throw new RangeError( `Invalid parameter: ${itemName}` )
+                    break
+
+            }
+
+        },
+
+        // Select
+        enableSelection () {
+            'use strict'
+
+            this.setCursorOfType( 'hand' )
+            //            this.enablePointer( 'Sphère' )
+            this.action                 = 'selection'
+            this.viewport.isRaycastable = true
+
+        },
+
+        disableSelection () {
+            'use strict'
+
+            this.viewport.isRaycastable = false
+            this.action                 = ''
+            //            this.disablePointer()
+            this.resetDefaultCursor()
+
+            this.onDeselect()
+            this._clearPreviousIntersected()
+
+        },
+
+        /// Modal
         toggleModalVisibility ( modalId ) {
             'use strict'
 
@@ -3305,769 +3721,88 @@ const EditorPage = {
 
         },
 
-        /// Loader
+        /// Cursor
+        setCursorOfType ( type ) {
+            'use strict'
+            document.body.style.cursor = type
+        },
 
-        updateFilesList ( files ) {
+        resetDefaultCursor () {
             'use strict'
 
-            this.filesList = files
+            document.body.style.cursor = 'auto'
 
         },
 
-        upload () {
-            'use strict'
+        //// Pointers
 
-            const self       = this
-            const datasGroup = self.scene.getObjectByName( 'Données' )
+        enablePointer ( pointerType ) {
 
-            this.toggleModalVisibility( 'modal-file-data' )
-
-            this.loader.load(
-                this.filesList,
-                data => {
-
-                    // Import routine
-
-                    data.traverse( object => {
-
-                        if ( !object.name ) {
-                            object.name = `${object.type}_${object.id}`
-                        }
-
-                        object.onClick = this.selectObject( object )
-
-                        object.modifiers = [
-                            {
-                                type:    'checkbox',
-                                value:   'checked',
-                                onClick: this.toggleVisibilityOf( object )
-                            },
-                            {
-                                type:     'range',
-                                onChange: this.updateOpacityOf( object )
-                            },
-                            {
-                                type:    'button',
-                                value:   'X',
-                                onClick: this.removeObject( object )
-                            },
-                            {
-                                type:    'button',
-                                value:   'Up',
-                                onClick: this.parentUp( object )
-                            }
-                        ]
-
-                        if ( object.isMesh || object.isLineSegments ) {
-                            object.isRaycastable = true
-                            object.geometry.computeFaceNormals()
-                            object.geometry.computeVertexNormals()
-                            //                                            object.castShadow    = true        //default is false
-                            //                                            object.receiveShadow = true     //default is false
-                        }
-
-                    } )
-
-                    datasGroup.add( data )
-
-                },
-                self.onProgress,
-                self.onError
-            )
-
-        },
-
-        clearDataGroup () {
-            'use strict'
-
-            let dataGroup = this.scene.getObjectByName( 'Données' )
-
-            for ( let childIndex = 0, numChildren = dataGroup.children.length ; childIndex < numChildren ; childIndex++ ) {
-                let child = dataGroup.children[ childIndex ]
-                dataGroup.remove( child )
+            if ( !pointerType || pointerType.length === 0 ) {
+                console.error( `Invalide pointer type: ${pointerType}` )
+                return
             }
 
-        },
-
-        download ( downloadType ) {
-            'use strict'
-
-            this.toggleModalVisibility( 'modal-display-data' )
-
-            let result = undefined
-            switch ( downloadType ) {
-
-                case 'json':
-                    result = this.downloadJSON()
-                    break
-
-                case 'obj':
-                    result = this.downloadOBJ()
-                    break
-
-                default:
-                    throw new RangeError( `Invalid switch parameter: ${downloadType}` )
-                    break
-
+            this.pointer = this.scene.getObjectByName( 'Environement' ).getObjectByName( 'Pointers' ).getObjectByName( pointerType )
+            if ( !this.pointer ) {
+                console.error( `Unable to find pointer of type: ${pointerType}` )
+                return
             }
 
-            console.log( `File size: ${result.length}` )
-            this.downloadDatas = result
+            this.pointer.visible = true
 
         },
 
-        downloadJSON () {
-            'use strict'
+        updatePointer ( point, face ) {
 
-            let dataGroup = this.scene.getObjectByName( 'Données' )
-            return JSON.stringify( dataGroup.children[ 0 ].toJSON() )
+            if ( !this.pointer ) {
+                return
+            }
 
-        },
+            if ( !point || !face ) {
+                return
+            }
 
-        downloadOBJ () {
-            'use strict'
+            //                                const arrowHelper = new Itee.ArrowHelper( face.normal, point, 1, 0x123456 )
+            //                                this.scene.add( arrowHelper )
 
-            let dataGroup     = this.scene.getObjectByName( 'Données' )
-            const objExporter = new Itee.OBJExporter()
-            return objExporter.parse( dataGroup.children[ 0 ] )
+            if ( this.pointer.name === 'Plan' ) {
 
-        },
+                const direction       = new Itee.Vector3().addVectors( point, face.normal )
+                const div             = direction.clone().normalize().divideScalar( 10 )
+                const offsetPosition  = point.clone().add( div )
+                const offsetDirection = direction.clone().add( div )
+                this.pointer.position.set( offsetPosition.x, offsetPosition.y, offsetPosition.z )
+                this.pointer.lookAt( offsetDirection )
 
-        /// Tree modifiers
+                //                                this.pointer.position.set( point.x, point.y, point.z )
+                //                                this.pointer.lookAt( direction )
+                //                                this.pointer.rotateX(Itee.degreesToRadians(90))
 
-        selectObject ( object ) {
-            'use strict'
+            } else if ( this.pointer.name === 'Sphère' ) {
 
-            const _self   = this
-            const _object = object
-            let _selected = false
+                //Todo: scale sphere in squared distance to intersect origin and camera position
+                this.pointer.position.set( point.x, point.y, point.z )
 
-            return function selectObjectHandler () {
+            } else {
 
-                _self.action = 'selection'
-                _selected    = !_selected
-
-                _self.selectedObject = _object
-
-                //                if ( _selected ) {
-                //                    _self.onSelect( {object: _object} )
-                //                } else {
-                //                    _self.onDeselect()
-                //                }
+                console.warn( `Unknown pointer ${this.pointer.name}, defaulting to intersect position` )
+                this.pointer.position.set( point.x, point.y, point.z )
 
             }
 
         },
 
-        toggleVisibilityOf ( object ) {
-            'use strict'
+        disablePointer () {
 
-            const _self   = this
-            const _object = object
-
-            return function toggleVisibility () {
-                _object.visible                = !_object.visible
-                _self.viewport.needCacheUpdate = true
+            if ( !this.pointer ) {
+                return
             }
 
-        },
-
-        updateOpacityOf ( object ) {
-            'use strict'
-
-            const _object = object
-
-            return function onChangeHandler ( changeEvent ) {
-
-                const opacity = changeEvent.target.valueAsNumber / 100
-
-                _object.traverse( child => {
-
-                    if ( !child.isMesh && !child.isLineSegments ) {
-                        return
-                    }
-
-                    const materials = child.material
-                    if ( !materials ) {
-                        return
-                    }
-
-                    if ( Array.isArray( materials ) ) {
-
-                        for ( let materialIndex = 0, numberOfMaterial = materials.length ; materialIndex < numberOfMaterial ; materialIndex++ ) {
-                            setOpacity( materials[ materialIndex ], opacity )
-                        }
-
-                    } else {
-
-                        setOpacity( materials, opacity )
-
-                    }
-
-                } )
-
-                function setOpacity ( material, opacity ) {
-
-                    if ( !material.transparent ) {
-                        material.transparent = true
-                    }
-
-                    material.opacity = opacity
-
-                }
-
-            }
+            this.pointer.visible = false
 
         },
 
-        removeObject ( element ) {
-            'use strict'
-
-            let _element = element
-
-            return function removeElementHandler () {
-                _element.parent.remove( _element )
-
-                const geometry = _element.geometry
-                if ( geometry ) {
-                    geometry.dispose()
-                }
-
-                const materials = _element.material
-                if ( materials ) {
-
-                    if ( Array.isArray( materials ) ) {
-                        for ( let i = 0, n = materials.length ; i < n ; i++ ) {
-                            materials[ i ].dispose()
-                        }
-                    } else {
-                        materials.dispose()
-                    }
-
-                }
-
-                _element = undefined
-            }
-
-        },
-
-        parentUp ( object ) {
-            'use strict'
-
-            const _object = object
-
-            return function () {
-
-                const grandParent = _object.parent.parent
-                if ( grandParent ) {
-                    grandParent.add( object )
-                }
-
-            }
-
-        },
-
-        parentDown ( object ) {
-            'use strict'
-
-            const _object = object
-
-            return function () {
-
-                const brothers = _object.parent.children
-                if ( brothers ) {
-                    brothers[ 0 ].add( object )
-                }
-
-            }
-
-        },
-
-        //// MESH MODIFIERS
-
-        setGroupTransparent () {
-            'use strict'
-
-            const group = this.scene.getObjectByName( 'Données' ).children[ 0 ]
-
-            group.traverse( child => {
-
-                if ( !child.isMesh ) {
-                    return
-                }
-
-                const materials = child.material
-                if ( !materials ) {
-                    return
-                }
-
-                if ( Array.isArray( materials ) ) {
-                    for ( let i = 0, n = materials.length ; i < n ; i++ ) {
-                        materials[ i ].transparent = true
-                        materials[ i ].opacity     = 0.5
-                    }
-                } else {
-                    materials.transparent = true
-                    materials.opacity     = 0.5
-                }
-
-            } )
-
-        },
-
-        showGroupGeometries ( color ) {
-            'use strict'
-
-            const group   = this.scene.getObjectByName( 'Données' ).children[ 0 ]
-            let helpGroup = this.scene.getObjectByName( 'Aides' )
-            if ( !helpGroup ) {
-
-                helpGroup      = new Itee.Group()
-                helpGroup.name = "Aides"
-                this.scene.add( helpGroup )
-
-            }
-
-            let geometriesHelperGroup = helpGroup.getObjectByName( 'Geometries' )
-            if ( !geometriesHelperGroup ) {
-
-                geometriesHelperGroup           = new Itee.Group()
-                geometriesHelperGroup.name      = "Geometries"
-                geometriesHelperGroup.modifiers = [
-                    {
-                        type:    'checkbox',
-                        value:   'checked',
-                        onClick: this.toggleVisibilityOf( geometriesHelperGroup )
-                    },
-                    {
-                        type:     'range',
-                        onChange: this.updateOpacityOf( geometriesHelperGroup )
-                    },
-                    {
-                        type:    'button',
-                        value:   'X',
-                        onClick: this.removeObject( geometriesHelperGroup )
-                    }
-                ]
-                helpGroup.add( geometriesHelperGroup )
-
-            }
-
-            const _color = color || Math.random() * 0xffffff
-
-            group.traverse( child => {
-
-                if ( !child.isMesh ) {
-                    return
-                }
-
-                const geometry = child.geometry
-                if ( !geometry ) {
-                    return
-                }
-
-                const geometryHelper     = new Itee.LineSegments(
-                    new Itee.EdgesGeometry( child.geometry ),
-                    new Itee.LineBasicMaterial( { color: _color } )
-                )
-                geometryHelper.modifiers = [
-                    {
-                        type:    'button',
-                        value:   'X',
-                        onClick: this.removeObject( geometryHelper )
-                    }
-                ]
-
-                geometryHelper.name = `${child.name}_Geometrie`
-
-                geometriesHelperGroup.add( geometryHelper )
-
-            } )
-
-        },
-
-        showGroupCenter () {
-            'use strict'
-
-            const group      = this.scene.getObjectByName( 'Données' ).children[ 0 ]
-            const position   = group.getWorldPosition( group.position.clone() )
-            const axesHelper = new Itee.AxesHelper( 100 )
-            axesHelper.position.set( position.x, position.y, position.z )
-            axesHelper.name = 'Centre du groupe'
-
-            let helpGroup = this.scene.getObjectByName( 'Aides' )
-            if ( !helpGroup ) {
-
-                helpGroup      = new Itee.Group()
-                helpGroup.name = "Aides"
-                this.scene.add( helpGroup )
-
-            }
-
-            let barycenterHelperGroup = helpGroup.getObjectByName( 'Centres' )
-            if ( !barycenterHelperGroup ) {
-
-                barycenterHelperGroup           = new Itee.Group()
-                barycenterHelperGroup.name      = "Centres"
-                barycenterHelperGroup.modifiers = [
-                    {
-                        type:    'checkbox',
-                        value:   'checked',
-                        onClick: this.toggleVisibilityOf( barycenterHelperGroup )
-                    },
-                    {
-                        type:     'range',
-                        onChange: this.updateOpacityOf( barycenterHelperGroup )
-                    },
-                    {
-                        type:    'button',
-                        value:   'X',
-                        onClick: this.removeObject( barycenterHelperGroup )
-                    }
-                ]
-                helpGroup.add( barycenterHelperGroup )
-
-            }
-
-            barycenterHelperGroup.add( axesHelper )
-
-        },
-
-        showMeshesBarycenter () {
-            'use strict'
-
-            const group            = this.scene.getObjectByName( 'Données' ).children[ 0 ]
-            const children         = group.children
-            const numberOfChildren = children.length || 1
-            const barycenter       = children.map( child => {return child.getWorldPosition( child.position.clone() )} )
-                                             .reduce( ( a, b ) => { return new Itee.Vector3().addVectors( a, b )} )
-                                             .divideScalar( numberOfChildren )
-
-            const axesHelper = new Itee.AxesHelper( 75 )
-            axesHelper.position.set( barycenter.x, barycenter.y, barycenter.z )
-            axesHelper.name = 'Barycentre des meshes'
-
-            let helpGroup = this.scene.getObjectByName( 'Aides' )
-            if ( !helpGroup ) {
-
-                helpGroup      = new Itee.Group()
-                helpGroup.name = "Aides"
-                this.scene.add( helpGroup )
-
-            }
-
-            let barycenterHelperGroup = helpGroup.getObjectByName( 'Centres' )
-            if ( !barycenterHelperGroup ) {
-
-                barycenterHelperGroup           = new Itee.Group()
-                barycenterHelperGroup.name      = "Centres"
-                barycenterHelperGroup.modifiers = [
-                    {
-                        type:    'checkbox',
-                        value:   'checked',
-                        onClick: this.toggleVisibilityOf( barycenterHelperGroup )
-                    },
-                    {
-                        type:     'range',
-                        onChange: this.updateOpacityOf( barycenterHelperGroup )
-                    },
-                    {
-                        type:    'button',
-                        value:   'X',
-                        onClick: this.removeObject( barycenterHelperGroup )
-                    }
-                ]
-                helpGroup.add( barycenterHelperGroup )
-
-            }
-
-            barycenterHelperGroup.add( axesHelper )
-
-        },
-
-        showGeometriesBarycenter () {
-            'use strict'
-
-            const group            = this.scene.getObjectByName( 'Données' ).children[ 0 ]
-            const children         = group.children
-            const numberOfChildren = children.length || 1
-            const barycenter       = children.map( child => {
-
-                                                 if ( !child.geometry.boundingBox ) {
-                                                     child.geometry.computeBoundingBox()
-                                                 }
-
-                                                 return child.geometry.boundingBox.getCenter()
-
-                                             } )
-                                             .reduce( ( a, b ) => { return new Itee.Vector3().addVectors( a, b )} )
-                                             .divideScalar( numberOfChildren )
-
-            const axesHelper = new Itee.AxesHelper( 50 )
-            axesHelper.position.set( barycenter.x, barycenter.y, barycenter.z )
-            axesHelper.name = 'Barycentre des geométries'
-
-            let helpGroup = this.scene.getObjectByName( 'Aides' )
-            if ( !helpGroup ) {
-
-                helpGroup      = new Itee.Group()
-                helpGroup.name = "Aides"
-                this.scene.add( helpGroup )
-
-            }
-
-            let barycenterHelperGroup = helpGroup.getObjectByName( 'Centres' )
-            if ( !barycenterHelperGroup ) {
-
-                barycenterHelperGroup           = new Itee.Group()
-                barycenterHelperGroup.name      = "Centres"
-                barycenterHelperGroup.modifiers = [
-                    {
-                        type:    'checkbox',
-                        value:   'checked',
-                        onClick: this.toggleVisibilityOf( barycenterHelperGroup )
-                    },
-                    {
-                        type:     'range',
-                        onChange: this.updateOpacityOf( barycenterHelperGroup )
-                    },
-                    {
-                        type:    'button',
-                        value:   'X',
-                        onClick: this.removeObject( barycenterHelperGroup )
-                    }
-                ]
-                helpGroup.add( barycenterHelperGroup )
-
-            }
-
-            barycenterHelperGroup.add( axesHelper )
-
-        },
-
-        ////////
-
-        setMeshesToBarycenter () {
-            'use strict'
-
-        },
-
-        setGroupToCenter () {
-            'use strict'
-
-            const group = this.scene.getObjectByName( 'Données' ).children[ 0 ]
-            group.position.set( 0, 0, 0 )
-            group.updateMatrix()
-
-        },
-
-        setMeshesToGroupCenter () {
-            'use strict'
-
-            const group            = this.scene.getObjectByName( 'Données' ).children[ 0 ]
-            const groupPosition    = group.position
-            const children         = group.children
-            const numberOfChildren = children.length || 1
-            const barycenter       = children.map( child => {return child.position} )
-                                             .reduce( ( a, b ) => { return new Itee.Vector3().addVectors( a, b )} )
-                                             .divideScalar( numberOfChildren )
-
-            const subVector = new Itee.Vector3().subVectors( barycenter, groupPosition )
-
-            group.traverse( child => {
-
-                if ( child.uuid === group.uuid ) {
-                    return
-                }
-
-                child.position.x -= subVector.x
-                child.position.y -= subVector.y
-                child.position.z -= subVector.z
-                child.updateMatrix()
-
-            } )
-
-        },
-
-        setGroupPositionToChildrenMeshBarycenter () {
-            'use strict'
-
-            const group            = this.scene.getObjectByName( 'Données' ).children[ 0 ]
-            const groupPosition    = group.position
-            const children         = group.children
-            const numberOfChildren = children.length || 1
-            const barycenter       = children.map( child => {return child.position} )
-                                             .reduce( ( a, b ) => { return new Itee.Vector3().addVectors( a, b )} )
-                                             .divideScalar( numberOfChildren )
-
-            const subVector = new Itee.Vector3().subVectors( barycenter, groupPosition )
-
-            group.traverse( child => {
-
-                if ( child.uuid === group.uuid ) {
-                    return
-                }
-
-                child.position.x -= subVector.x
-                child.position.y -= subVector.y
-                child.position.z -= subVector.z
-                child.updateMatrix()
-
-            } )
-
-            group.position.set( barycenter.x, barycenter.y, barycenter.z )
-            group.updateMatrix()
-
-        },
-
-        setGroupPositionToChildrenGeometryBarycenter () {
-            'use strict'
-
-            const groupToUpdate    = this.scene.getObjectByName( 'Données' ).children[ 0 ]
-            const children         = groupToUpdate.children
-            const numberOfChildren = children.length || 1
-            const barycenter       = children.map( child => {
-
-                                                 if ( !child.geometry.boundingBox ) {
-                                                     child.geometry.computeBoundingBox()
-                                                 }
-
-                                                 return child.geometry.boundingBox.getCenter()
-
-                                             } )
-                                             .reduce( ( a, b ) => { return new Itee.Vector3().addVectors( a, b )} )
-                                             .divideScalar( numberOfChildren )
-
-            const negatedBarycenter = barycenter.clone().negate()
-
-            groupToUpdate.position.set( barycenter.x, barycenter.y, barycenter.z )
-            groupToUpdate.updateMatrix()
-
-            groupToUpdate.traverse( child => {
-
-                if ( child.uuid === groupToUpdate.uuid ) {
-                    return
-                }
-
-                child.position.set( negatedBarycenter.x, negatedBarycenter.y, negatedBarycenter.z )
-                child.updateMatrix()
-
-            } )
-
-        },
-
-        /////////
-
-        rotateGeometries () {
-            'use strict'
-
-            const group = this.scene.getObjectByName( 'Données' ).children[ 0 ]
-            group.traverse( child => {
-
-                if ( !child.isMesh ) {
-                    return
-                }
-
-                child.geometry.rotateX( Itee.degreesToRadians( 90 ) )
-
-            } )
-
-        },
-
-        recenterGeometriesChildren () {
-            'use strict'
-
-            // Recenter buffergeometry in world center
-            const group = this.scene.getObjectByName( 'Données' ).children[ 0 ]
-            group.traverse( child => {
-
-                if ( !child.isMesh ) {
-                    return
-                }
-
-                const center         = child.geometry.center()
-                const meshBarycenter = center.negate()
-
-                child.position.set( meshBarycenter.x, meshBarycenter.y, meshBarycenter.z )
-                child.updateMatrix()
-
-            } )
-
-        },
-
-        /////////
-
-        applyRotationToGeometries () {
-            'use strict'
-
-            const group = this.scene.getObjectByName( 'Données' ).children[ 0 ]
-            group.traverse( child => {
-
-                if ( !child.isMesh ) {
-                    return
-                }
-
-                const rotateX = Itee.degreesToRadians( this.geometries.rotate.x )
-                const rotateY = Itee.degreesToRadians( this.geometries.rotate.y )
-                const rotateZ = Itee.degreesToRadians( this.geometries.rotate.z )
-                child.geometry.rotateX( rotateX )
-                child.geometry.rotateY( rotateY )
-                child.geometry.rotateZ( rotateZ )
-
-            } )
-
-        },
-
-        applyTranslationToGeometries () {
-            'use strict'
-
-            const group = this.scene.getObjectByName( 'Données' ).children[ 0 ]
-            group.traverse( child => {
-
-                if ( !child.isMesh ) {
-                    return
-                }
-
-                const translateX = this.geometries.translate.x
-                const translateY = this.geometries.translate.y
-                const translateZ = this.geometries.translate.z
-                child.geometry.translate( translateX, translateY, translateZ )
-
-            } )
-
-        },
-
-        applyRotationToMeshes () {
-            'use strict'
-
-            const group = this.scene.getObjectByName( 'Données' ).children[ 0 ]
-
-            const rotateX = Itee.degreesToRadians( this.meshes.rotate.x )
-            const rotateY = Itee.degreesToRadians( this.meshes.rotate.y )
-            const rotateZ = Itee.degreesToRadians( this.meshes.rotate.z )
-            group.rotateX( rotateX )
-            group.rotateY( rotateY )
-            group.rotateZ( rotateZ )
-
-            group.updateMatrix()
-
-        },
-
-        applyTranslationToMeshes () {
-            'use strict'
-
-            const group = this.scene.getObjectByName( 'Données' ).children[ 0 ]
-
-            const translateX = this.meshes.translate.x
-            const translateY = this.meshes.translate.y
-            const translateZ = this.meshes.translate.z
-            group.translateX( translateX )
-            group.translateY( translateY )
-            group.translateZ( translateZ )
-
-            group.updateMatrix()
-
-        },
 
         //// // VIEWPORT
 
@@ -4104,53 +3839,6 @@ const EditorPage = {
 
         //// Pointers
 
-        enablePointer () {
-
-            if ( !this.pointer ) {
-                return
-            }
-
-            this.pointer.visible = true
-
-        },
-
-        updatePointer ( point, face ) {
-
-            if ( !this.pointer || !point ) {
-                return
-            }
-
-            //Todo: scale sphere in squared distance to intersect origin and camera position
-            if ( this.pointer.name === 'Plan' ) {
-
-                //                                const arrowHelper = new Itee.ArrowHelper( face.normal, point, 1, 0x123456 )
-                //                                this.scene.add( arrowHelper )
-
-                const direction       = new Itee.Vector3().addVectors( point, face.normal )
-                const div             = direction.clone().normalize().divideScalar( 10 )
-                const offsetPosition  = point.clone().add( div )
-                const offsetDirection = direction.clone().add( div )
-                this.pointer.position.set( offsetPosition.x, offsetPosition.y, offsetPosition.z )
-                this.pointer.lookAt( offsetDirection )
-                //                                this.pointer.position.set( point.x, point.y, point.z )
-                //                                this.pointer.lookAt( direction )
-                //                                this.pointer.rotateX(Itee.degreesToRadians(90))
-
-            } else {
-                this.pointer.position.set( point.x, point.y, point.z )
-            }
-
-        },
-
-        disablePointer () {
-
-            if ( !this.pointer ) {
-                return
-            }
-
-            this.pointer.visible = false
-
-        },
 
         // Viewport selection
 
@@ -4482,6 +4170,1015 @@ const EditorPage = {
             } else {
                 materials.dispose()
             }
+
+        },
+
+        /// Loader
+        updateFilesList ( files ) {
+            'use strict'
+
+            this.filesList = files
+
+        },
+
+        upload () {
+            'use strict'
+
+            const self       = this
+            const datasGroup = self.scene.getObjectByName( 'Données' )
+
+            this.toggleModalVisibility( 'modal-file-data' )
+
+            this.loader.load(
+                this.filesList,
+                data => {
+
+                    // Import routine
+
+                    const totalObject = data.children.length
+                    let processedObject = 0
+                    data.traverse( object => {
+
+                        processedObject++
+                        console.log(`Progress: ${processedObject}/${totalObject}`)
+
+                        if ( !object.name ) {
+                            object.name = `${object.type}_${object.id}`
+                        }
+
+                        object.onClick = this.selectObject( object )
+                        object.modifiers = this.applyModifiers(object, ['toggleVisibility', 'opacity', 'remove', 'parentUp'])
+
+                        if ( object.isMesh || object.isLineSegments ) {
+                            object.isRaycastable = true
+                            object.geometry.computeFaceNormals()
+                            object.geometry.computeVertexNormals()
+//                            object.castShadow    = true        //default is false
+//                            object.receiveShadow = true     //default is false
+                        }
+
+                        const objectName = object.name
+                        const splits     = objectName.split( ' - ' )
+                        let subParent    = datasGroup
+                        if ( splits.length > 1 ) {
+
+                            for ( let splitIndex = 0, numberOfSplits = splits.length ; splitIndex < numberOfSplits ; splitIndex++ ) {
+
+                                let subGroupName = splits[ splitIndex ].trim()
+
+                                let subGroup = subParent.getObjectByName( subGroupName )
+                                if ( subGroupName.length > 0 && !subGroup ) {
+
+                                    subGroup      = new Itee.Group()
+                                    subGroup.name = subGroupName
+                                    self.applyModifiers( subGroup, [ 'toggleVisibility', 'toggleChildrenVisibility', 'opacity' ] )
+
+                                    subParent.add( subGroup )
+
+                                }
+
+                                subParent = subGroup
+
+                            }
+
+                            if ( subParent && subParent.type !== 'Scene' ) {
+
+                                object.name   = object._id
+                                object.parent = null
+
+                                subParent.add( object )
+
+                            } else {
+                                //todo: alert unkowngroup
+                            }
+
+                        }
+
+                    } )
+
+//                    datasGroup.add( data )
+
+                },
+                self.onProgress,
+                self.onError
+            )
+
+        },
+
+        clearDataGroup () {
+            'use strict'
+
+            let dataGroup = this.scene.getObjectByName( 'Données' )
+
+            for ( let childIndex = 0, numChildren = dataGroup.children.length ; childIndex < numChildren ; childIndex++ ) {
+                let child = dataGroup.children[ childIndex ]
+                dataGroup.remove( child )
+            }
+
+        },
+
+        download ( downloadType ) {
+            'use strict'
+
+            this.toggleModalVisibility( 'modal-display-data' )
+
+            let result = undefined
+            switch ( downloadType ) {
+
+                case 'json':
+                    result = this.downloadJSON()
+                    break
+
+                case 'obj':
+                    result = this.downloadOBJ()
+                    break
+
+                default:
+                    throw new RangeError( `Invalid switch parameter: ${downloadType}` )
+                    break
+
+            }
+
+            console.log( `File size: ${result.length}` )
+            this.downloadDatas = result
+
+        },
+
+        downloadJSON () {
+            'use strict'
+
+            let dataGroup = this.scene.getObjectByName( 'Données' )
+            return JSON.stringify( dataGroup.children[ 0 ].toJSON() )
+
+        },
+
+        downloadOBJ () {
+            'use strict'
+
+            let dataGroup     = this.scene.getObjectByName( 'Données' )
+            const objExporter = new Itee.OBJExporter()
+            return objExporter.parse( dataGroup.children[ 0 ] )
+
+        },
+
+        /// Tree modifiers
+
+        applyModifiers ( object, modifiersNames, modifiersDatas ) {
+
+            const self = this
+
+            let modifiers = []
+
+            for ( let modifierIndex = 0, numberOfModifiers = modifiersNames.length ; modifierIndex < numberOfModifiers ; modifierIndex++ ) {
+
+                switch ( modifiersNames[ modifierIndex ] ) {
+
+                    case 'lazyPopulate':
+                        modifiers.push( {
+                            type: 'icon',
+                            icon: 'download'
+                        } )
+                        break
+
+                    case 'toggleVisibility':
+                        modifiers.push( {
+                            type:    'checkicon',
+                            iconOn:  'eye',
+                            iconOff: 'eye-slash',
+                            value:   object.visible,
+                            onClick: self.toggleVisibilityOf( object )
+                        } )
+                        break
+
+                    case 'toggleChildrenVisibility':
+                        modifiers.push( {
+                            type:    'icon',
+                            icon:    'low-vision',
+                            onClick: self.makeVisibleAllChildrenOf( object )
+                        } )
+                        break
+
+                    case 'opacity':
+                        modifiers.push( {
+                            type:     'range',
+                            display:  'select',
+                            onChange: self.updateOpacityOf( object )
+                        } )
+                        break
+
+                    case 'lookAt':
+                        modifiers.push( {
+                            type:    'icon',
+                            display: 'select',
+                            icon:    'search',
+                            onClick: self.lookAtObject( object )
+                        } )
+                        break
+
+                    case 'remove':
+                        modifiers.push( {
+                            type:    'icon',
+                            display: 'select',
+                            icon:    'times',
+                            onClick: self.removeObject( object )
+                        } )
+                        break
+
+                    case 'parentUp':
+                        modifiers.push( {
+                            type:    'icon',
+                            display: 'select',
+                            icon:    'times',
+                            onClick: self.parentUp( object )
+                        } )
+                        break
+
+                    case 'updateClipping':
+                        modifiers.push( {
+                            type:     'range',
+                            onChange: self.updateClippingPlane( modifiersDatas.clippingPlane, modifiersDatas.sensibility )
+                        } )
+                        break
+
+                    case 'removeClipping':
+                        modifiers.push( {
+                            type:    'icon',
+                            icon:    'times',
+                            onClick: self.removeClippingPlane.call(self, modifiersDatas.clippingPlane, object )
+                        } )
+                        break
+                }
+
+            }
+
+            object.modifiers = modifiers
+
+        },
+
+        selectObject ( object ) {
+            'use strict'
+
+            const self    = this
+            const _object = object
+            let _selected = false
+
+            return function selectObjectHandler () {
+
+                _selected = !_selected
+
+                if ( _selected ) {
+                    self.onSelect( _object )
+                } else {
+                    self.onDeselect()
+                }
+
+            }
+
+        },
+
+        toggleVisibilityOf ( object ) {
+            'use strict'
+
+            const _self   = this
+            const _object = object
+
+            return function toggleVisibility () {
+                _object.visible                = !_object.visible
+                _object.modifiers[ 0 ].value   = _object.visible
+                _self.tree.needUpdate          = !_self.tree.needUpdate
+                _self.viewport.needCacheUpdate = true
+            }
+
+        },
+
+        makeVisibleAllChildrenOf ( object ) {
+
+            const _self             = this
+            const _object           = object
+            let _childrenVisibility = _object.visible
+
+            return function toggleVisibility () {
+
+                _childrenVisibility = !_childrenVisibility
+                _object.traverse( function ( children ) {
+                    children.visible              = _childrenVisibility
+                    children.modifiers[ 0 ].value = _childrenVisibility
+                } )
+
+                _self.tree.needUpdate          = !_self.tree.needUpdate
+                _self.viewport.needCacheUpdate = true
+            }
+
+        },
+
+        updateOpacityOf ( object ) {
+            'use strict'
+
+            const _object = object
+
+            return function onChangeHandler ( changeEvent ) {
+
+                const opacity = changeEvent.target.valueAsNumber / 100
+
+                _object.traverse( child => {
+
+                    if ( !child.isMesh && !child.isLineSegments ) {
+                        return
+                    }
+
+                    const materials = child.material
+                    if ( !materials ) {
+                        return
+                    }
+
+                    if ( Array.isArray( materials ) ) {
+
+                        for ( let materialIndex = 0, numberOfMaterial = materials.length ; materialIndex < numberOfMaterial ; materialIndex++ ) {
+                            setOpacity( materials[ materialIndex ], opacity )
+                        }
+
+                    } else {
+
+                        setOpacity( materials, opacity )
+
+                    }
+
+                } )
+
+                function setOpacity ( material, opacity ) {
+
+                    if ( !material.transparent ) {
+                        material.transparent = true
+                    }
+
+                    material.opacity = opacity
+
+                }
+
+            }
+
+        },
+
+        removeObject ( element ) {
+            'use strict'
+
+            let _element = element
+
+            return function removeElementHandler () {
+                _element.parent.remove( _element )
+
+                const geometry = _element.geometry
+                if ( geometry ) {
+                    geometry.dispose()
+                }
+
+                const materials = _element.material
+                if ( materials ) {
+
+                    if ( Array.isArray( materials ) ) {
+                        for ( let i = 0, n = materials.length ; i < n ; i++ ) {
+                            materials[ i ].dispose()
+                        }
+                    } else {
+                        materials.dispose()
+                    }
+
+                }
+
+                _element = undefined
+            }
+
+        },
+
+        lookAtObject ( object ) {
+            'use strict'
+
+            const _self   = this
+            const _object = object
+
+            return function _lookAtObject () {
+
+                if ( _object.isMesh ) {
+
+                    if ( !_object.geometry.boundingSphere ) {
+                        _object.geometry.computeBoundingSphere()
+                    }
+
+                    const objectPosition       = _object.position
+                    const objectBoundingSphere = _object.geometry.boundingSphere
+                    const radius               = objectBoundingSphere.radius * 2
+                    const target               = new Itee.Vector3().add( objectPosition, objectBoundingSphere.center )
+                    const position             = new Itee.Vector3( radius, radius, radius ).add( target )
+
+                    _self.viewport.camera = {
+                        type:     'perspective',
+                        position: position,
+                        target:   target
+                    }
+
+                }
+
+            }
+
+        },
+
+        updateClippingPlane ( clippingPlane, sensibility ) {
+
+            const _clippingPlane = clippingPlane
+            const _sensibility   = sensibility || 1
+
+            return function ( changeEvent ) {
+
+                const centeredValue     = (changeEvent.target.valueAsNumber - 50) * _sensibility
+                _clippingPlane.constant = centeredValue
+
+            }
+
+        },
+
+        removeClippingPlane ( clippingPlane, helper ) {
+
+            const _self         = this
+            let _clippingPlanes = _self.renderer.clippingPlanes
+            let _clippingPlane  = clippingPlane
+            let _element        = helper
+
+            return function removeModifierHandler () {
+
+                _clippingPlanes.splice( _clippingPlanes.indexOf( _clippingPlane ), 1 )
+
+                _element.parent.remove( _element )
+
+                const geometry = _element.geometry
+                if ( geometry ) {
+                    geometry.dispose()
+                }
+
+                const materials = _element.material
+                if ( materials ) {
+
+                    if ( Array.isArray( materials ) ) {
+                        for ( let i = 0, n = materials.length ; i < n ; i++ ) {
+                            materials[ i ].dispose()
+                        }
+                    } else {
+                        materials.dispose()
+                    }
+
+                }
+
+                _element = undefined
+
+                // Special case to refresh treeview that cannot listen on scene
+                _self.tree.needUpdate = !_self.tree.needUpdate
+
+            }
+
+        },
+
+        parentUp ( object ) {
+            'use strict'
+
+            const _object = object
+
+            return function () {
+
+                const grandParent = _object.parent.parent
+                if ( grandParent ) {
+                    grandParent.add( object )
+                }
+
+            }
+
+        },
+
+        parentDown ( object ) {
+            'use strict'
+
+            const _object = object
+
+            return function () {
+
+                const brothers = _object.parent.children
+                if ( brothers ) {
+                    brothers[ 0 ].add( object )
+                }
+
+            }
+
+        },
+
+        //// MESH MODIFIERS
+
+        setGroupTransparent () {
+            'use strict'
+
+            const group = this.scene.getObjectByName( 'Données' ).children[ 0 ]
+
+            group.traverse( child => {
+
+                if ( !child.isMesh ) {
+                    return
+                }
+
+                const materials = child.material
+                if ( !materials ) {
+                    return
+                }
+
+                if ( Array.isArray( materials ) ) {
+                    for ( let i = 0, n = materials.length ; i < n ; i++ ) {
+                        materials[ i ].transparent = true
+                        materials[ i ].opacity     = 0.5
+                    }
+                } else {
+                    materials.transparent = true
+                    materials.opacity     = 0.5
+                }
+
+            } )
+
+        },
+
+        showGroupGeometries ( color ) {
+            'use strict'
+
+            const group   = this.scene.getObjectByName( 'Données' ).children[ 0 ]
+            let helpGroup = this.scene.getObjectByName( 'Aides' )
+            if ( !helpGroup ) {
+
+                helpGroup      = new Itee.Group()
+                helpGroup.name = "Aides"
+                this.scene.add( helpGroup )
+
+            }
+
+            let geometriesHelperGroup = helpGroup.getObjectByName( 'Geometries' )
+            if ( !geometriesHelperGroup ) {
+
+                geometriesHelperGroup           = new Itee.Group()
+                geometriesHelperGroup.name      = "Geometries"
+                geometriesHelperGroup.modifiers = [
+                    {
+                        type:    'checkbox',
+                        value:   'checked',
+                        onClick: this.toggleVisibilityOf( geometriesHelperGroup )
+                    },
+                    {
+                        type:     'range',
+                        onChange: this.updateOpacityOf( geometriesHelperGroup )
+                    },
+                    {
+                        type:    'button',
+                        value:   'X',
+                        onClick: this.removeObject( geometriesHelperGroup )
+                    }
+                ]
+                helpGroup.add( geometriesHelperGroup )
+
+            }
+
+            const _color = color || Math.random() * 0xffffff
+
+            group.traverse( child => {
+
+                if ( !child.isMesh ) {
+                    return
+                }
+
+                const geometry = child.geometry
+                if ( !geometry ) {
+                    return
+                }
+
+                const geometryHelper     = new Itee.LineSegments(
+                    new Itee.EdgesGeometry( child.geometry ),
+                    new Itee.LineBasicMaterial( { color: _color } )
+                )
+                geometryHelper.modifiers = [
+                    {
+                        type:    'button',
+                        value:   'X',
+                        onClick: this.removeObject( geometryHelper )
+                    }
+                ]
+
+                geometryHelper.name = `${child.name}_Geometrie`
+
+                geometriesHelperGroup.add( geometryHelper )
+
+            } )
+
+        },
+
+        showGroupCenter () {
+            'use strict'
+
+            const group      = this.scene.getObjectByName( 'Données' ).children[ 0 ]
+            const position   = group.getWorldPosition( group.position.clone() )
+            const axesHelper = new Itee.AxesHelper( 100 )
+            axesHelper.position.set( position.x, position.y, position.z )
+            axesHelper.name = 'Centre du groupe'
+
+            let helpGroup = this.scene.getObjectByName( 'Aides' )
+            if ( !helpGroup ) {
+
+                helpGroup      = new Itee.Group()
+                helpGroup.name = "Aides"
+                this.scene.add( helpGroup )
+
+            }
+
+            let barycenterHelperGroup = helpGroup.getObjectByName( 'Centres' )
+            if ( !barycenterHelperGroup ) {
+
+                barycenterHelperGroup           = new Itee.Group()
+                barycenterHelperGroup.name      = "Centres"
+                barycenterHelperGroup.modifiers = [
+                    {
+                        type:    'checkbox',
+                        value:   'checked',
+                        onClick: this.toggleVisibilityOf( barycenterHelperGroup )
+                    },
+                    {
+                        type:     'range',
+                        onChange: this.updateOpacityOf( barycenterHelperGroup )
+                    },
+                    {
+                        type:    'button',
+                        value:   'X',
+                        onClick: this.removeObject( barycenterHelperGroup )
+                    }
+                ]
+                helpGroup.add( barycenterHelperGroup )
+
+            }
+
+            barycenterHelperGroup.add( axesHelper )
+
+        },
+
+        showMeshesBarycenter () {
+            'use strict'
+
+            const group            = this.scene.getObjectByName( 'Données' ).children[ 0 ]
+            const children         = group.children
+            const numberOfChildren = children.length || 1
+            const barycenter       = children.map( child => {return child.getWorldPosition( child.position.clone() )} )
+                                             .reduce( ( a, b ) => { return new Itee.Vector3().addVectors( a, b )} )
+                                             .divideScalar( numberOfChildren )
+
+            const axesHelper = new Itee.AxesHelper( 75 )
+            axesHelper.position.set( barycenter.x, barycenter.y, barycenter.z )
+            axesHelper.name = 'Barycentre des meshes'
+
+            let helpGroup = this.scene.getObjectByName( 'Aides' )
+            if ( !helpGroup ) {
+
+                helpGroup      = new Itee.Group()
+                helpGroup.name = "Aides"
+                this.scene.add( helpGroup )
+
+            }
+
+            let barycenterHelperGroup = helpGroup.getObjectByName( 'Centres' )
+            if ( !barycenterHelperGroup ) {
+
+                barycenterHelperGroup           = new Itee.Group()
+                barycenterHelperGroup.name      = "Centres"
+                barycenterHelperGroup.modifiers = [
+                    {
+                        type:    'checkbox',
+                        value:   'checked',
+                        onClick: this.toggleVisibilityOf( barycenterHelperGroup )
+                    },
+                    {
+                        type:     'range',
+                        onChange: this.updateOpacityOf( barycenterHelperGroup )
+                    },
+                    {
+                        type:    'button',
+                        value:   'X',
+                        onClick: this.removeObject( barycenterHelperGroup )
+                    }
+                ]
+                helpGroup.add( barycenterHelperGroup )
+
+            }
+
+            barycenterHelperGroup.add( axesHelper )
+
+        },
+
+        showGeometriesBarycenter () {
+            'use strict'
+
+            const group            = this.scene.getObjectByName( 'Données' ).children[ 0 ]
+            const children         = group.children
+            const numberOfChildren = children.length || 1
+            const barycenter       = children.map( child => {
+
+                                                 if ( !child.geometry.boundingBox ) {
+                                                     child.geometry.computeBoundingBox()
+                                                 }
+
+                                                 return child.geometry.boundingBox.getCenter()
+
+                                             } )
+                                             .reduce( ( a, b ) => { return new Itee.Vector3().addVectors( a, b )} )
+                                             .divideScalar( numberOfChildren )
+
+            const axesHelper = new Itee.AxesHelper( 50 )
+            axesHelper.position.set( barycenter.x, barycenter.y, barycenter.z )
+            axesHelper.name = 'Barycentre des geométries'
+
+            let helpGroup = this.scene.getObjectByName( 'Aides' )
+            if ( !helpGroup ) {
+
+                helpGroup      = new Itee.Group()
+                helpGroup.name = "Aides"
+                this.scene.add( helpGroup )
+
+            }
+
+            let barycenterHelperGroup = helpGroup.getObjectByName( 'Centres' )
+            if ( !barycenterHelperGroup ) {
+
+                barycenterHelperGroup           = new Itee.Group()
+                barycenterHelperGroup.name      = "Centres"
+                barycenterHelperGroup.modifiers = [
+                    {
+                        type:    'checkbox',
+                        value:   'checked',
+                        onClick: this.toggleVisibilityOf( barycenterHelperGroup )
+                    },
+                    {
+                        type:     'range',
+                        onChange: this.updateOpacityOf( barycenterHelperGroup )
+                    },
+                    {
+                        type:    'button',
+                        value:   'X',
+                        onClick: this.removeObject( barycenterHelperGroup )
+                    }
+                ]
+                helpGroup.add( barycenterHelperGroup )
+
+            }
+
+            barycenterHelperGroup.add( axesHelper )
+
+        },
+
+        showFaceNormals () {
+
+            const group            = this.scene.getObjectByName( 'Données' ).children[ 0 ]
+            const children         = group.children
+
+            for ( let childIndex = 0, numberOfChildren = children.length ; childIndex < numberOfChildren ; childIndex++ ) {
+                let child = children[ childIndex ]
+
+                const helper = new Itee.FaceNormalsHelper( child, 2, 0xff0000, 1 )
+                this.scene.add(helper)
+            }
+
+        },
+
+        showVertexNormals () {
+
+            const group            = this.scene.getObjectByName( 'Données' ).children[ 0 ]
+            const children         = group.children
+
+            for ( let childIndex = 0, numberOfChildren = children.length ; childIndex < numberOfChildren ; childIndex++ ) {
+                let child = children[ childIndex ]
+
+                const helper = new Itee.VertexNormalsHelper( child, 2, 0x00ff00, 1 )
+                this.scene.add(helper)
+            }
+
+        },
+
+        ////////
+
+        setMeshesToBarycenter () {
+            'use strict'
+
+        },
+
+        setGroupToCenter () {
+            'use strict'
+
+            const group = this.scene.getObjectByName( 'Données' ).children[ 0 ]
+            group.position.set( 0, 0, 0 )
+            group.updateMatrix()
+
+        },
+
+        setMeshesToGroupCenter () {
+            'use strict'
+
+            const group            = this.scene.getObjectByName( 'Données' ).children[ 0 ]
+            const groupPosition    = group.position
+            const children         = group.children
+            const numberOfChildren = children.length || 1
+            const barycenter       = children.map( child => {return child.position} )
+                                             .reduce( ( a, b ) => { return new Itee.Vector3().addVectors( a, b )} )
+                                             .divideScalar( numberOfChildren )
+
+            const subVector = new Itee.Vector3().subVectors( barycenter, groupPosition )
+
+            group.traverse( child => {
+
+                if ( child.uuid === group.uuid ) {
+                    return
+                }
+
+                child.position.x -= subVector.x
+                child.position.y -= subVector.y
+                child.position.z -= subVector.z
+                child.updateMatrix()
+
+            } )
+
+        },
+
+        setGroupPositionToChildrenMeshBarycenter () {
+            'use strict'
+
+            const group            = this.scene.getObjectByName( 'Données' ).children[ 0 ]
+            const groupPosition    = group.position
+            const children         = group.children
+            const numberOfChildren = children.length || 1
+            const barycenter       = children.map( child => {return child.position} )
+                                             .reduce( ( a, b ) => { return new Itee.Vector3().addVectors( a, b )} )
+                                             .divideScalar( numberOfChildren )
+
+            const subVector = new Itee.Vector3().subVectors( barycenter, groupPosition )
+
+            group.traverse( child => {
+
+                if ( child.uuid === group.uuid ) {
+                    return
+                }
+
+                child.position.x -= subVector.x
+                child.position.y -= subVector.y
+                child.position.z -= subVector.z
+                child.updateMatrix()
+
+            } )
+
+            group.position.set( barycenter.x, barycenter.y, barycenter.z )
+            group.updateMatrix()
+
+        },
+
+        setGroupPositionToChildrenGeometryBarycenter () {
+            'use strict'
+
+            const groupToUpdate    = this.scene.getObjectByName( 'Données' ).children[ 0 ]
+            const children         = groupToUpdate.children
+            const numberOfChildren = children.length || 1
+            const barycenter       = children.map( child => {
+
+                                                 if ( !child.geometry.boundingBox ) {
+                                                     child.geometry.computeBoundingBox()
+                                                 }
+
+                                                 return child.geometry.boundingBox.getCenter()
+
+                                             } )
+                                             .reduce( ( a, b ) => { return new Itee.Vector3().addVectors( a, b )} )
+                                             .divideScalar( numberOfChildren )
+
+            const negatedBarycenter = barycenter.clone().negate()
+
+            groupToUpdate.position.set( barycenter.x, barycenter.y, barycenter.z )
+            groupToUpdate.updateMatrix()
+
+            groupToUpdate.traverse( child => {
+
+                if ( child.uuid === groupToUpdate.uuid ) {
+                    return
+                }
+
+                child.position.set( negatedBarycenter.x, negatedBarycenter.y, negatedBarycenter.z )
+                child.updateMatrix()
+
+            } )
+
+        },
+
+        /////////
+
+        rotateGeometries () {
+            'use strict'
+
+            const group = this.scene.getObjectByName( 'Données' ).children[ 0 ]
+            group.traverse( child => {
+
+                if ( !child.isMesh ) {
+                    return
+                }
+
+                child.geometry.rotateX( Itee.degreesToRadians( 90 ) )
+
+            } )
+
+        },
+
+        recenterGeometriesChildren () {
+            'use strict'
+
+            // Recenter buffergeometry in world center
+            const group = this.scene.getObjectByName( 'Données' ).children[ 0 ]
+            group.traverse( child => {
+
+                if ( !child.isMesh ) {
+                    return
+                }
+
+                const center         = child.geometry.center()
+                const meshBarycenter = center.negate()
+
+                child.position.set( meshBarycenter.x, meshBarycenter.y, meshBarycenter.z )
+                child.updateMatrix()
+
+            } )
+
+        },
+
+        /////////
+
+        applyRotationToGeometries () {
+            'use strict'
+
+            const group = this.scene.getObjectByName( 'Données' ).children[ 0 ]
+            group.traverse( child => {
+
+                if ( !child.isMesh ) {
+                    return
+                }
+
+                const rotateX = Itee.degreesToRadians( this.geometries.rotate.x )
+                const rotateY = Itee.degreesToRadians( this.geometries.rotate.y )
+                const rotateZ = Itee.degreesToRadians( this.geometries.rotate.z )
+                child.geometry.rotateX( rotateX )
+                child.geometry.rotateY( rotateY )
+                child.geometry.rotateZ( rotateZ )
+
+            } )
+
+        },
+
+        applyTranslationToGeometries () {
+            'use strict'
+
+            const group = this.scene.getObjectByName( 'Données' ).children[ 0 ]
+            group.traverse( child => {
+
+                if ( !child.isMesh ) {
+                    return
+                }
+
+                const translateX = this.geometries.translate.x
+                const translateY = this.geometries.translate.y
+                const translateZ = this.geometries.translate.z
+                child.geometry.translate( translateX, translateY, translateZ )
+
+            } )
+
+        },
+
+        applyRotationToMeshes () {
+            'use strict'
+
+            const group = this.scene.getObjectByName( 'Données' ).children[ 0 ]
+
+            const rotateX = Itee.degreesToRadians( this.meshes.rotate.x )
+            const rotateY = Itee.degreesToRadians( this.meshes.rotate.y )
+            const rotateZ = Itee.degreesToRadians( this.meshes.rotate.z )
+            group.rotateX( rotateX )
+            group.rotateY( rotateY )
+            group.rotateZ( rotateZ )
+
+            group.updateMatrix()
+
+        },
+
+        applyTranslationToMeshes () {
+            'use strict'
+
+            const group = this.scene.getObjectByName( 'Données' ).children[ 0 ]
+
+            const translateX = this.meshes.translate.x
+            const translateY = this.meshes.translate.y
+            const translateZ = this.meshes.translate.z
+            group.translateX( translateX )
+            group.translateY( translateY )
+            group.translateZ( translateZ )
+
+            group.updateMatrix()
 
         },
 
@@ -5486,7 +6183,7 @@ const DatabasePage = {
                                             <input v-model="selectedElement[key][subKey]" type="checkbox" :value="subValue">
                                         </div>
                                         <div v-else-if="Array.isArray(subValue)" class="list-group" style="flex: 1 1 auto;">
-                                            <div v-if="subValue.length > 0" v-for="(subSubValue, index) in subValue" class="list-group-item" >
+                                            <div v-if="subValue && subValue.length > 0" v-for="(subSubValue, index) in subValue" class="list-group-item" >
                                                 <div class="input-group">
                                                     <input type="text" class="form-control" v-model="selectedElement[key][subKey][index]">
                                                     <div class="input-group-append">
@@ -5532,7 +6229,7 @@ const DatabasePage = {
                         <input v-model="schemas[key].inputs[inputKey]" type="checkbox" :value="inputValue">
                     </div>
                     <div v-else-if="Array.isArray(inputValue)" class="list-group" style="flex: 1 1 auto;">
-                        <div v-if="inputValue.length > 0" v-for="(arrayInputValue, index) in inputValue" class="list-group-item" >
+                        <div v-if="inputValue && inputValue.length > 0" v-for="(arrayInputValue, index) in inputValue" class="list-group-item" >
                             <div class="input-group">
                                 <input type="text" class="form-control" v-model="schemas[key].inputs[inputKey][index]">
                                 <div class="input-group-append">

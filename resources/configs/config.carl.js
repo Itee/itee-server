@@ -195,8 +195,8 @@ const ViewerPage = {
 
                     </div>
                     <div class="modal-footer">
-                        <button v-if="selected && selected.object && selected.object.userData && selected.object.userData.gmaoId" type="button" class="btn btn-primary" v-on:click.stop="getCarlDetail()"><TIcon name="pencil-alt"></TIcon></button>
-						<button v-if="selected && selected.object && selected.object.userData && selected.object.userData.gmaoId" type="button" class="btn btn-primary" v-on:click.stop="createCarlInter()"><TIcon name="cog"></TIcon></button>
+                        <TButton v-if="selected.object && selected.object.userData && selected.object.userData.gmaoId" class="btn-primary" icon="pencil-alt" :onClick=getCarlDetail></TButton>
+                        <TButton v-if="selected.object && selected.object.userData && selected.object.userData.gmaoId" class="btn-primary" icon="cog" :onClick=createCarlInter></TButton>
                         <button type="button" class="btn btn-primary" v-on:click.stop="onToggleModalVisibility('userDataModal')">Ok</button>
                     </div>
                 </div>
@@ -205,7 +205,6 @@ const ViewerPage = {
 							
     </TContainerVertical>
     `,
-    props:    [ 'foobar' ],
     data () {
 
         return {
@@ -291,13 +290,8 @@ const ViewerPage = {
                     }
 
                     if (
-                        //                        key === 'uuid' ||
-                    key === 'name' ||
-                    //                        key === 'position' ||
-                    //                        key === 'rotation' ||
-                    //                        key === 'scale' ||
-                    //                        key === 'layers' ||
-                    key === 'userData'
+                        key === 'name' ||
+                        key === 'userData'
                     ) {
                         return true
                     } else {
@@ -319,12 +313,6 @@ const ViewerPage = {
         }
 
     },
-    beforeCreate () {
-        'use strict'
-
-        console.log( 'beforeCreate' )
-
-    },
     created () {
         'use strict'
 
@@ -338,45 +326,6 @@ const ViewerPage = {
         this._initDatas( _externalOptions )
 
         console.log( 'created' )
-
-    },
-    beforeMount () {
-        'use strict'
-
-        console.log( 'beforeMount' )
-
-    },
-    mounted () {
-        'use strict'
-
-        //        this.setViewportCameraOfType ( 'perspective' )
-        //        this.setViewportControlOfType ( 'orbit' )
-
-        console.log( 'mounted' )
-
-    },
-    beforeUpdate () {
-        'use strict'
-
-        //        console.log('beforeUpdate')
-
-    },
-    updated () {
-        'use strict'
-
-        //        console.log('updated')
-
-    },
-    beforeDestroy () {
-        'use strict'
-
-        console.log( 'beforeDestroy' )
-
-    },
-    destroyed () {
-        'use strict'
-
-        console.log( 'destroyed' )
 
     },
     methods:  {
@@ -467,10 +416,10 @@ const ViewerPage = {
         //
         //                switch ( event.keyCode ) {
         //
-        //                            case 38: // up
-        //                            case 90: // z
-        //                                self._moveForward = true
-        //                                break
+        //                    case 38: // up
+        //                    case 90: // z
+        //                        self._moveForward = true
+        //                        break
         //
         //                    case 37: // left
         //                    case 81: // q
@@ -627,76 +576,28 @@ const ViewerPage = {
             let gridGroup = parentGroup.getObjectByName( 'Grilles' )
             if ( !gridGroup ) {
 
-                gridGroup           = new Itee.Group()
-                gridGroup.name      = "Grilles"
-                gridGroup.modifiers = [
-                    {
-                        type:    'checkicon',
-                        iconOn:  'eye',
-                        iconOff: 'eye-slash',
-                        value:   true,
-                        onClick: this.toggleVisibilityOf( gridGroup )
-                    },
-                    //                    {
-                    //                        type:     'range',
-                    //                        onChange: this.updateOpacityOf( gridGroup )
-                    //                    }
-                ]
+                gridGroup      = new Itee.Group()
+                gridGroup.name = "Grilles"
+                this.applyModifiers( gridGroup, [ 'toggleVisibility', 'opacity' ] )
                 parentGroup.add( gridGroup )
 
             }
 
             /// XZ
 
-            const gridHelperXZ_1     = new Itee.GridHelper( 20, 20 )
-            gridHelperXZ_1.name      = "Grille XZ - Mètrique"
-            gridHelperXZ_1.modifiers = [
-                {
-                    type:    'checkicon',
-                    iconOn:  'eye',
-                    iconOff: 'eye-slash',
-                    value:   true,
-                    onClick: this.toggleVisibilityOf( gridHelperXZ_1 )
-                },
-                {
-                    type:     'range',
-                    onChange: this.updateOpacityOf( gridHelperXZ_1 )
-                }
-            ]
+            const gridHelperXZ_1 = new Itee.GridHelper( 20, 20 )
+            gridHelperXZ_1.name  = "Grille XZ - Mètrique"
+            this.applyModifiers( gridHelperXZ_1, [ 'toggleVisibility', 'opacity' ] )
             gridGroup.add( gridHelperXZ_1 )
 
-            const gridHelperXZ_10     = new Itee.GridHelper( 200, 20 )
-            gridHelperXZ_10.name      = "Grille XZ - Décamètrique"
-            gridHelperXZ_10.modifiers = [
-                {
-                    type:    'checkicon',
-                    iconOn:  'eye',
-                    iconOff: 'eye-slash',
-                    value:   true,
-                    onClick: this.toggleVisibilityOf( gridHelperXZ_10 )
-                },
-                {
-                    type:     'range',
-                    onChange: this.updateOpacityOf( gridHelperXZ_10 )
-                }
-            ]
+            const gridHelperXZ_10 = new Itee.GridHelper( 200, 20 )
+            gridHelperXZ_10.name  = "Grille XZ - Décamètrique"
+            this.applyModifiers( gridHelperXZ_10, [ 'toggleVisibility', 'opacity' ] )
             gridGroup.add( gridHelperXZ_10 )
 
-            const gridHelperXZ_100     = new Itee.GridHelper( 2000, 20 )
-            gridHelperXZ_100.name      = "Grille XZ - Hectomètrique"
-            gridHelperXZ_100.modifiers = [
-                {
-                    type:    'checkicon',
-                    iconOn:  'eye',
-                    iconOff: 'eye-slash',
-                    value:   true,
-                    onClick: this.toggleVisibilityOf( gridHelperXZ_100 )
-                },
-                {
-                    type:     'range',
-                    onChange: this.updateOpacityOf( gridHelperXZ_100 )
-                }
-            ]
+            const gridHelperXZ_100 = new Itee.GridHelper( 2000, 20 )
+            gridHelperXZ_100.name  = "Grille XZ - Hectomètrique"
+            this.applyModifiers( gridHelperXZ_100, [ 'toggleVisibility', 'opacity' ] )
             gridGroup.add( gridHelperXZ_100 )
 
             /// XY
@@ -802,7 +703,7 @@ const ViewerPage = {
             'use strict'
 
             const _parameters = parameters || {
-                companyId: {}
+                companyId: '5b07f0ae5b5bf56470e07de6' //'5abb2eab3dae751becf8aed3',
             }
 
             this._initDatabaseManagers()
@@ -826,77 +727,98 @@ const ViewerPage = {
 
             const self = this
 
-            self.dbManager.read(
-                '5af95b84a9b22e409cca2b51',
-                companyOnSuccess.bind( this ),
-                self.onProgress,
-                self.onError
-            )
+            const collection = parameters.collection
+            const query      = parameters.query
 
-            const trackingCounter = {
-                geometries: {},
-                materials:  {}
-            }
+            let sitesGroup = this.scene.getObjectByName( 'Sites' )
+            if ( !sitesGroup ) {
 
-            function companyOnSuccess ( companies ) {
-
-                const sitesGroup = new Itee.Group()
-                sitesGroup.name  = "Sites"
+                sitesGroup      = new Itee.Group()
+                sitesGroup.name = "Sites"
                 this.scene.add( sitesGroup )
 
-                let _query = undefined
-                if ( parameters.query ) {
+            }
 
-                    if ( parameters.query._id ) {
-                        _query = []
-                        _query.push( parameters.query._id )
-                    } else {
-                        _query = parameters.query
-                    }
+            if ( collection === "companies" ) {
 
-                } else {
-                    _query = companies[ 0 ].sites
-                }
+                self.dbManager.read(
+                    query,
+                    ( companies ) => {
 
-                fetchObjects( _query, ( objectData ) => {
+                        let sites = undefined
+                        for ( let key in companies ) {
+                            sites = companies[key].sites
+                        }
 
-                    populateOne( objectData[ 0 ], ( object ) => {
+                        fetchObjects( sites, ( objectData ) => {
 
-                        self.carl.objectId = object.userData.gmaoId
-                        self.carl.isGroup  = ( object.isGroup || object.parent.name === "Locaux" )
+                            for ( let key in objectData ) {
 
-                        lookAtObject( object )
+                                populateOne( objectData[key], ( object ) => {
 
-                        searchFamilly( object, sitesGroup, ( parent ) => {
+                                    lookAtObject( object )
+                                    searchFamilly( object, sitesGroup, ( parent ) => {
 
-                            onFetchEnd()
+                                        onFetchEnd()
+
+                                    } )
+
+                                } )
+
+                            }
 
                         } )
 
-                    } )
+                    },
+                    self.onProgress,
+                    self.onError
+                )
+
+            } else if ( collection === "objects" ) {
+
+                fetchObjects( query, ( objectData ) => {
+
+                    for ( let key in objectData ) {
+
+                        populateOne( objectData[key], ( object ) => {
+
+                            lookAtObject( object )
+                            searchFamilly( object, sitesGroup, ( parent ) => {
+
+                                onFetchEnd()
+
+                            } )
+
+                        } )
+
+                    }
 
                 } )
 
-                function lookAtObject ( object ) {
+            } else {
 
-                    if ( object.isMesh ) {
+                console.error('Invalid parameters !')
 
-                        if ( !object.geometry.boundingSphere ) {
-                            object.geometry.computeBoundingSphere()
-                        }
+            }
 
-                        const objectPosition       = object.position
-                        const objectBoundingSphere = object.geometry.boundingSphere
-                        const radius               = objectBoundingSphere.radius * 2
-                        const target               = new Itee.Vector3().add( objectPosition, objectBoundingSphere.center )
-                        const position             = new Itee.Vector3( radius, radius, radius ).add( target )
+            function lookAtObject ( object ) {
 
-                        self.viewport.camera = {
-                            type:     'perspective',
-                            position: position,
-                            target:   target
-                        }
+                if ( object.isMesh ) {
 
+                    if ( !object.geometry.boundingSphere ) {
+                        object.geometry.computeBoundingSphere()
+                    }
+
+                    const objectPosition       = object.position
+                    const objectBoundingSphere = object.geometry.boundingSphere
+                    const radius               = objectBoundingSphere.radius * 2
+                    const target               = new Itee.Vector3().add( objectPosition, objectBoundingSphere.center )
+                    const position             = new Itee.Vector3( radius, radius, radius ).add( target )
+
+                    self.viewport.camera = {
+                        type:     'perspective',
+                        position: position,
+                        target:   target
                     }
 
                 }
@@ -920,51 +842,9 @@ const ViewerPage = {
 
                 // Special case to refresh treeview that cannot listen on scene
                 self.viewport.needCacheUpdate = true
+                self.viewport.needCameraFitWorldBoundingBox = true
+
                 self.tree.needUpdate          = !self.tree.needUpdate
-
-                console.log( trackingCounter )
-
-            }
-
-            function populateOne ( object, callback ) {
-
-                if ( object.isGroup || object.type === 'Group' || object.type === 'Scene' ) {
-
-                    self.applyModifiers( object, [ 'toggleVisibility', 'toggleChildrenVisibility', 'opacity' ] )
-
-                    callback( object )
-
-                } else {
-
-                    const geometriesId = object.geometry
-                    const materialsIds = object.material
-
-                    self.geometriesManager.read(
-                        geometriesId,
-                        geometry => {
-
-                            self.materialsManager.read(
-                                materialsIds,
-                                materials => {
-
-                                    applyGeometry( object, geometry )
-                                    applyMaterials( object, materials )
-                                    self.applyModifiers( object, [ 'toggleVisibility', 'opacity', 'lookAt' ] )
-                                    object.isRaycastable = true
-
-                                    callback( object )
-
-                                },
-                                self.onProgress,
-                                self.onError
-                            )
-
-                        },
-                        self.onProgress,
-                        self.onError
-                    )
-
-                }
 
             }
 
@@ -1003,21 +883,22 @@ const ViewerPage = {
                     // Have only an ancestor got it
                     object.parent = null
 
-                    // Assign to root element
+                    // Assign to root element before reassign to his real parent
                     root.add( object )
 
                     populateParent( [ object ], parentId, ( parent ) => {
 
                         // Recursive family search against parent
                         searchFamilly( parent, root, callback )
-                        //                        root.add(parent)
 
                     } )
 
                 } else if ( !haveParent && haveChildren ) {
-
                     // It is a top level element without children
-                    //                    object.parent   = null
+
+                    // Assign to root element
+                    root.add( object )
+
                     object.children = childrenObj
                     populateChildren( object, childrenIds, () => {
 
@@ -1027,9 +908,30 @@ const ViewerPage = {
                     } )
 
                 } else {
+                    // It is a top level element without parent or children
 
-                    // It is a top level element without children
-                    object.parent = null
+                    // Assign to root element
+                    root.add( object )
+
+                    callback( object )
+
+                }
+
+            }
+
+            function populateOne ( object, callback ) {
+
+                if ( object.isGroup || object.type === 'Group' || object.type === 'Scene' ) {
+
+                    self.applyModifiers( object, [ 'toggleVisibility', 'toggleChildrenVisibility', 'opacity' ] )
+
+                    callback( object )
+
+                } else {
+
+                    self.applyModifiers( object, [ 'toggleVisibility', 'opacity', 'lookAt' ] )
+                    object.isRaycastable = true
+
                     callback( object )
 
                 }
@@ -1042,22 +944,10 @@ const ViewerPage = {
                     parentId,
                     objects => {
 
-                        // Exit condition
-                        // Todo: root object3d should not be a company so this condition will disapear
-                        // it will be parentId === null ?
-                        if ( !objects ) {
-
-                            for ( let childIndex = 0, numberOfChildren = children.length ; childIndex < numberOfChildren ; childIndex++ ) {
-                                if ( typeof children[ childIndex ].parent === 'string' ) {
-                                    children[ childIndex ].parent = null
-                                }
-                            }
-
-                            callback( children[ 0 ] )
-                            return
+                        let parent = undefined
+                        for ( let key in objects ) {
+                            parent = objects[key]
                         }
-
-                        const parent = objects[ 0 ]
 
                         if ( parent.isGroup || parent.type === 'Group' || parent.type === 'Scene' ) {
 
@@ -1083,45 +973,22 @@ const ViewerPage = {
 
                         } else {
 
-                            const geometryId  = parent.geometry
-                            const materialIds = parent.material
+                            parent.isRaycastable = true
 
-                            self.geometriesManager.read(
-                                geometryId,
-                                geometry => {
+                            // Update child reference
+                            if ( children ) {
 
-                                    self.materialsManager.read(
-                                        materialIds,
-                                        materials => {
+                                for ( let childIndex = 0, numberOfChildren = children.length ; childIndex < numberOfChildren ; childIndex++ ) {
+                                    children[ childIndex ].parent = null
 
-                                            applyGeometry( parent, geometry )
-                                            applyMaterials( parent, materials )
-                                            parent.isRaycastable = true
+                                    const childPosition = parent.children.indexOf( children[ childIndex ]._id )
+                                    parent.children.splice( childPosition, 1 )
+                                    parent.add( children[ childIndex ] )
+                                }
 
-                                            // Update child reference
-                                            if ( children ) {
+                            }
 
-                                                for ( let childIndex = 0, numberOfChildren = children.length ; childIndex < numberOfChildren ; childIndex++ ) {
-                                                    children[ childIndex ].parent = null
-
-                                                    const childPosition = parent.children.indexOf( children[ childIndex ]._id )
-                                                    parent.children.splice( childPosition, 1 )
-                                                    parent.add( children[ childIndex ] )
-                                                }
-
-                                            }
-
-                                            callback( parent )
-
-                                        },
-                                        self.onProgress,
-                                        self.onError
-                                    )
-
-                                },
-                                self.onProgress,
-                                self.onError
-                            )
+                            callback( parent )
 
                         }
 
@@ -1155,226 +1022,200 @@ const ViewerPage = {
                     objects => {
 
                         const groupsObjects = []
+                        let haveGroups      = false
+
                         const meshesObjects = []
+                        let haveMeshes      = false
 
                         // Dispatch by categories
-                        for ( let objI = 0, numObj = objects.length ; objI < numObj ; objI++ ) {
-                            let obj = objects[ objI ]
+                        for ( let key in objects ) {
+//                        for ( let objI = 0, numObj = objects.length ; objI < numObj ; objI++ ) {
+                            let obj = objects[ key ]
 
                             if ( obj.isGroup || obj.type === 'Group' || obj.type === 'Scene' ) {
                                 groupsObjects.push( obj )
+                                haveGroups = true
                             } else {
                                 meshesObjects.push( obj )
+                                haveMeshes = true
                             }
 
                         }
 
                         // Fill Groups
-                        for ( let groupIndex = 0, numberOfGroups = groupsObjects.length ; groupIndex < numberOfGroups ; groupIndex++ ) {
+                        if ( haveGroups && haveMeshes ) {
 
-                            let group = groupsObjects[ groupIndex ]
+                            fillGroups( groupsObjects )
+                            fillMeshes( meshesObjects )
 
-                            if ( group.layers.mask > 0 ) {
+                        } else if ( haveGroups && !haveMeshes ) {
 
-                                group.modifiers = [
-                                    {
-                                        type:    'icon',
-                                        icon:    'download',
-                                        onClick: (function encloseLazyLoading () {
+                            fillGroups( groupsObjects )
 
-                                            const _group       = group
-                                            const _childrenIds = group.children
+                        } else if ( !haveGroups && haveMeshes ) {
 
-                                            return function lazyLoadingPopulate () {
+                            fillMeshes( meshesObjects )
 
-                                                _group.layers.mask = 0
+                        } else {
 
-                                                populateChildren( _group, _childrenIds, function () {
-
-                                                    _group.modifiers = [
-                                                        {
-                                                            type:    'checkicon',
-                                                            iconOn:  'eye',
-                                                            iconOff: 'eye-slash',
-                                                            value:   _group.visible,
-                                                            onClick: self.toggleVisibilityOf( _group )
-                                                        },
-                                                        {
-                                                            type:    'icon',
-                                                            icon:    'low-vision',
-                                                            onClick: self.makeVisibleAllChildrenOf( group )
-                                                        }
-                                                    ]
-
-                                                    self.tree.needUpdate = !self.tree.needUpdate
-
-                                                } )
-
-                                            }
-
-                                        })()
-                                    }
-                                ]
-
-                                //                                group.onClick = function yClick() {
-                                //
-                                //                                    alert('Yclick !')
-                                //                                }
-
-                            } else {
-
-                                self.applyModifiers( group, [ 'toggleVisibility', 'toggleChildrenVisibility', 'opacity' ] )
-
-                            }
-
-                            // Reset children to empty array before fill it
-                            const subChildrenIds = group.children
-                            group.children       = []
-
-                            // Assign to parent first
-                            group.parent = null
-                            //                            group.visible = false
-                            parent.add( group )
-
-                            // then Populate children
-                            populateChildren( group, subChildrenIds, checkPopulateEnd )
+                            callback()
 
                         }
 
-                        // Fill Objects
-                        const geometriesIds = meshesObjects.map( object => object.geometry ).filter( ( value, index, self ) => {
-                            return self.indexOf( value ) === index
-                        } )
+                        function fillGroups ( groups ) {
 
-                        const materialsArray       = meshesObjects.map( object => object.material )
-                        const concatMaterialsArray = [].concat.apply( [], materialsArray )
-                        const materialsIds         = concatMaterialsArray.filter( ( value, index, self ) => {
-                            return self.indexOf( value ) === index
-                        } )
+                            for ( let groupIndex = 0, numberOfGroups = groups.length ; groupIndex < numberOfGroups ; groupIndex++ ) {
 
-                        self.geometriesManager.read(
-                            geometriesIds,
-                            geometries => {
+                                let group = groups[ groupIndex ]
 
-                                self.materialsManager.read(
-                                    materialsIds,
-                                    materials => {
+                                if ( group.layers.mask > 0 ) {
 
-                                        for ( let objectIndex = 0, numberOfObjects = objects.length ; objectIndex < numberOfObjects ; objectIndex++ ) {
+                                    group.modifiers = [
+                                        {
+                                            type:    'icon',
+                                            icon:    'download',
+                                            onClick: (function encloseLazyLoading () {
 
-                                            const object      = objects[ objectIndex ]
-                                            const geometryId  = object.geometry
-                                            const materialIds = object.material
+                                                const _group       = group
+                                                const _childrenIds = group.children
 
-                                            //////////////////////
-                                            if ( !trackingCounter.geometries[ geometryId ] ) {
-                                                trackingCounter.geometries[ geometryId ] = 0
-                                            }
-                                            trackingCounter.geometries[ geometryId ] += 1
-                                            if ( Array.isArray( materialIds ) ) {
-                                                for ( let materialIndex = 0, numberOfMaterial = materialIds.length ; materialIndex < numberOfMaterial ; materialIndex++ ) {
-                                                    if ( !trackingCounter.materials[ materialIds[ materialIndex ] ] ) {
-                                                        trackingCounter.materials[ materialIds[ materialIndex ] ] = 0
-                                                    }
-                                                    trackingCounter.materials[ materialIds[ materialIndex ] ] += 1
-                                                }
-                                            } else {
-                                                if ( !trackingCounter.materials[ materialIds ] ) {
-                                                    trackingCounter.materials[ materialIds ] = 0
-                                                }
-                                                trackingCounter.materials[ materialIds ] += 1
-                                            }
-                                            //////////////////////
+                                                return function lazyLoadingPopulate () {
 
-                                            applyGeometry( object, geometries )
-                                            applyMaterials( object, materials )
-                                            self.applyModifiers( object, [ 'toggleVisibility', 'opacity', 'lookAt' ] )
+                                                    _group.layers.mask = 0
 
-                                            object.isRaycastable = true
+                                                    populateChildren( _group, _childrenIds, function () {
 
-                                            // Reset children to empty array before fill it
-                                            const subChildrenIds = object.children
-                                            object.children      = []
+                                                        _group.modifiers = [
+                                                            {
+                                                                type:    'checkicon',
+                                                                iconOn:  'eye',
+                                                                iconOff: 'eye-slash',
+                                                                value:   _group.visible,
+                                                                onClick: self.toggleVisibilityOf( _group )
+                                                            },
+                                                            {
+                                                                type:    'icon',
+                                                                icon:    'low-vision',
+                                                                onClick: self.makeVisibleAllChildrenOf( group )
+                                                            }
+                                                        ]
 
-                                            // Assign to parent first
+                                                        self.viewport.needCacheUpdate = true
+                                                        self.tree.needUpdate = !self.tree.needUpdate
 
-                                            /////////////////////////////////
-
-                                            if ( parent.name !== "Locaux" ) {
-
-                                                const objectName = object.name
-                                                const splits     = objectName.split( ' - ' )
-                                                let subParent    = parent
-
-                                                if ( splits.length > 0 ) {
-
-                                                    for ( let splitIndex = 0, numberOfSplits = splits.length ; splitIndex < numberOfSplits ; splitIndex++ ) {
-
-                                                        let subGroupName = splits[ splitIndex ].trim()
-
-                                                        let subGroup       = subParent.getObjectByName( subGroupName )
-                                                        if ( subGroupName.length > 0 && !subGroup ) {
-
-                                                            subGroup      = new Itee.Group()
-                                                            subGroup.name = subGroupName
-                                                            self.applyModifiers( subGroup, [ 'toggleVisibility', 'toggleChildrenVisibility', 'opacity' ] )
-
-                                                            subParent.add( subGroup )
-
-                                                        }
-
-                                                        subParent = subGroup
-
-                                                    }
-
-                                                    if ( subParent && subParent.type !== 'Scene' ) {
-
-                                                        object.name   = object._id
-                                                        object.parent = null
-
-                                                        subParent.add( object )
-
-                                                    } else {
-                                                        //todo: alert unkowngroup
-                                                    }
-
-                                                } else {
-
-                                                    object.parent = null
-
-                                                    parent.add( object )
+                                                    } )
 
                                                 }
 
-                                            } else {
+                                            })()
+                                        }
+                                    ]
 
-                                                object.parent = null
+                                } else {
 
-                                                parent.add( object )
+                                    self.applyModifiers( group, [ 'toggleVisibility', 'toggleChildrenVisibility', 'opacity' ] )
+
+                                }
+
+                                // Reset children to empty array before fill it
+                                const subChildrenIds = group.children
+                                group.children       = []
+
+                                // Assign to parent first
+                                group.parent = null
+                                parent.add( group )
+
+                                // then Populate children
+                                populateChildren( group, subChildrenIds, checkPopulateEnd )
+
+                            }
+
+                        }
+
+                        function fillMeshes ( meshes ) {
+
+                            for ( let key in meshes ) {
+
+                                const object      = meshes[ key ]
+                                self.applyModifiers( object, [ 'toggleVisibility', 'opacity', 'lookAt' ] )
+
+                                object.isRaycastable = true
+
+                                // Reset children to empty array before fill it
+                                const subChildrenIds = object.children
+                                object.children      = []
+
+                                // Assign to parent first
+
+                                /////////////////////////////////
+
+                                if ( parent.name !== "Locaux" ) {
+
+                                    const objectName = object.name
+                                    const splits     = objectName.split( ' - ' )
+                                    let subParent    = parent
+
+                                    if ( splits.length > 0 ) {
+
+                                        for ( let splitIndex = 0, numberOfSplits = splits.length ; splitIndex < numberOfSplits ; splitIndex++ ) {
+
+                                            let subGroupName = splits[ splitIndex ].trim()
+
+                                            let subGroup = subParent.getObjectByName( subGroupName )
+                                            if ( subGroupName.length > 0 && !subGroup ) {
+
+                                                subGroup      = new Itee.Group()
+                                                subGroup.name = subGroupName
+                                                self.applyModifiers( subGroup, [ 'toggleVisibility', 'toggleChildrenVisibility', 'opacity' ] )
+
+                                                subParent.add( subGroup )
 
                                             }
 
-                                            // OR
-
-                                            //                                            object.parent = null
-                                            //                                            parent.add( object )
-
-                                            /////////////////////////////////
-
-                                            // then Populate children
-                                            populateChildren( object, subChildrenIds, checkPopulateEnd )
+                                            subParent = subGroup
 
                                         }
 
-                                    },
-                                    self.onProgress,
-                                    self.onError
-                                )
+                                        if ( subParent && subParent.type !== 'Scene' ) {
 
-                            },
-                            self.onProgress,
-                            self.onError
-                        )
+                                            object.name   = object._id
+                                            object.parent = null
+
+                                            subParent.add( object )
+
+                                        } else {
+                                            //todo: alert unkowngroup
+                                        }
+
+                                    } else {
+
+                                        object.parent = null
+
+                                        parent.add( object )
+
+                                    }
+
+                                } else {
+
+                                    object.parent = null
+
+                                    parent.add( object )
+
+                                }
+
+                                // OR
+
+                                //                                            object.parent = null
+                                //                                            parent.add( object )
+
+                                /////////////////////////////////
+
+                                // then Populate children
+                                populateChildren( object, subChildrenIds, checkPopulateEnd )
+
+                            }
+
+                        }
 
                         function checkPopulateEnd () {
 
@@ -1391,40 +1232,6 @@ const ViewerPage = {
                     self.onProgress,
                     self.onError
                 )
-
-            }
-
-            function applyGeometry ( object, geometries ) {
-
-                const geometryId = object.geometry
-
-                object.geometry = geometries[ geometryId ]
-
-            }
-
-            function applyMaterials ( object, materials ) {
-
-                const materialIds = object.material
-
-                if ( Array.isArray( materialIds ) ) {
-
-                    if ( materialIds.length === 1 ) {
-
-                        object.material = materials[ materialIds[ 0 ] ].clone()
-
-                    } else {
-
-                        object.material = []
-                        for ( let materialIndex = 0, numberOfMaterial = materialIds.length ; materialIndex < numberOfMaterial ; materialIndex++ ) {
-                            object.material.push( materials[ materialIds[ materialIndex ] ].clone() )
-                        }
-                    }
-
-                } else if ( typeof materialIds === 'string' ) {
-                    object.material = materials[ materialIds ].clone()
-                } else {
-                    object.material = new Itee.MeshBasicMaterial( { side: Itee.DoubleSide } )
-                }
 
             }
 
@@ -1627,64 +1434,6 @@ const ViewerPage = {
                     modal.style.display = 'none'
                 }
 
-            }
-
-        },
-
-        editBuilding () {
-
-            const id = this.carl.objectId
-            if ( id ) {
-
-                const isGroup = this.carl.isGroup
-                if ( isGroup ) {
-                    parent.postMessage( `GISDetailAction#-#${id};com.carl.xnet.equipment.backend.bean.BoxBean#+#`, '*' )
-                } else {
-                    parent.postMessage( `GISDetailAction#-#${id};com.carl.xnet.equipment.backend.bean.MaterialBean#+#`, '*' )
-                }
-
-            } else {
-                console.warn( 'The current building doesn\'t container a gmaoId' )
-            }
-
-        },
-
-        createBuildingIntervention () {
-
-            const id = this.carl.objectId
-            if ( id ) {
-
-                const isGroup = this.carl.isGroup
-                if ( isGroup ) {
-                    parent.postMessage( `CREATE_WO#-#${id};com.carl.xnet.equipment.backend.bean.BoxBean#+#`, '*' )
-                } else {
-                    parent.postMessage( `CREATE_WO#-#${id};com.carl.xnet.equipment.backend.bean.MaterialBean#+#`, '*' )
-                }
-
-            } else {
-                console.warn( 'The current building doesn\'t container a gmaoId' )
-            }
-
-        },
-
-        getCarlDetail () {
-
-            const id = this.selected.object.userData.gmaoId
-            if ( id ) {
-                parent.postMessage( `GISDetailAction#-#${id};com.carl.xnet.equipment.backend.bean.MaterialBean#+#`, '*' )
-            } else {
-                console.warn( 'The current selection doesn\'t container a gmaoId' )
-            }
-
-        },
-
-        createCarlInter () {
-
-            const id = this.selected.object.userData.gmaoId
-            if ( id ) {
-                parent.postMessage( `CREATE_WO#-#${id};com.carl.xnet.equipment.backend.bean.MaterialBean#+#`, '*' )
-            } else {
-                console.warn( 'The current selection doesn\'t container a gmaoId' )
             }
 
         },
@@ -1988,26 +1737,9 @@ const ViewerPage = {
             let measuresABGroup = measuresGroup.getObjectByName( 'Mesures AB' )
             if ( !measuresABGroup ) {
 
-                measuresABGroup           = new Itee.Group()
-                measuresABGroup.name      = 'Mesures AB'
-                measuresABGroup.modifiers = [
-                    {
-                        type:    'checkicon',
-                        iconOn:  'eye',
-                        iconOff: 'eye-slash',
-                        value:   true,
-                        onClick: this.toggleVisibilityOf( measuresABGroup )
-                    },
-                    //                    {
-                    //                        type:     'range',
-                    //                        onChange: this.updateOpacityOf( measuresABGroup )
-                    //                    },
-                    //                    {
-                    //                        type:    'button',
-                    //                        value:   'X',
-                    //                        onClick: this.removeObject( measuresABGroup )
-                    //                    }
-                ]
+                measuresABGroup      = new Itee.Group()
+                measuresABGroup.name = 'Mesures AB'
+                this.applyModifiers( measuresABGroup, [ 'toggleVisibility', 'opacity', 'remove' ] )
                 measuresGroup.add( measuresABGroup )
                 this.tree.needUpdate = !this.tree.needUpdate
 
@@ -2049,27 +1781,11 @@ const ViewerPage = {
             let currentGroup = this.measures.ab.currentGroup
             if ( !currentGroup ) {
 
-                const measuresABGroup            = this.scene.getObjectByName( 'Mesures' ).getObjectByName( 'Mesures AB' )
-                let currentMeasuresABGroup       = new Itee.Group()
-                currentMeasuresABGroup.name      = `${measuresABGroup.children.length}`
-                currentMeasuresABGroup.modifiers = [
-                    {
-                        type:    'checkicon',
-                        iconOn:  'eye',
-                        iconOff: 'eye-slash',
-                        value:   true,
-                        onClick: this.toggleVisibilityOf( currentMeasuresABGroup )
-                    },
-                    //                    {
-                    //                        type:     'range',
-                    //                        onChange: this.updateOpacityOf( measuresABGroup )
-                    //                    },
-                    //                    {
-                    //                        type:    'button',
-                    //                        value:   'X',
-                    //                        onClick: this.removeObject( measuresABGroup )
-                    //                    }
-                ]
+                const measuresABGroup       = this.scene.getObjectByName( 'Mesures' ).getObjectByName( 'Mesures AB' )
+                let currentMeasuresABGroup  = new Itee.Group()
+                currentMeasuresABGroup.name = `${measuresABGroup.children.length}`
+                this.applyModifiers( currentMeasuresABGroup, [ 'toggleVisibility', 'opacity', 'remove' ] )
+
                 measuresABGroup.add( currentMeasuresABGroup )
                 this.tree.needUpdate = !this.tree.needUpdate
 
@@ -2530,11 +2246,9 @@ const ViewerPage = {
 
         },
 
-        _addClippingPlan ( point, normal, name, sensibilityCoefficient ) {
+        _addClippingPlan ( point, normal, name, sensibility ) {
 
             const self = this
-
-            const _sensibilityCoefficient = sensibilityCoefficient || 1
 
             let envGroup = this.scene.getObjectByName( 'Environement' )
             if ( !envGroup ) {
@@ -2565,72 +2279,13 @@ const ViewerPage = {
             const clippingPlaneIndex = this.renderer.clippingPlanes.length
             clippingPlane.id         = clippingPlaneIndex
 
-            const helper     = new Itee.PlaneHelper( clippingPlane, 1000, 0xffffff )
-            helper.name      = name || `Plan de coupe n°${clippingPlaneIndex}`
-            helper.visible   = false
-            helper.modifiers = [
-                {
-                    type:     'range',
-                    onChange: (function () {
-                        'use strict'
-
-                        const _clippingPlane = clippingPlane
-
-                        return function ( changeEvent ) {
-
-                            const centeredValue     = (changeEvent.target.valueAsNumber - 50) * _sensibilityCoefficient
-                            _clippingPlane.constant = centeredValue
-
-                        }
-
-                    })()
-                },
-                {
-                    type:    'button',
-                    value:   'X',
-                    onClick: (function () {
-                        'use strict'
-
-                        const _self         = self
-                        let _clippingPlanes = _self.renderer.clippingPlanes
-                        let _clippingPlane  = clippingPlane
-                        let _element        = helper
-
-                        return function removeModifierHandler () {
-
-                            _clippingPlanes.splice( _clippingPlanes.indexOf( _clippingPlane ), 1 )
-
-                            _element.parent.remove( _element )
-
-                            const geometry = _element.geometry
-                            if ( geometry ) {
-                                geometry.dispose()
-                            }
-
-                            const materials = _element.material
-                            if ( materials ) {
-
-                                if ( Array.isArray( materials ) ) {
-                                    for ( let i = 0, n = materials.length ; i < n ; i++ ) {
-                                        materials[ i ].dispose()
-                                    }
-                                } else {
-                                    materials.dispose()
-                                }
-
-                            }
-
-                            _element = undefined
-
-                            // Special case to refresh treeview that cannot listen on scene
-                            _self.tree.needUpdate = !_self.tree.needUpdate
-
-                        }
-
-                    })()
-                }
-            ]
-
+            const helper   = new Itee.PlaneHelper( clippingPlane, 1000, 0xffffff )
+            helper.name    = name || `Plan de coupe n°${clippingPlaneIndex}`
+            helper.visible = false
+            self.applyModifiers( helper, [ 'updateClipping', 'removeClipping' ], {
+                clippingPlane,
+                sensibility
+            } )
             modifiersGroup.add( helper )
 
             this.renderer.clippingPlanes.push( clippingPlane )
@@ -2790,7 +2445,7 @@ const ViewerPage = {
         },
 
         /// Tree modifiers
-        applyModifiers ( object, modifiersNames ) {
+        applyModifiers ( object, modifiersNames, modifiersDatas ) {
 
             const self = this
 
@@ -2837,11 +2492,34 @@ const ViewerPage = {
                         modifiers.push( {
                             type:    'icon',
                             display: 'select',
-                            icon:    'taxi',
+                            icon:    'search',
                             onClick: self.lookAtObject( object )
                         } )
                         break
 
+                    case 'remove':
+                        modifiers.push( {
+                            type:    'icon',
+                            display: 'select',
+                            icon:    'times',
+                            onClick: self.removeObject( object )
+                        } )
+                        break
+
+                    case 'updateClipping':
+                        modifiers.push( {
+                            type:     'range',
+                            onChange: self.updateClippingPlane( modifiersDatas.clippingPlane, modifiersDatas.sensibility )
+                        } )
+                        break
+
+                    case 'removeClipping':
+                        modifiers.push( {
+                            type:    'icon',
+                            icon:    'times',
+                            onClick: self.removeClippingPlane.call(self, modifiersDatas.clippingPlane, object )
+                        } )
+                        break
                 }
 
             }
@@ -3017,6 +2695,60 @@ const ViewerPage = {
 
         },
 
+        updateClippingPlane ( clippingPlane, sensibility ) {
+
+            const _clippingPlane = clippingPlane
+            const _sensibility   = sensibility || 1
+
+            return function ( changeEvent ) {
+
+                const centeredValue     = (changeEvent.target.valueAsNumber - 50) * _sensibility
+                _clippingPlane.constant = centeredValue
+
+            }
+
+        },
+
+        removeClippingPlane ( clippingPlane, helper ) {
+
+            const _self         = this
+            let _clippingPlanes = _self.renderer.clippingPlanes
+            let _clippingPlane  = clippingPlane
+            let _element        = helper
+
+            return function removeModifierHandler () {
+
+                _clippingPlanes.splice( _clippingPlanes.indexOf( _clippingPlane ), 1 )
+
+                _element.parent.remove( _element )
+
+                const geometry = _element.geometry
+                if ( geometry ) {
+                    geometry.dispose()
+                }
+
+                const materials = _element.material
+                if ( materials ) {
+
+                    if ( Array.isArray( materials ) ) {
+                        for ( let i = 0, n = materials.length ; i < n ; i++ ) {
+                            materials[ i ].dispose()
+                        }
+                    } else {
+                        materials.dispose()
+                    }
+
+                }
+
+                _element = undefined
+
+                // Special case to refresh treeview that cannot listen on scene
+                _self.tree.needUpdate = !_self.tree.needUpdate
+
+            }
+
+        },
+
         ////
 
         onProgress ( progressEvent ) {
@@ -3049,6 +2781,80 @@ const ViewerPage = {
             'use strict'
 
             console.error( error )
+
+        },
+
+        // CARL
+
+        editBuilding () {
+
+            const id = this.carl.objectId
+            if ( id ) {
+
+                const isGroup = this.carl.isGroup
+                if ( isGroup ) {
+                    parent.postMessage( `GISDetailAction#-#${id};com.carl.xnet.equipment.backend.bean.BoxBean#+#`, '*' )
+                } else {
+                    parent.postMessage( `GISDetailAction#-#${id};com.carl.xnet.equipment.backend.bean.MaterialBean#+#`, '*' )
+                }
+
+            } else {
+                console.warn( 'The current building doesn\'t container a gmaoId' )
+            }
+
+        },
+
+        createBuildingIntervention () {
+
+            const id = this.carl.objectId
+            if ( id ) {
+
+                const isGroup = this.carl.isGroup
+                if ( isGroup ) {
+                    parent.postMessage( `CREATE_WO#-#${id};com.carl.xnet.equipment.backend.bean.BoxBean#+#`, '*' )
+                } else {
+                    parent.postMessage( `CREATE_WO#-#${id};com.carl.xnet.equipment.backend.bean.MaterialBean#+#`, '*' )
+                }
+
+            } else {
+                console.warn( 'The current building doesn\'t container a gmaoId' )
+            }
+
+        },
+
+        getCarlDetail () {
+
+            const id = this.selected.object.userData.gmaoId
+            if ( id ) {
+
+                const isRoom = (this.selected.object.parent.name === "Locaux")
+                if ( isRoom ) {
+                    parent.postMessage( `GISDetailAction#-#${id};com.carl.xnet.equipment.backend.bean.BoxBean#+#`, '*' )
+                } else {
+                    parent.postMessage( `GISDetailAction#-#${id};com.carl.xnet.equipment.backend.bean.MaterialBean#+#`, '*' )
+                }
+
+            } else {
+                console.warn( 'The current selection doesn\'t container a gmaoId' )
+            }
+
+        },
+
+        createCarlInter () {
+
+            const id = this.selected.object.userData.gmaoId
+            if ( id ) {
+
+                const isRoom = (this.selected.object.parent.name === "Locaux")
+                if ( isRoom ) {
+                    parent.postMessage( `CREATE_WO#-#${id};com.carl.xnet.equipment.backend.bean.BoxBean#+#`, '*' )
+                } else {
+                    parent.postMessage( `CREATE_WO#-#${id};com.carl.xnet.equipment.backend.bean.MaterialBean#+#`, '*' )
+                }
+
+            } else {
+                console.warn( 'The current selection doesn\'t container a gmaoId' )
+            }
 
         },
 
