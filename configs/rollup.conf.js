@@ -78,7 +78,7 @@ function CreateRollupConfiguration ( format, onProduction, wantSourceMap ) {
                 commonJs( {
                     include: 'node_modules/**'
                 } ),
-                babel(require( './babel.conf' )),
+                babel(require( './babel.conf' )(_onProduction)),
                 replace( {
                     'process.env.NODE_ENV': JSON.stringify( (_onProduction) ? 'production' : 'development' )
                 } ),
@@ -88,14 +88,10 @@ function CreateRollupConfiguration ( format, onProduction, wantSourceMap ) {
 
             // advanced options
             onwarn: function onWarn ( { loc, frame, message } ) {
-                // print location if applicable
                 if ( loc ) {
-                    process.stderr.write( `${loc.file} (${loc.line}:${loc.column}) ${message}` )
-                    if ( frame ) {
-                        process.stderr.write( frame )
-                    }
+                    process.stderr.write( `/!\\ WARNING: ${loc.file} (${loc.line}:${loc.column}) ${frame} ${message}\n` )
                 } else {
-                    process.stderr.write( message )
+                    process.stderr.write( `/!\\ WARNING: ${message}\n` )
                 }
             },
             cache:  undefined,
