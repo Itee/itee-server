@@ -17,7 +17,7 @@ function getURLParams ( query ) {
 
     for ( let key in query ) {
 
-        if ( key === 'config' ) {
+        if ( key === 'app' ) {
             continue
         }
 
@@ -44,13 +44,13 @@ module.exports = function ( env ) {
         .get( '/:view(*)', ( request, response, next ) => {
 
             const view       = request.params.view
-            const config     = request.query.config || 'undefined'
-            const urlParams  = getURLParams( request.query )
+            const app     = request.query.app || 'undefined'
+            const urlParams  = getURLParams( request.config )
             const extension  = view.split( "." )[ 1 ]
             const pathToFile = path.join( __dirname, '../../', '/resources/views/', view )
 
             console.log( view );
-            console.log( config );
+            console.log( app );
             console.log( urlParams );
             console.log( extension );
             console.log( pathToFile );
@@ -66,7 +66,7 @@ module.exports = function ( env ) {
                                     view,
                                     {
                                         env:       _env,
-                                        config:    config,
+                                        app:       app,
                                         urlParams: urlParams
                                     }
                                 )

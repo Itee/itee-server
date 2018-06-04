@@ -11,8 +11,8 @@
  * MODULES
  */
 var router = require( 'express' ).Router( { mergeParams: true } )
-var path    = require( 'path' )
-var fs      = require( 'fs' )
+var path   = require( 'path' )
+var fs     = require( 'fs' )
 
 function getURLParams ( query ) {
 
@@ -20,7 +20,7 @@ function getURLParams ( query ) {
 
     for ( let key in query ) {
 
-        if ( key === 'config' ) {
+        if ( key === 'app' ) {
             continue
         }
 
@@ -39,8 +39,8 @@ router
     .get( '', ( request, response, next ) => {
 
         const pathToFile = path.join( __dirname, '../../../../resources/views/', 'index.pug' )
-        const config     = request.query.config || 'undefined'
-        const query      = request.query.query || null
+        const app        = request.query.app || 'undefined'
+        const config     = request.query.config || null
 
         fs.stat(
             pathToFile,
@@ -52,8 +52,8 @@ router
                         .render(
                             'index.pug',
                             {
-                                _config_: config,
-                                _query_:  query
+                                _app_:    app,
+                                _config_: config
                             }
                         )
 
