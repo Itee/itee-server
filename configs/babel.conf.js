@@ -15,22 +15,25 @@
  *
  * @returns {object} The babel configuration
  */
-function CreateBabelConfiguration () {
+function CreateBabelConfiguration ( onProduction ) {
 
     return {
-        "presets": [
+        presets: [
             [
-                "es2015",
+                "env",
                 {
-                    "modules": false
+                    modules: false
                 }
             ]
         ],
-        "plugins": [
-            "external-helpers"
-        ]
+        plugins: [
+            "external-helpers",
+            "transform-class-properties",
+            "transform-react-jsx"
+        ],
+        compact: onProduction
     }
 
 }
 
-module.exports = CreateBabelConfiguration()
+module.exports = CreateBabelConfiguration

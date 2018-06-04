@@ -19,11 +19,34 @@
 /* eslint-env node */
 
 const path        = require( 'path' )
-const buble       = require( 'rollup-plugin-buble' )
+const babel       = require( 'rollup-plugin-babel' )
 const nodeResolve = require( 'rollup-plugin-node-resolve' )
 const commonJs    = require( 'rollup-plugin-commonjs' )
 const replace     = require( 'rollup-plugin-replace' )
 const uglify      = require( 'rollup-plugin-uglify-es' )
+
+function glsl () {
+
+    return {
+        transform ( code, id ) {
+            if ( !/\.glsl$/.test( id ) ) {
+                return
+            }
+
+            var transformedCode = 'export default ' + JSON.stringify(
+                code
+                    .replace( /[ \t]*\/\/.*\n/g, '' )
+                    .replace( /[ \t]*\/\*[\s\S]*?\*\//g, '' )
+                    .replace( /\n{2,}/g, '\n' )
+            ) + ';'
+            return {
+                code: transformedCode,
+                map:  { mappings: '' }
+            }
+        }
+    }
+
+}
 
 /**
  * Will create an appropriate configuration object for rollup, related to the given arguments.
@@ -51,10 +74,11 @@ function CreateRollupConfiguration ( format, onProduction, wantSourceMap ) {
             input:    inputFilePath,
             external: [],
             plugins:  [
-                buble(),
+                glsl(),
                 commonJs( {
                     include: 'node_modules/**'
                 } ),
+                babel(require( './babel.conf' )(_onProduction)),
                 replace( {
                     'process.env.NODE_ENV': JSON.stringify( (_onProduction) ? 'production' : 'development' )
                 } ),
@@ -64,14 +88,10 @@ function CreateRollupConfiguration ( format, onProduction, wantSourceMap ) {
 
             // advanced options
             onwarn: function onWarn ( { loc, frame, message } ) {
-                // print location if applicable
                 if ( loc ) {
-                    process.stderr.write( `${loc.file} (${loc.line}:${loc.column}) ${message}` )
-                    if ( frame ) {
-                        process.stderr.write( frame )
-                    }
+                    process.stderr.write( `/!\\ WARNING: ${loc.file} (${loc.line}:${loc.column}) ${frame} ${message}\n` )
                 } else {
-                    process.stderr.write( message )
+                    process.stderr.write( `/!\\ WARNING: ${message}\n` )
                 }
             },
             cache:  undefined,

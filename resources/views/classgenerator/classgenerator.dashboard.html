@@ -1,0 +1,17 @@
+<div id="dashboard-class-generator" class="col-md-11 full-height">
+
+    <div class="class" ng-repeat="classManager in dashboardCtrl.classList" ng-click="dashboardCtrl.setSelectedClass(classManager.name)">
+        <div class="row">
+
+            <div ng-hide="dashboardCtrl.isSelected(classManager.name)">
+                <class-simpleview></class-simpleview>
+            </div>
+            <div ng-show="dashboardCtrl.isSelected(classManager.name)">
+                <class-editable></class-editable>
+                <class-tools></class-tools>
+            </div>
+
+        </div>
+    </div>
+
+</div>

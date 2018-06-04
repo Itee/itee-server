@@ -32,6 +32,8 @@ const gulp        = require( 'gulp' )
 const util        = require( 'gulp-util' )
 const jsdoc       = require( 'gulp-jsdoc3' )
 const eslint      = require( 'gulp-eslint' )
+const nodemon     = require( 'gulp-nodemon' )
+const liveReload  = require( 'gulp-livereload' )
 const del         = require( 'del' )
 const runSequence = require( 'run-sequence' )
 const rollup      = require( 'rollup' )
@@ -106,8 +108,19 @@ gulp.task( 'clean', () => {
 gulp.task( 'lint', () => {
 
     // Todo: split between source and test with differents env
+    const filesToLint = [
+        'gulpfile.js',
+        'run.js',
+        'application/**/*',
+        'assets/javascript/**/*',
+        'configs/**/*.js',
+        'database/**/*',
+        'modules/**/*',
+        'routes/**/*',
+        'server/**/*'
+    ]
 
-    return gulp.src( [ 'gulpfile.js', 'configs/**/*.js', 'scripts/**/*.js', 'sources/**/*', 'tests/**/*.js' ] )
+    return gulp.src( filesToLint )
                .pipe( eslint( {
                    allowInlineConfig: true,
                    globals:           [],
@@ -138,7 +151,18 @@ gulp.task( 'doc', () => {
 
     const config = require( './configs/jsdoc.conf' )
 
-    return gulp.src( [ '' ], { read: false } )
+    const filesToDocument = [
+        'README.md',
+        'gulpfile.js',
+        'run.js',
+        'application/*',
+        'database/*',
+        'modules/*',
+        'routes/*',
+        'server/*'
+    ]
+
+    return gulp.src( filesToDocument, { read: false } )
                .pipe( jsdoc( config ) )
 
 } )
@@ -173,11 +197,13 @@ gulp.task( 'bench', () => {
 
 } )
 
+
+
 /**
  * @method npm run build
  * @description Will build itee client module using optional arguments, running clean and _extendThree tasks before. See help to further informations.
  */
-gulp.task( 'build', ( done ) => {
+gulp.task( 'build-scripts', ( done ) => {
 
     const options = processArguments( process.argv )
     const configs = createBuildsConfigs( options )
@@ -289,6 +315,58 @@ gulp.task( 'build', ( done ) => {
 } )
 
 /**
+ * Add watcher to assets javascript files and run build-js on file change
+ */
+gulp.task( 'watch-script', (done) => {
+
+    log( 'Add watcher to javascript files !' )
+
+    gulp.watch( './assets/javascript/**/*.js', [ 'build-script' ] )
+    done()
+
+} )
+
+/**
+ * Build css and javascript files
+ */
+gulp.task( 'build', done => {
+
+    log( 'Start build css and javascript...' )
+
+    // Allow to build in an automatic way css and javascript files on change
+    if ( util.env.auto ) {
+
+        runSequence(
+            'clean',
+            'lint',
+            'watch-scripts',
+            done
+        )
+
+    } else if ( util.env.production ) {
+
+        runSequence(
+            'clean',
+            'lint',
+            'build-scripts',
+            'doc',
+            done
+        )
+
+    } else {
+
+        runSequence(
+            'clean',
+            'build-scripts',
+            done
+        )
+
+    }
+
+} )
+
+
+/**
  * @method npm run release
  * @description Will perform a complet release of the library.
  */
@@ -304,5 +382,85 @@ gulp.task( 'release', ( done ) => {
         'build',
         done
     )
+
+} )
+
+//
+// RUN SERVER
+//
+
+/**
+ * Launch node deamon to auto-reload server on file change
+ */
+gulp.task( 'nodemon', done => {
+
+    log( 'Start node server as daemon...' )
+
+    nodemon( {
+        script:  'run.js',
+        verbose: true,
+        ignore:  [
+            // Folders
+            '.git',
+            '.idea',
+            'assets',
+            'configs',
+            'documentation',
+            'logs',
+            'node_modules',
+            'resources',
+            'services',
+            'tests',
+            'views',
+
+            // Files
+            '.gitignore',
+            'LICENSE.md',
+            'package.json',
+            'package-lock.json',
+            'README.md'
+        ],
+        execMap: {
+            "js": "node --max-old-space-size=16384"
+        },
+        env:     { 'NODE_ENV': (util.env.production) ? 'production' : 'development' }
+    } )
+
+    done()
+
+} )
+
+/**
+ * Start sources auto building,
+ * and node server refresh on file change
+ */
+gulp.task( 'build-n-run', done => {
+
+    log( 'Running auto build and run nodemon...' )
+
+    runSequence(
+        'build',
+        'nodemon',
+        done
+    )
+
+} )
+
+/**
+ * Set a livereaload server for dev workflow
+ * reload gulp and server on files change
+ */
+gulp.task( 'live-reload', [ 'build-n-run' ], done => {
+
+    log( 'Run live-reload gulp with options :' )
+    log( util.env )
+
+    // Create LiveReload server
+    liveReload.listen()
+
+    // Watch this file, and reload gulp on change
+    gulp.watch( [ './gulpfile.js' ] ).on( 'change', liveReload.changed )
+
+    done()
 
 } )
