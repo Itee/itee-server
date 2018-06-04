@@ -7,7 +7,7 @@
  * @description This module will create CRUD routes for the given schemaName
  */
 
-const DatabaseController = require( '../../databases/database_controllers/TDatabaseController' )
+const DatabaseController = require( '../../databases/mongodb/database_controllers/TDatabaseController.js' )
 const mongoose           = require( 'mongoose' )
 const express            = require( 'express' )
 const path               = require( 'path' )
