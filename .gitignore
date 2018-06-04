@@ -17,3 +17,5 @@ resources/models/
 resources/textures/
 
 /utils/
+/resources/configs/config.realworld.js
+/resources/configs/config.carl.js
