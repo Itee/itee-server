@@ -18,8 +18,7 @@ const AppPage = {
             <THeader id="appHeader" style="min-height: 60px;">
                 <TAppBar height="60px">
                     <TContainer vAlign="center" hAlign="start">
-                        <TLabel class="tBrand" icon="eye" label="Geomap-Imagis" />
-                        <!--<TLabel class="tBrand" label="Geomap-Imagis" icon="rocket" />-->
+                        <TLabel class="tBrand" icon="rocket" label="Itee" />
                     </TContainer>
                     <TMenu>
                         <TMenuItem label="Home" :onClick="function() { routeTo('/') }" />

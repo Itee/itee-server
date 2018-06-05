@@ -1,20 +1,10 @@
-.idea*
-node_modules
-/node_modules/
-logs/
+# Created by .ignore support plugin (hsz.mobi)
 /logs/
-documentation/
-/documentation/
-tutorials/
-/tutorials/
-sandbox/
-/sandbox/
-
-/utils/
-/legacy/
 /resources/audio/*
 /resources/fonts/*
 /resources/images/*
 /resources/models/*
 /resources/textures/*
 /resources/views/legacy/
+/sandbox/
+/tests/
