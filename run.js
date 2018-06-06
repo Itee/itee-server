@@ -9,7 +9,7 @@
 //
 //});
 //
-//app.get('/', require( './routes/index/index.js' ) );
+//app.get('/', require( './_routes/index/index.js' ) );
 //
 //app.ws('/web-socket', function(ws, req) {
 //
@@ -63,17 +63,17 @@ console.log( '\n' )
 // ////////////////////////////////////
 // ////////// DATABASE ////////////////
 // ////////////////////////////////////
-var database = require( './sources/databases/_mongodb/TDatabase.js' )( config.database )
+var database = require( './sources/_core/_databases/_mongodb/TDatabase.js' )( config.database )
 
 // ////////////////////////////////////
 // ////////// APPLICATION /////////////
 // ////////////////////////////////////
-var application = require( './sources/server/TServerApplication' )( config.application )
+var application = require( './sources/_core/_server/TServerApplication' )( config.application )
 
 // ////////////////////////////////////
 // ////////// SERVER HTTP /////////////
 // ////////////////////////////////////
-var server = require( './sources/server/HttpServer.js' )( application, config.server )
+var server = require( './sources/_core/_server/HttpServer.js' )( application, config.server )
 
 // ////////////////////////////////////
 // //////////// PROCESS ///////////////
