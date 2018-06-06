@@ -9,7 +9,7 @@
  */
 
 const FileToThreeBase = require( './FileToThreeBase' )
-const ShpLoader       = require( '../../../applications/loaders/SHPLoader' )
+const ShpLoader       = require( '../../../_server/_loaders/SHPLoader' )
 
 ////
 
