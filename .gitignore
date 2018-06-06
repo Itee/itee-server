@@ -18,3 +18,4 @@ sandbox/
 /resources/models/*
 /resources/textures/*
 /resources/views/legacy/
+/sources/_core/_databases/_mongodb/schemas/
