@@ -9,7 +9,7 @@
  */
 
 const FileToThreeBase = require( './FileToThreeBase' )
-const DbfLoader       = require( '../../../applications/loaders/DBFLoader' )
+const DbfLoader       = require( '../../../_server/_loaders/DBFLoader' )
 
 class DbfToThree extends FileToThreeBase {
 
