@@ -11486,7 +11486,7 @@ OBJLoader.prototype = {
 
                     material = this.materials.create( sourceMaterial.name );
 
-                    // mtl etc. loaders probably can't create line materials correctly, copy properties to a line material.
+                    // mtl etc. _loaders probably can't create line materials correctly, copy properties to a line material.
                     if ( isLine && material && ! ( material instanceof LineBasicMaterial ) ) {
 
                         var materialLine = new LineBasicMaterial();
