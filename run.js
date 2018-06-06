@@ -68,7 +68,7 @@ var database = require( './sources/databases/mongodb/TDatabase.js' )( config.dat
 // ////////////////////////////////////
 // ////////// APPLICATION /////////////
 // ////////////////////////////////////
-var application = require( './sources/applications/TServerApplication' )( config.application )
+var application = require( './sources/server/TServerApplication' )( config.application )
 
 // ////////////////////////////////////
 // ////////// SERVER HTTP /////////////
