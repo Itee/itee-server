@@ -10,7 +10,7 @@
 const buildRouteFor = require( './TRouteBuilder' )
 
 /**
- * This module add routes to the _server.
+ * This module add _routes to the _server.
  * It manage by default the index route ('/'), resources route ('/resources'), view route ('/views') and 404 route ('/*')
  * @param app - The app to extend
  * @returns {*} - The extended app
@@ -18,7 +18,7 @@ const buildRouteFor = require( './TRouteBuilder' )
 module.exports = function routing ( app ) {
 
     //TODO: allow external route to be loaded from here
-    //TODO: Use _config to allow/disallow some predefined routes (like uploads for example) in function of the _server type wanted
+    //TODO: Use _config to allow/disallow some predefined _routes (like uploads for example) in function of the _server type wanted
 
     //    app.ws('/web-socket', function(ws, req) {
     //

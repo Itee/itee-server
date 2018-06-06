@@ -15,7 +15,7 @@
  */
 
 /**
- * This module add routes for CloudPoint using the CloudPointController on request
+ * This module add _routes for CloudPoint using the CloudPointController on request
  * @module Routes/CloudPoints
  *
  * @author Tristan Valcke <valcke.tristan@gmail.com>

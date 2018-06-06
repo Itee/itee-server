@@ -13,7 +13,7 @@
 var router = require( 'express' ).Router( { mergeParams: true } )
 const path       = require( 'path' )
 const fs         = require( 'fs' )
-const FilesToDatabase = require( '../../../databases/mongodb/converters/FilesToDatabase.js' )
+const FilesToDatabase = require( '../../../_databases/_mongodb/_converters/FilesToDatabase.js' )
 
 const filesToDatabase = new FilesToDatabase()
 
