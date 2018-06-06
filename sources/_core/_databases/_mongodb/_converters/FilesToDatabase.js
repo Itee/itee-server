@@ -10,10 +10,13 @@
 const I     = require( 'i-return' )
 const path  = require( 'path' )
 
-const THREE = require( '../../../../node_modules/threejs-full-es6/builds/Three.cjs' )
+// Todo: Fix correct package if possible
+const THREE = require( '../../../../../node_modules/threejs-full-es6/builds/Three.cjs' )
 //const THREE = require( 'threejs-full-es6' )
 //const THREE = require( 'three' )
+//const THREE = require( 'three' )
 
+// Todo: Make it a converter
 const AscFile = require( './AscFile' )
 
 const JsonToThree = require( './JsonToThree' )
