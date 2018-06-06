@@ -26,14 +26,14 @@
  *
  */
 
-var ImageShoot = require( 'mongoose' ).model( 'ImageShoot' )
+var SolePlate = require( 'mongoose' ).model( 'SolePlate' )
 var i          = require( 'i-return' )
 
 /**
  * This singleton module make easier the cloud point data routing from the database to the end user.
  * @type {{getInstance}}
  */
-var ImageShootsDatabaseController = (function () {
+var SolePlatesDatabaseController = (function () {
 
     var _instance = null
 
@@ -51,8 +51,8 @@ var ImageShootsDatabaseController = (function () {
          * Check if requested params named 'dataName' exist in request.body, request.params or request.query
          *
          * @param dataName - The property name to looking for
-         * @param request - The server request
-         * @param response - The server response
+         * @param request - The _server request
+         * @param response - The _server response
          * @returns {*} - Return the property or return error to the end user if the property doesn't exist
          * @private
          */
@@ -94,8 +94,8 @@ var ImageShootsDatabaseController = (function () {
          * return the property if exist, else return an error to end user.
          *
          * @param idName - The id property to looking for
-         * @param request - The server request
-         * @param response - The server response
+         * @param request - The _server request
+         * @param response - The _server response
          * @returns {*} - Return the id property or return error to the end user if the property doesn't exist
          * @private
          */
@@ -128,8 +128,8 @@ var ImageShootsDatabaseController = (function () {
          * return the property if exist, else return an error to end user.
          *
          * @param idName - The id property to looking for
-         * @param request - The server request
-         * @param response - The server response
+         * @param request - The _server request
+         * @param response - The _server response
          * @returns {*} - Return the id property or return error to the end user if the property doesn't exist
          * @private
          */
@@ -169,30 +169,30 @@ var ImageShootsDatabaseController = (function () {
         /*
          * REST API
          */
-        function createImageShoots ( request, response ) {
+        function createSolePlates ( request, response ) {
 
-            console.log( 'createImageShoots' )
+            console.log( 'createSolePlates' )
 
-//            console.log("request:")
-//            console.log(request)
-//
-//            console.log("body:")
-//            console.log(request.body)
-//
-//            console.log("params:")
-//            console.log(request.params)
-//
-//            console.log("query:")
-//            console.log(request.query)
+            console.log("request:")
+            console.log(request)
+
+            console.log("body:")
+            console.log(request.body)
+
+            console.log("params:")
+            console.log(request.params)
+
+            console.log("query:")
+            console.log(request.query)
 
 
-            var newModel = new ImageShoot( {
+            var newModel = new SolePlate( {
                 data: request.body
             } )
 
             newModel.save( i.return( response ) )
 
-            i.returnData( "createImageShoots: ...", response )
+            i.returnData( "createSolePlates: ...", response )
 
         }
 
@@ -205,52 +205,52 @@ var ImageShootsDatabaseController = (function () {
          * }
          *
          * @param request - The user request
-         * @param response - The server response
+         * @param response - The _server response
          */
-        function readImageShoots ( request, response ) {
+        function readSolePlates ( request, response ) {
 
-            console.log( 'readImageShoots' )
+            console.log( 'readSolePlates' )
 
-//            console.log("request:")
-//            console.log(request)
-//
-//            console.log("body:")
-//            console.log(request.body)
-//
-//            console.log("params:")
-//            console.log(request.params)
-//
-//            console.log("query:")
-//            console.log(request.query)
+            console.log("request:")
+            console.log(request)
 
-            ImageShoot.find( i.return( response ) )
+            console.log("body:")
+            console.log(request.body)
+
+            console.log("params:")
+            console.log(request.params)
+
+            console.log("query:")
+            console.log(request.query)
+
+            SolePlate.find( i.return( response ) )
 
 
         }
 
-        function updateImageShoots ( request, response ) {
+        function updateSolePlates ( request, response ) {
 
-            console.log( 'updateImageShoots' )
+            console.log( 'updateSolePlates' )
 
-            i.returnData( "updateImageShoots: ...", response )
-
-        }
-
-        function deleteImageShoots ( request, response ) {
-
-            console.log( 'deleteImageShoots' )
-
-            i.returnData( "deleteImageShoots: ...", response )
+            i.returnData( "updateSolePlates: ...", response )
 
         }
 
+        function deleteSolePlates ( request, response ) {
 
-        function createImageShootsWithId ( request, response ) {
+            console.log( 'deleteSolePlates' )
 
-            console.log( 'createImageShootsWithId' )
+            i.returnData( "deleteSolePlates: ...", response )
+
+        }
+
+
+        function createSolePlatesWithId ( request, response ) {
+
+            console.log( 'createSolePlatesWithId' )
 
             var id = __checkIdParam( 'id', request, response )
-            ImageShoot.findById( id, i.return( response ) )
+            SolePlate.findById( id, i.return( response ) )
 
         }
 
@@ -258,14 +258,14 @@ var ImageShootsDatabaseController = (function () {
          * Get a specific Cloud Point with given id
          *
          * @param request - The user request
-         * @param response - The server response
+         * @param response - The _server response
          */
-        function readImageShootsWithId ( request, response ) {
+        function readSolePlatesWithId ( request, response ) {
 
-            console.log( 'readImageShootsWithId' )
+            console.log( 'readSolePlatesWithId' )
 
             var id = __checkIdParam( 'id', request, response )
-            ImageShoot.findById( id, i.return( response ) )
+            SolePlate.findById( id, i.return( response ) )
 
         }
 
@@ -273,44 +273,44 @@ var ImageShootsDatabaseController = (function () {
          * Allow to update data store in a specific cloud point
          *
          * @param request - The user request
-         * @param response - The server response
+         * @param response - The _server response
          */
-        function updateImageShootsWithId ( request, response ) {
+        function updateSolePlatesWithId ( request, response ) {
 
-            console.log( 'updateImageShootsWithId' )
+            console.log( 'updateSolePlatesWithId' )
 
             var id = __checkIdParam( 'id', request, response )
-            ImageShoot.findById( id, i.return( response, {
-                'returnData': function ( imageShoot ) {
+            SolePlate.findById( id, i.return( response, {
+                'returnData': function ( solePlate ) {
 
                     // update model here
 
-                    imageShoot.save( i.return( response ) );
+                    solePlate.save( i.return( response ) );
                 }
             } ) )
 
         }
 
-        function deleteImageShootsWithId ( request, response ) {
+        function deleteSolePlatesWithId ( request, response ) {
 
-            console.log( 'deleteImageShootsWithId' )
+            console.log( 'deleteSolePlatesWithId' )
 
             var id = __checkIdParam( 'id', request, response )
-            i.returnData( "deleteImageShootsWithId: " + id, response )
+            i.returnData( "deleteSolePlatesWithId: " + id, response )
 
         }
 
         // Return the public interface
         return {
-            create: createImageShoots,
-            read:   readImageShoots,
-            update: updateImageShoots,
-            delete: deleteImageShoots,
+            create: createSolePlates,
+            read:   readSolePlates,
+            update: updateSolePlates,
+            delete: deleteSolePlates,
 
-            createOne: createImageShootsWithId,
-            readOne:   readImageShootsWithId,
-            updateOne: updateImageShootsWithId,
-            deleteOne: deleteImageShootsWithId
+            createOne: createSolePlatesWithId,
+            readOne:   readSolePlatesWithId,
+            updateOne: updateSolePlatesWithId,
+            deleteOne: deleteSolePlatesWithId
         }
     }
 
@@ -335,4 +335,4 @@ var ImageShootsDatabaseController = (function () {
  * Export the singleton instance as module
  * @type {*|WorldCellDatabaseController}
  */
-module.exports = ImageShootsDatabaseController.getInstance()
+module.exports = SolePlatesDatabaseController.getInstance()

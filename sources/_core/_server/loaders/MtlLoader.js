@@ -3443,7 +3443,7 @@ Object.assign( TextureLoader.prototype, {
 
         var texture = new Texture();
 
-        //        [TV-PATCH] just return default texture instead of trying to access DOM in server side...
+        //        [TV-PATCH] just return default texture instead of trying to access DOM in _server side...
 
 //        var loader = new ImageLoader( this.manager );
 //        loader.setCrossOrigin( this.crossOrigin );

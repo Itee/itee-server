@@ -51,8 +51,8 @@ var PointCloudDatabaseController = (function () {
          * Check if requested params named 'dataName' exist in request.body, request.params or request.query
          *
          * @param dataName - The property name to looking for
-         * @param request - The server request
-         * @param response - The server response
+         * @param request - The _server request
+         * @param response - The _server response
          * @returns {*} - Return the property or return error to the end user if the property doesn't exist
          * @private
          */
@@ -94,8 +94,8 @@ var PointCloudDatabaseController = (function () {
          * return the property if exist, else return an error to end user.
          *
          * @param idName - The id property to looking for
-         * @param request - The server request
-         * @param response - The server response
+         * @param request - The _server request
+         * @param response - The _server response
          * @returns {*} - Return the id property or return error to the end user if the property doesn't exist
          * @private
          */
@@ -128,8 +128,8 @@ var PointCloudDatabaseController = (function () {
          * return the property if exist, else return an error to end user.
          *
          * @param idName - The id property to looking for
-         * @param request - The server request
-         * @param response - The server response
+         * @param request - The _server request
+         * @param response - The _server response
          * @returns {*} - Return the id property or return error to the end user if the property doesn't exist
          * @private
          */
@@ -186,7 +186,7 @@ var PointCloudDatabaseController = (function () {
          * }
          *
          * @param request - The user request
-         * @param response - The server response
+         * @param response - The _server response
          */
         var readPointCloudsRequestCounter = 0
         function readPointClouds ( request, response ) {
@@ -382,7 +382,7 @@ var PointCloudDatabaseController = (function () {
          * Get a specific Cloud Point with given id
          *
          * @param request - The user request
-         * @param response - The server response
+         * @param response - The _server response
          */
         var readPointCloudWithIdRequestCounter = 0
         function readPointCloudWithId ( request, response ) {
@@ -406,7 +406,7 @@ var PointCloudDatabaseController = (function () {
          * Allow to update data store in a specific cloud point
          *
          * @param request - The user request
-         * @param response - The server response
+         * @param response - The _server response
          */
         var updatePointCloudWithIdRequestCounter = 0
         function updatePointCloudWithId ( request, response ) {

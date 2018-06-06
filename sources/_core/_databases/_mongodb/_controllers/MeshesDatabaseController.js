@@ -51,8 +51,8 @@ var MeshesDatabaseController = (function () {
          * Check if requested params named 'dataName' exist in request.body, request.params or request.query
          *
          * @param dataName - The property name to looking for
-         * @param request - The server request
-         * @param response - The server response
+         * @param request - The _server request
+         * @param response - The _server response
          * @returns {*} - Return the property or return error to the end user if the property doesn't exist
          * @private
          */
@@ -94,8 +94,8 @@ var MeshesDatabaseController = (function () {
          * return the property if exist, else return an error to end user.
          *
          * @param idName - The id property to looking for
-         * @param request - The server request
-         * @param response - The server response
+         * @param request - The _server request
+         * @param response - The _server response
          * @returns {*} - Return the id property or return error to the end user if the property doesn't exist
          * @private
          */
@@ -128,8 +128,8 @@ var MeshesDatabaseController = (function () {
          * return the property if exist, else return an error to end user.
          *
          * @param dataName - The data property to looking for
-         * @param request - The server request
-         * @param response - The server response
+         * @param request - The _server request
+         * @param response - The _server response
          * @returns {*} - Return the id property or return error to the end user if the property doesn't exist
          * @private
          */
@@ -212,7 +212,7 @@ var MeshesDatabaseController = (function () {
          * }
          *
          * @param request - The user request
-         * @param response - The server response
+         * @param response - The _server response
          */
         var readMeshesRequestCounter = 0
         function readMeshes ( request, response ) {
@@ -341,7 +341,7 @@ var MeshesDatabaseController = (function () {
          * Get a specific Cloud Point with given id
          *
          * @param request - The user request
-         * @param response - The server response
+         * @param response - The _server response
          */
         var readMeshesWithIdRequestCounter = 0
         function readMeshesWithId ( request, response ) {
@@ -374,7 +374,7 @@ var MeshesDatabaseController = (function () {
          * Allow to update data store in a specific cloud point
          *
          * @param request - The user request
-         * @param response - The server response
+         * @param response - The _server response
          */
         function updateMeshesWithId ( request, response ) {
 

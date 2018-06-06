@@ -49,8 +49,8 @@ var WorldCellDatabaseController = (function () {
          * Check if requested params named 'dataName' exist in request.body, request.params or request.query
          *
          * @param dataName - The property name to looking for
-         * @param request - The server request
-         * @param response - The server response
+         * @param request - The _server request
+         * @param response - The _server response
          * @returns {*} - Return the property or return error to the end user if the property doesn't exist
          * @private
          */
@@ -81,8 +81,8 @@ var WorldCellDatabaseController = (function () {
          * return the property if exist, else return an error to end user.
          *
          * @param idName - The id property to looking for
-         * @param request - The server request
-         * @param response - The server response
+         * @param request - The _server request
+         * @param response - The _server response
          * @returns {*} - Return the id property or return error to the end user if the property doesn't exist
          * @private
          */
@@ -108,8 +108,8 @@ var WorldCellDatabaseController = (function () {
          * return the property if exist, else return an error to end user.
          *
          * @param idName - The id property to looking for
-         * @param request - The server request
-         * @param response - The server response
+         * @param request - The _server request
+         * @param response - The _server response
          * @returns {*} - Return the id property or return error to the end user if the property doesn't exist
          * @private
          */
@@ -156,7 +156,7 @@ var WorldCellDatabaseController = (function () {
          * }
          *
          * @param request - The user request
-         * @param response - The server response
+         * @param response - The _server response
          */
         var getAllWorldCellsRequestCounter = 0
 
@@ -182,7 +182,7 @@ var WorldCellDatabaseController = (function () {
          * Get a specific Cloud Point with given id
          *
          * @param request - The user request
-         * @param response - The server response
+         * @param response - The _server response
          */
         function getWorldCellWithId ( request, response ) {
             console.log( 'getWorldCellWithId' )
@@ -195,7 +195,7 @@ var WorldCellDatabaseController = (function () {
          * Allow to update data store in a specific cloud point
          *
          * @param request - The user request
-         * @param response - The server response
+         * @param response - The _server response
          */
         function updateWorldCellWithId ( request, response ) {
 
@@ -287,7 +287,7 @@ var WorldCellDatabaseController = (function () {
          * Get the data cube for the WorldCell with given id, applying the given sampling hash.
          *
          * @param request - The user request
-         * @param response - The server response
+         * @param response - The _server response
          */
         var getPointCloudMultiSampledRequestCounter = 0
         function getPointCloudMultiSampled ( request, response ) {
@@ -467,7 +467,7 @@ var WorldCellDatabaseController = (function () {
          * an concat into a single buffer all the data cube.
          *
          * @param request - The user request
-         * @param response - The server response
+         * @param response - The _server response
          */
 
         var getAllPointCloudForWorldCellWithIdRequestCounter = 0
@@ -628,7 +628,7 @@ var WorldCellDatabaseController = (function () {
          * Get a cube data point with given id for a WorldCell with given id
          *
          * @param request - The user request
-         * @param response - The server response
+         * @param response - The _server response
          */
         var getPointCloudWithIdForWorldCellWithIdRequestCounter = 0
         function getPointCloudWithIdForWorldCellWithId ( request, response ) {

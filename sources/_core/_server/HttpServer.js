@@ -35,7 +35,7 @@ function onTimeout ( data ) {
 /**
  * Handle request event
  * @param request - The user request
- * @param response - The server response
+ * @param response - The _server response
  */
 function onRequest ( request, response ) {
 

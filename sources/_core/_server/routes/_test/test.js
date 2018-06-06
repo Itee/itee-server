@@ -19,7 +19,7 @@
  */
 const express = require( '../../node_modules/express/index' )
 
-const testController             = require( '../../database/database_controllers/TestDatabaseController' )
+const testController             = require( '../../database/_controllers/TestDatabaseController' )
 let router = express.Router( { mergeParams: true } )
 
 /*

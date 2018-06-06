@@ -32,8 +32,8 @@ const errorHandler = require( 'errorhandler' )
 const favicon      = require( 'serve-favicon' )
 
 /**
- * Setup the web server application
- * @param app - The server application to extend (by default this is a newly created express app)
+ * Setup the web _server application
+ * @param app - The _server application to extend (by default this is a newly created express app)
  * @param config - The config to apply to the application
  * @returns {*} - The extended application
  */

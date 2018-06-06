@@ -26,8 +26,8 @@ Object.assign( DatabaseController, {
      * Check if requested params named 'dataName' exist in request.body, request.params or request.query
      *
      * @param dataName - The property name to looking for
-     * @param request - The server request
-     * @param response - The server response
+     * @param request - The _server request
+     * @param response - The _server response
      * @returns {*} - Return the property or return error to the end user if the property doesn't exist
      * @private
      */
@@ -69,8 +69,8 @@ Object.assign( DatabaseController, {
      * return the property if exist, else return an error to end user.
      *
      * @param idName - The id property to looking for
-     * @param request - The server request
-     * @param response - The server response
+     * @param request - The _server request
+     * @param response - The _server response
      * @returns {*} - Return the id property or return error to the end user if the property doesn't exist
      * @private
      */
@@ -103,8 +103,8 @@ Object.assign( DatabaseController, {
      * return the property if exist, else return an error to end user.
      *
      * @param idName - The id property to looking for
-     * @param request - The server request
-     * @param response - The server response
+     * @param request - The _server request
+     * @param response - The _server response
      * @returns {*} - Return the id property or return error to the end user if the property doesn't exist
      * @private
      */
