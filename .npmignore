@@ -1,11 +1,3 @@
-# Created by .ignore support plugin (hsz.mobi)
-/logs/
-/resources/audio/*
-/resources/fonts/*
-/resources/images/*
-/resources/models/*
-/resources/textures/*
-/resources/views/legacy/
-/sandbox/
+.idea*
 /tests/
-/sources/_core/_databases/_mongodb/schemas/
+/configs/
