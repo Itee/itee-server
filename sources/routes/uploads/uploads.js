@@ -13,8 +13,9 @@
 var router = require( 'express' ).Router( { mergeParams: true } )
 const path       = require( 'path' )
 const fs         = require( 'fs' )
-const FilesToDatabase = require( '../../../_databases/_mongodb/_converters/FilesToDatabase.js' )
 
+//TODO: CARE HARD CODED PATH FOR ITEE PACKAGE DEPS
+const FilesToDatabase = require( '../../../../itee-database-mongodb/sources/converters/FilesToDatabase.js' )
 const filesToDatabase = new FilesToDatabase()
 
 /*

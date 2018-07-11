@@ -9,8 +9,11 @@
 const fs                 = require( 'fs' )
 const path               = require( 'path' )
 const buildRouteFor      = require( './TRouteBuilder' )
-const DatabaseController = require( '../../_databases/_mongodb/_controllers/TDatabaseController.js' )
+
 const mongoose           = require( 'mongoose' )
+
+//TODO: CARE HARD CODED PATH FOR ITEE PACKAGE DEPS
+const DatabaseController = require( '../../../itee-database-mongodb/sources/controllers/TDatabaseController.js' )
 
 /**
  * Allow to search all files under filePaths in a recursive way
