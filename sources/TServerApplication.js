@@ -23,6 +23,7 @@
 
 const fs           = require( 'fs' )
 const path         = require( 'path' )
+const compression  = require( 'compression' )
 const express      = require( 'express' )
 const busBoy       = require( 'express-busboy' )
 const webSocket    = require( 'express-ws' )
@@ -86,9 +87,14 @@ module.exports = function ( config ) {
     app.use( favicon( middlewareConfig.favicon.path ) )
 
     // ////////////////////////////////////
+    // /////////// COMPRESSION ////////////
+    // ////////////////////////////////////
+    app.use( compression() )
+
+    // ////////////////////////////////////
     // //////////// ROUTES ////////////////
     // ////////////////////////////////////
-    require( './routes/TRouter' )( app )
+    require( './_routes/TRouter' )( app )
 
     // //// END OF APPLICATION //////
     return app
