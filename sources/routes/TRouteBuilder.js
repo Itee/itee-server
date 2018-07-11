@@ -7,8 +7,6 @@
  * @description This module will create CRUD routes for the given schemaName
  */
 
-const DatabaseController = require( '../../_databases/_mongodb/_controllers/TDatabaseController.js' )
-const mongoose           = require( 'mongoose' )
 const express            = require( 'express' )
 const path               = require( 'path' )
 const fs                 = require( 'fs' )
@@ -18,10 +16,8 @@ const fs                 = require( 'fs' )
  * @param schemaName
  * @constructor
  */
-function BuildRoutesFor ( schemaName ) {
+function BuildRoutesFor ( controller ) {
 
-    const ressource  = mongoose.model( schemaName )
-    const controller = new DatabaseController( ressource )
     const router     = express.Router( { mergeParams: true } )
                               .put( '/', controller.create.bind( controller ) )
                               .post( '/', controller.read.bind( controller ) )
