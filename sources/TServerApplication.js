@@ -94,7 +94,7 @@ module.exports = function ( config ) {
     // ////////////////////////////////////
     // //////////// ROUTES ////////////////
     // ////////////////////////////////////
-    require( './routes/TRouter' )( app )
+    require( './routes/TRouter' )( app, config )
 
     // //// END OF APPLICATION //////
     return app
