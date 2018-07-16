@@ -83,7 +83,7 @@ function _getFilesPathsUnder ( filePaths ) {
  * @param app - The app to extend
  * @returns {*} - The extended app
  */
-module.exports = function routing ( app, parameters ) {
+module.exports = function routing ( app, databases, parameters ) {
 
     //TODO: allow external route to be loaded from here
     //TODO: Use _config to allow/disallow some predefined _routes (like uploads for example) in function of the _server type wanted
