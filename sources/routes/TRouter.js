@@ -134,7 +134,7 @@ module.exports = function routing ( app, parameters ) {
 //    app.use( '/downloads', require( './downloads/downloads.js' ) )
 //    app.use( '/uploads', require( './uploads/uploads.js' ) )
 
-    // Register routes
+    // Register local routes
     const routersFilesPaths = _getFilesPathsUnder( __dirname )
     for ( let routerIndex = 0, numberOfRouters = routersFilesPaths.length ; routerIndex < numberOfRouters ; routerIndex++ ) {
 
@@ -144,15 +144,20 @@ module.exports = function routing ( app, parameters ) {
 
     }
 
+    // Register Database routes
+    const databasePluginsBasePath = path.join( __dirname, '..', 'node_modules' )
+    const databasesPluginsNames    = parameters.plugins
+    for ( let index = 0, numberOfPlugins = databasesPluginsNames.length ; index < numberOfPlugins ; index++ ) {
 
-    // MongoDB Routes
-    app.use( '/users', buildRouteFor( new DatabaseController( mongoose.model( 'User' ) ) ) )
-    app.use( '/companies', buildRouteFor( new DatabaseController( mongoose.model( 'Company' ) ) ) )
-    app.use( '/objects', buildRouteFor( new DatabaseController( mongoose.model( 'Objects3D' ) ) ) )
-    app.use( '/curves', buildRouteFor( new DatabaseController( mongoose.model( 'Curves' ) ) ) )
-    app.use( '/geometries', buildRouteFor( new DatabaseController( mongoose.model( 'Geometries' ) ) ) )
-    app.use( '/materials', buildRouteFor( new DatabaseController( mongoose.model( 'Materials' ) ) ) )
-    app.use( '/textures', buildRouteFor( new DatabaseController( mongoose.model( 'Textures' ) ) ) )
+        const pluginPath = path.join( databasePluginsBasePath, databasesPluginsNames[ index ] )
+        const plugin     = require( pluginPath )
+        const pluginsRoutes = plugin.routes
+
+        for ( let routeKey in pluginsRoutes ) {
+            app.use( routeKey, pluginsRoutes[routeKey] )
+        }
+
+    }
 
     app.use( '*/*', ( request, response, next ) => {
 
