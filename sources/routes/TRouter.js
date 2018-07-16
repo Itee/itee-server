@@ -6,11 +6,11 @@
  *
  * @description Main entry point to extend application routes
  */
-const fs                 = require( 'fs' )
-const path               = require( 'path' )
-const buildRouteFor      = require( './TRouteBuilder' )
+const fs            = require( 'fs' )
+const path          = require( 'path' )
+const buildRouteFor = require( './TRouteBuilder' )
 
-const mongoose           = require( 'mongoose' )
+const mongoose = require( 'mongoose' )
 
 //TODO: CARE HARD CODED PATH FOR ITEE PACKAGE DEPS
 const DatabaseController = require( '../../../itee-database-mongodb/sources/controllers/TDatabaseController.js' )
@@ -129,10 +129,10 @@ module.exports = function routing ( app, parameters ) {
     // Todo: buildServiceFor( 'Foo' )
     app.use( '/', require( './index/index.js' ) )
 
-//    app.use( '/docs', require( './docs/docs.js' ) )
-//    app.use( '/resources', require( './resources/resources.js' ) )
-//    app.use( '/downloads', require( './downloads/downloads.js' ) )
-//    app.use( '/uploads', require( './uploads/uploads.js' ) )
+    //    app.use( '/docs', require( './docs/docs.js' ) )
+    //    app.use( '/resources', require( './resources/resources.js' ) )
+    //    app.use( '/downloads', require( './downloads/downloads.js' ) )
+    //    app.use( '/uploads', require( './uploads/uploads.js' ) )
 
     // Register local routes
     const routersFilesPaths = _getFilesPathsUnder( __dirname )
@@ -146,15 +146,15 @@ module.exports = function routing ( app, parameters ) {
 
     // Register Database routes
     const databasePluginsBasePath = path.join( __dirname, '..', 'node_modules' )
-    const databasesPluginsNames    = parameters.plugins
+    const databasesPluginsNames   = parameters.plugins
     for ( let index = 0, numberOfPlugins = databasesPluginsNames.length ; index < numberOfPlugins ; index++ ) {
 
-        const pluginPath = path.join( databasePluginsBasePath, databasesPluginsNames[ index ] )
-        const plugin     = require( pluginPath )
+        const pluginPath    = path.join( databasePluginsBasePath, databasesPluginsNames[ index ] )
+        const plugin        = require( pluginPath )
         const pluginsRoutes = plugin.routes
 
         for ( let routeKey in pluginsRoutes ) {
-            app.use( routeKey, pluginsRoutes[routeKey] )
+            app.use( routeKey, buildRouteFor( pluginsRoutes[ routeKey ] ) )
         }
 
     }
