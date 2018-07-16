@@ -154,7 +154,7 @@ module.exports = function routing ( app, parameters ) {
         const pluginsRoutes = plugin.routes
 
         for ( let routeKey in pluginsRoutes ) {
-            app.use( routeKey, pluginsRoutes[routeKey] )
+            app.use( routeKey, buildRouteFor( pluginsRoutes[ routeKey ] ) )
         }
 
     }
