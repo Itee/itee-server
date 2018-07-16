@@ -141,6 +141,16 @@ module.exports = function routing ( app, databases, parameters ) {
     }
 
     // Register Database routes
+    for ( let dbIndex = 0, numberOfDatabases = databases.length ; dbIndex < numberOfDatabases ; dbIndex++ ) {
+
+        const pluginsRoutes = databases[ dbIndex ].routes
+        for ( let routeKey in pluginsRoutes ) {
+            app.use( routeKey, buildRouteFor( pluginsRoutes[ routeKey ] ) )
+        }
+
+    }
+
+    /*
     const databasePluginsBasePath = path.join( __dirname, '..', 'node_modules' )
     const databasesPluginsNames   = parameters.plugins
     for ( let index = 0, numberOfPlugins = databasesPluginsNames.length ; index < numberOfPlugins ; index++ ) {
@@ -154,6 +164,7 @@ module.exports = function routing ( app, databases, parameters ) {
         }
 
     }
+    */
 
     app.use( '*/*', ( request, response, next ) => {
 
