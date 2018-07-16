@@ -38,7 +38,7 @@ const favicon      = require( 'serve-favicon' )
  * @param config - The config to apply to the application
  * @returns {*} - The extended application
  */
-module.exports = function ( config ) {
+module.exports = function ( databases, config ) {
 
     // //////////////////////////////
     // /////// APPLICATION //////////
@@ -94,7 +94,7 @@ module.exports = function ( config ) {
     // ////////////////////////////////////
     // //////////// ROUTES ////////////////
     // ////////////////////////////////////
-    require( './routes/TRouter' )( app, config )
+    require( './routes/TRouter' )( app, databases, config )
 
     // //// END OF APPLICATION //////
     return app

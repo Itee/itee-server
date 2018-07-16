@@ -10,10 +10,6 @@ const fs            = require( 'fs' )
 const path          = require( 'path' )
 const buildRouteFor = require( './TRouteBuilder' )
 
-const mongoose = require( 'mongoose' )
-
-//TODO: CARE HARD CODED PATH FOR ITEE PACKAGE DEPS
-const DatabaseController = require( '../../../itee-database-mongodb/sources/controllers/TDatabaseController.js' )
 
 /**
  * Allow to search all files under filePaths in a recursive way
@@ -87,7 +83,7 @@ function _getFilesPathsUnder ( filePaths ) {
  * @param app - The app to extend
  * @returns {*} - The extended app
  */
-module.exports = function routing ( app, parameters ) {
+module.exports = function routing ( app, databases, parameters ) {
 
     //TODO: allow external route to be loaded from here
     //TODO: Use _config to allow/disallow some predefined _routes (like uploads for example) in function of the _server type wanted
@@ -145,6 +141,16 @@ module.exports = function routing ( app, parameters ) {
     }
 
     // Register Database routes
+    for ( let dbIndex = 0, numberOfDatabases = databases.length ; dbIndex < numberOfDatabases ; dbIndex++ ) {
+
+        const pluginsRoutes = databases[ dbIndex ].routes
+        for ( let routeKey in pluginsRoutes ) {
+            app.use( routeKey, buildRouteFor( pluginsRoutes[ routeKey ] ) )
+        }
+
+    }
+
+    /*
     const databasePluginsBasePath = path.join( __dirname, '..', 'node_modules' )
     const databasesPluginsNames   = parameters.plugins
     for ( let index = 0, numberOfPlugins = databasesPluginsNames.length ; index < numberOfPlugins ; index++ ) {
@@ -158,6 +164,7 @@ module.exports = function routing ( app, parameters ) {
         }
 
     }
+    */
 
     app.use( '*/*', ( request, response, next ) => {
 
