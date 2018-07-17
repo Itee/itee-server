@@ -161,7 +161,7 @@ class TServer {
 
     _buildRoutesFor ( controller ) {
 
-        return this.applications.Router( { mergeParams: true } )
+        return this.router( { mergeParams: true } )
                    .put( '/', controller.create.bind( controller ) )
                    .post( '/', controller.read.bind( controller ) )
                    .patch( '/', controller.update.bind( controller ) )
