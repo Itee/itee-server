@@ -17,7 +17,7 @@
   ],
   "repository": "https://github.com/Itee/itee-server.git",
   "license": "BSD-3-Clause",
-  "main": "itee-server.js",
+  "main": "TServer.js",
   "scripts": {
     "help": "gulp help",
     "clean": "gulp clean",
