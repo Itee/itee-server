@@ -47,7 +47,7 @@
     "itee-validators": "^2.0.1",
     "jquery": "^3.3.1",
     "method-override": "^3.0.0",
-    "mongoose": "^5.2.3",
+    "mongoose": "^5.2.4",
     "mongoose-double": "0.0.1",
     "morgan": "^1.9.0",
     "node-windows": "^0.1.14",
