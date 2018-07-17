@@ -199,6 +199,33 @@ class TServer {
 
     }
 
+    stop ( callback ) {
+
+        this.server.close( () => {
+
+            console.log( 'Closed out remaining connections.' )
+
+            const numberOfDatabases = this.databases.length
+            let closedDatabases     = 0
+
+            for ( let dbKey in this.databases ) {
+                this.databases[ dbKey ].close( () => {
+
+                    closedDatabases++
+
+                    if ( closedDatabases < numberOfDatabases ) {
+                        return
+                    }
+
+                    callback()
+
+                } )
+            }
+
+        } )
+
+    }
+
 }
 
 module.exports = TServer
