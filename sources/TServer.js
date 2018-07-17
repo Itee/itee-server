@@ -19,8 +19,6 @@ const favicon      = require( 'serve-favicon' )
 const morgan       = require( 'morgan' )
 const rfs          = require( 'rotating-file-stream' )
 
-const buildRouteFor = require( './TRouteBuilder' )
-
 const http = require( 'http' )
 
 class TServer {
@@ -138,7 +136,7 @@ class TServer {
 
                     const pluginsRoutes = mongoDatabase.routes
                     for ( let routeKey in pluginsRoutes ) {
-                        this.applications.use( routeKey, buildRouteFor( pluginsRoutes[ routeKey ] ) )
+                        this.applications.use( routeKey, this._buildRoutesFor( pluginsRoutes[ routeKey ] ) )
                     }
 
                     this.databases[ dbName ] = mongoDatabase
