@@ -43,6 +43,7 @@
     "express-resource": "^1.0.0",
     "express-ws": "^4.0.0",
     "i-return": "^1.0.3",
+    "itee-utils": "^1.1.5",
     "itee-validators": "^2.0.1",
     "jquery": "^3.3.1",
     "method-override": "^3.0.0",
