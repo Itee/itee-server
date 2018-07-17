@@ -25,7 +25,9 @@ class TServer {
 
     constructor ( parameters ) {
 
-        this.applications = null
+        this.rootPath     = parameters.rootPath
+        this.applications = express()
+        this.router       = express.Router
         this.databases    = {}
         this.server       = null
 
@@ -112,7 +114,7 @@ class TServer {
 
         // Register local services routes
         for ( let routerKey in routers ) {
-            const routerPath = path.join( __dirname, routers[ routerKey ] )
+            const routerPath = path.join( this.rootPath, 'servers/routes', routers[ routerKey ] )
             this.applications.use( routerKey, require( routerPath ) )
         }
 
@@ -151,7 +153,7 @@ class TServer {
 
     _initServers ( config ) {
 
-        this.server                 = http.createServer( app )
+        this.server                 = http.createServer( this.applications )
         this.server.maxHeadersCount = config.max_headers_count
         this.server.timeout         = config.timeout;
 
@@ -159,7 +161,7 @@ class TServer {
 
     _buildRoutesFor ( controller ) {
 
-        return this.applications.Router( { mergeParams: true } )
+        return this.router( { mergeParams: true } )
                    .put( '/', controller.create.bind( controller ) )
                    .post( '/', controller.read.bind( controller ) )
                    .patch( '/', controller.update.bind( controller ) )
@@ -188,11 +190,13 @@ class TServer {
 
     start () {
 
-        const port     = this.applications.get( 'port' )
-        const hostName = this.applications.get( 'hostName' )
+        const currentDate = new Date()
+        const currentEnv  = this.applications.get( 'env' )
+        const port        = this.applications.get( 'port' )
+        const hostName    = this.applications.get( 'hostName' )
 
         this.server.listen( port, hostName, () => {
-            console.log( `Server start listening on : ${hostName}:${port} at ${new Date()} on ${app.get( 'env' )} environment.` )
+            console.log( `Server start listening on : ${hostName}:${port} at ${currentDate} under ${currentEnv} environment.` )
             console.timeEnd( 'Server launch time' )
             console.log( '\n' )
         } )
