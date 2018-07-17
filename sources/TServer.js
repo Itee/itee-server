@@ -190,11 +190,13 @@ class TServer {
 
     start () {
 
-        const port     = this.applications.get( 'port' )
-        const hostName = this.applications.get( 'hostName' )
+        const currentDate = new Date()
+        const currentEnv  = this.applications.get( 'env' )
+        const port        = this.applications.get( 'port' )
+        const hostName    = this.applications.get( 'hostName' )
 
         this.server.listen( port, hostName, () => {
-            console.log( `Server start listening on : ${hostName}:${port} at ${new Date()} on ${app.get( 'env' )} environment.` )
+            console.log( `Server start listening on : ${hostName}:${port} at ${currentDate} under ${currentEnv} environment.` )
             console.timeEnd( 'Server launch time' )
             console.log( '\n' )
         } )
