@@ -25,7 +25,9 @@ class TServer {
 
     constructor ( parameters ) {
 
-        this.applications = null
+        this.rootPath     = parameters.rootPath
+        this.applications = express()
+        this.router       = express.Router
         this.databases    = {}
         this.server       = null
 
@@ -112,7 +114,7 @@ class TServer {
 
         // Register local services routes
         for ( let routerKey in routers ) {
-            const routerPath = path.join( __dirname, routers[ routerKey ] )
+            const routerPath = path.join( this.rootPath, 'servers/routes', routers[ routerKey ] )
             this.applications.use( routerKey, require( routerPath ) )
         }
 
