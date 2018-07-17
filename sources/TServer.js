@@ -153,7 +153,7 @@ class TServer {
 
     _initServers ( config ) {
 
-        this.server                 = http.createServer( app )
+        this.server                 = http.createServer( this.applications )
         this.server.maxHeadersCount = config.max_headers_count
         this.server.timeout         = config.timeout;
 
