@@ -190,6 +190,10 @@ class TServer {
 
     start () {
 
+        for ( let key in this.databases ) {
+            this.databases[key].connect()
+        }
+
         const currentDate = new Date()
         const currentEnv  = this.applications.get( 'env' )
         const port        = this.applications.get( 'port' )
