@@ -134,14 +134,8 @@ class TServer {
 
                     // TODO: Check if exist
                     const TMongoDBDatabase = require( 'itee-database-mongodb' )
-                    const mongoDatabase    = new TMongoDBDatabase( databaseConfig.plugins, databaseConfig.auto_reconnect_timeout, databaseConfig.database_url )
 
-                    const pluginsRoutes = mongoDatabase.routes
-                    for ( let routeKey in pluginsRoutes ) {
-                        this.applications.use( routeKey, this._buildRoutesFor( pluginsRoutes[ routeKey ] ) )
-                    }
-
-                    this.databases[ dbName ] = mongoDatabase
+                    this.databases[ dbName ] = new TMongoDBDatabase( this.applications, this.router, databaseConfig.plugins, databaseConfig )
                     break;
 
                 default:
