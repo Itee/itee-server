@@ -19,6 +19,8 @@ const favicon      = require( 'serve-favicon' )
 const morgan       = require( 'morgan' )
 const rfs          = require( 'rotating-file-stream' )
 
+const Databases = require( 'itee-database' )
+
 const http = require( 'http' )
 
 class TServer {
@@ -133,7 +135,7 @@ class TServer {
                     const dbName = `${(databaseConfig.name) ? databaseConfig.name : 'mongo_' + configIndex}`
 
                     // TODO: Check if exist
-                    const TMongoDBDatabase = require( 'itee-database-mongodb' )
+                    const TMongoDBDatabase = Databases.TMongoDBDatabase
 
                     this.databases[ dbName ] = new TMongoDBDatabase( this.applications, this.router, databaseConfig.plugins, databaseConfig )
                     break;
@@ -185,7 +187,7 @@ class TServer {
     start () {
 
         for ( let key in this.databases ) {
-            this.databases[key].connect()
+            this.databases[ key ].connect()
         }
 
         const currentDate = new Date()
