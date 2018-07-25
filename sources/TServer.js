@@ -111,19 +111,16 @@ class TServer {
 
     _initRouters ( routers ) {
 
-        // Services
-        // Todo: buildServiceFor( 'Foo' )
-
-        // Register local services routes
         for ( let routerKey in routers ) {
 
-            const routerPath = path.join( this.rootPath, 'servers/routes', routers[ routerKey ] )
+            const router = routers[ routerKey ]
+            const routerPath = path.join( this.rootPath, 'servers/routes', router )
             try {
                 let router = require( routerPath )
-                console.log( `Add router to: ${routerKey}` )
+                console.log( `Add router from ${router} to ${routerKey} route` )
                 this.applications.use( routerKey, router )
             } catch ( error ) {
-                console.error( `Unable to find router at: ${routerPath}` )
+                console.error( `Unable to assign router from ${router} to ${routerKey} route` )
             }
 
         }
