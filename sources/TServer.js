@@ -140,12 +140,8 @@ class TServer {
             switch ( dbType ) {
 
                 case 'mongo':
-                    const dbName = `${(databaseConfig.name) ? databaseConfig.name : 'mongo_' + configIndex}`
-
-                    // TODO: Check if exist
-                    const TMongoDBDatabase = Databases.TMongoDBDatabase
-
-                    this.databases[ dbName ] = new TMongoDBDatabase( this.applications, this.router, databaseConfig.plugins, databaseConfig )
+                    const dbName             = `${(databaseConfig.name) ? databaseConfig.name : 'mongo_' + configIndex}`
+                    this.databases[ dbName ] = new Databases.TMongoDBDatabase( this.applications, this.router, databaseConfig.plugins, databaseConfig )
                     break;
 
                 default:
