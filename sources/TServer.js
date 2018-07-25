@@ -116,8 +116,16 @@ class TServer {
 
         // Register local services routes
         for ( let routerKey in routers ) {
+
             const routerPath = path.join( this.rootPath, 'servers/routes', routers[ routerKey ] )
-            this.applications.use( routerKey, require( routerPath ) )
+            try {
+                let router = require( routerPath )
+                console.log( `Add router to: ${routerKey}` )
+                this.applications.use( routerKey, router )
+            } catch ( error ) {
+                console.error( `Unable to find router at: ${routerPath}` )
+            }
+
         }
 
     }
@@ -132,12 +140,8 @@ class TServer {
             switch ( dbType ) {
 
                 case 'mongo':
-                    const dbName = `${(databaseConfig.name) ? databaseConfig.name : 'mongo_' + configIndex}`
-
-                    // TODO: Check if exist
-                    const TMongoDBDatabase = Databases.TMongoDBDatabase
-
-                    this.databases[ dbName ] = new TMongoDBDatabase( this.applications, this.router, databaseConfig.plugins, databaseConfig )
+                    const dbName             = `${(databaseConfig.name) ? databaseConfig.name : 'mongo_' + configIndex}`
+                    this.databases[ dbName ] = new Databases.TMongoDBDatabase( this.applications, this.router, databaseConfig.plugins, databaseConfig )
                     break;
 
                 default:
