@@ -116,8 +116,16 @@ class TServer {
 
         // Register local services routes
         for ( let routerKey in routers ) {
+
             const routerPath = path.join( this.rootPath, 'servers/routes', routers[ routerKey ] )
-            this.applications.use( routerKey, require( routerPath ) )
+            try {
+                let router = require( routerPath )
+                console.log( `Add router to: ${routerKey}` )
+                this.applications.use( routerKey, router )
+            } catch ( error ) {
+                console.error( `Unable to find router at: ${routerPath}` )
+            }
+
         }
 
     }
