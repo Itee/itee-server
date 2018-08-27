@@ -113,14 +113,14 @@ class TServer {
 
         for ( let routerKey in routers ) {
 
-            const router = routers[ routerKey ]
+            const router     = routers[ routerKey ]
             const routerPath = path.join( this.rootPath, 'servers/routes', router )
             try {
                 let router = require( routerPath )
-                console.log( `Add router from ${router} to ${routerKey} route` )
+                console.log( `Assign router from ${routerPath} to ${routerKey} route` )
                 this.applications.use( routerKey, router )
             } catch ( error ) {
-                console.error( `Unable to assign router from ${router} to ${routerKey} route` )
+                console.error( `Unable to assign router from ${routerPath} to ${routerKey} route` )
             }
 
         }
@@ -133,17 +133,18 @@ class TServer {
 
             const databaseConfig = config[ configIndex ]
             const dbType         = databaseConfig.type
+            const dbName         = `${(databaseConfig.name) ? databaseConfig.name : 'mongo_' + configIndex}`
 
-            switch ( dbType ) {
+            try {
 
-                case 'mongo':
-                    const dbName             = `${(databaseConfig.name) ? databaseConfig.name : 'mongo_' + configIndex}`
-                    this.databases[ dbName ] = new Databases.TMongoDBDatabase( this.applications, this.router, databaseConfig.plugins, databaseConfig )
-                    break;
+                this.databases[ dbName ] = new Databases[ dbType ]( this.applications, this.router, databaseConfig.plugins, databaseConfig )
 
-                default:
-                    console.error( `Unable to create database of type ${dbType}` )
+            } catch ( error ) {
+
+                console.error( `Unable to create database of type ${dbType}` )
+                
             }
+
         }
 
     }
