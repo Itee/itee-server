@@ -113,14 +113,14 @@ class TServer {
 
         for ( let routerKey in routers ) {
 
-            const router = routers[ routerKey ]
+            const router     = routers[ routerKey ]
             const routerPath = path.join( this.rootPath, 'servers/routes', router )
             try {
                 let router = require( routerPath )
-                console.log( `Add router from ${router} to ${routerKey} route` )
+                console.log( `Assign router from ${routerPath} to ${routerKey} route` )
                 this.applications.use( routerKey, router )
             } catch ( error ) {
-                console.error( `Unable to assign router from ${router} to ${routerKey} route` )
+                console.error( `Unable to assign router from ${routerPath} to ${routerKey} route` )
             }
 
         }
