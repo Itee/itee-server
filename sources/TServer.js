@@ -202,7 +202,7 @@ class TServer {
                    .post( '/:id', controller.read.bind( controller ) )
                    .patch( '/:id', controller.update.bind( controller ) )
                    .delete( '/:id', controller.delete.bind( controller ) )
-                   .all( '*/*', ( request, response, next ) => {
+                   .all( '*/*', ( request, response ) => {
 
                        response.status( 404 ).send()
 
