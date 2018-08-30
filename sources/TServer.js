@@ -140,7 +140,11 @@ class TServer {
         this.applications.use( errorHandler() )
         this.applications.use( favicon( config.favicon.path ) )
         this.applications.use( compression() )
-
+        this.applications.use( ( requet, response, next ) => {
+            // required for compression
+            response.set( "Content-Type", "application/json" )
+            next()
+        } )
     }
 
     _initRouters ( routers ) {
