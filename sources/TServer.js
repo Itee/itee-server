@@ -210,14 +210,21 @@ class TServer {
 
     }
 
-    databaseOn ( databaseKey, eventName, callback ) {}
+    /**
+     *
+     * @param databaseKey
+     * @param eventName
+     * @param callback
+     */
+    databaseOn ( databaseKey, eventName, callback ) {} // eslint-disable-line no-unused-vars
 
-    serverOn ( serverKey, eventName, callback ) {
+    serverOn ( eventName, callback ) {
 
         //TODO: filter availaible events
         // [ 'request', 'connection', 'close', 'timeout', 'checkContinue', 'connect', 'upgrade', 'clientError' ]
 
         this.server.on( eventName, callback )
+
     }
 
     start () {
