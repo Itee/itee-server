@@ -8,6 +8,8 @@
  *
  */
 
+/*eslint no-console: ["error", { allow: ["time", "timeEnd", "log", "warn", "error"] }] */
+
 const fs   = require( 'fs' )
 const path = require( 'path' )
 
