@@ -50,6 +50,7 @@
     "serve-favicon": "^2.5.0"
   },
   "devDependencies": {
+    "babel-eslint": "^9.0.0",
     "benchmark": "^2.1.4",
     "chai": "^4.1.2",
     "del": "^3.0.0",
