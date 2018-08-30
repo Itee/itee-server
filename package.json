@@ -41,7 +41,7 @@
     "express-busboy": "^7.0.0",
     "express-resource": "^1.0.0",
     "express-ws": "^4.0.0",
-    "itee-database": "^4.0.1",
+    "itee-database": "^4.1.1",
     "itee-utils": "^1.1.5",
     "itee-validators": "^2.1.0",
     "morgan": "^1.9.0",
