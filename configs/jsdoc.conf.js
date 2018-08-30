@@ -36,7 +36,7 @@ function CreateJsdocConfiguration () {
             "recurse":     true,
             "verbose":     true,
             "private":     true,
-            "tutorials":   "tutorials/"
+            "tutorials":   null
         },
         "templates":    {
             "cleverLinks":    false,

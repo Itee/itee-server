@@ -32,11 +32,6 @@ const gulp        = require( 'gulp' )
 const util        = require( 'gulp-util' )
 const jsdoc       = require( 'gulp-jsdoc3' )
 const eslint      = require( 'gulp-eslint' )
-const nodemon     = require( 'gulp-nodemon' )
-const liveReload  = require( 'gulp-livereload' )
-const del         = require( 'del' )
-const runSequence = require( 'run-sequence' )
-const rollup      = require( 'rollup' )
 
 const log     = util.log
 const colors  = util.colors
@@ -51,7 +46,6 @@ const magenta = colors.magenta
  * @method npm run help ( default )
  * @description Will display the help in console
  */
-gulp.task( 'default', [ 'help' ] )
 gulp.task( 'help', ( done ) => {
 
     log( '====================================================' )
@@ -90,18 +84,6 @@ gulp.task( 'help', ( done ) => {
 } )
 
 /**
- * @method npm run clean
- * @description Will delete builds and temporary folders
- */
-gulp.task( 'clean', () => {
-
-    return del( [
-        '../builds'
-    ] )
-
-} )
-
-/**
  * @method npm run lint
  * @description Will lint the sources files and try to fix the style when possible
  */
@@ -110,14 +92,7 @@ gulp.task( 'lint', () => {
     // Todo: split between source and test with differents env
     const filesToLint = [
         'gulpfile.js',
-        'run.js',
-        'application/**/*',
-        'assets/javascript/**/*',
-        'configs/**/*.js',
-        'database/**/*',
-        'modules/**/*',
-        'routes/**/*',
-        'server/**/*'
+        'sources/**/*.js'
     ]
 
     return gulp.src( filesToLint )
@@ -147,37 +122,17 @@ gulp.task( 'lint', () => {
  * @method npm run doc
  * @description Will generate this documentation
  */
-gulp.task( 'doc', () => {
+gulp.task( 'doc', ( done ) => {
 
     const config = require( './configs/jsdoc.conf' )
-
     const filesToDocument = [
         'README.md',
         'gulpfile.js',
-        'run.js',
-        'application/*',
-        'database/*',
-        'modules/*',
-        'routes/*',
-        'server/*'
+        'sources/**/*.js'
     ]
 
     return gulp.src( filesToDocument, { read: false } )
-               .pipe( jsdoc( config ) )
-
-} )
-
-/**
- * @method npm run test
- * @description Will run unit tests and benchmarks using karma
- */
-gulp.task( 'test', ( done ) => {
-
-    runSequence(
-        'unit',
-        'bench',
-        done
-    )
+               .pipe( jsdoc( config, done ) )
 
 } )
 
@@ -185,282 +140,30 @@ gulp.task( 'test', ( done ) => {
  * @method npm run unit
  * @description Will run unit tests using karma
  */
-gulp.task( 'unit', () => {
-
+gulp.task( 'unit', ( done ) => {
+    done()
 } )
 
 /**
  * @method npm run bench
  * @description Will run benchmarks using karma
  */
-gulp.task( 'bench', () => {
-
-} )
-
-
-
-/**
- * @method npm run build
- * @description Will build itee client module using optional arguments, running clean and _extendThree tasks before. See help to further informations.
- */
-gulp.task( 'build-scripts', ( done ) => {
-
-    const options = processArguments( process.argv )
-    const configs = createBuildsConfigs( options )
-
-    nextBuild()
-
-    function processArguments ( processArgv ) {
-        'use strict'
-
-        let defaultOptions = {
-            environments: [ 'development', 'production' ],
-            formats:      [ 'amd', 'cjs', 'es', 'iife', 'umd' ],
-            sourceMap:    false
-        }
-
-        const argv = processArgv.slice( 3 ) // Ignore nodejs, script paths and gulp params
-        argv.forEach( argument => {
-
-            if ( argument.indexOf( '-f' ) > -1 || argument.indexOf( '--format' ) > -1 ) {
-
-                const splits    = argument.split( ':' )
-                const splitPart = splits[ 1 ]
-
-                defaultOptions.formats = []
-                defaultOptions.formats.push( splitPart )
-
-            } else if ( argument.indexOf( '-d' ) > -1 || argument.indexOf( '--dev' ) > -1 ) {
-
-                defaultOptions.environments = []
-                defaultOptions.environments.push( 'development' )
-
-            } else if ( argument.indexOf( '-p' ) > -1 || argument.indexOf( '--prod' ) > -1 ) {
-
-                defaultOptions.environments = []
-                defaultOptions.environments.push( 'production' )
-
-            } else if ( argument.indexOf( '-s' ) > -1 || argument.indexOf( '--sourcemap' ) > -1 ) {
-
-                defaultOptions.sourceMap = true
-
-            } else {
-
-                throw new Error( `Build Script: invalid argument ${argument}. Type \`npm run help build\` to display available argument.` )
-
-            }
-
-        } )
-
-        return defaultOptions
-
-    }
-
-    function createBuildsConfigs ( options ) {
-        'use strict'
-
-        let configs = []
-
-        for ( let formatIndex = 0, numberOfFormats = options.formats.length ; formatIndex < numberOfFormats ; ++formatIndex ) {
-            const format = options.formats[ formatIndex ]
-
-            for ( let envIndex = 0, numberOfEnvs = options.environments.length ; envIndex < numberOfEnvs ; ++envIndex ) {
-                const environment  = options.environments[ envIndex ]
-                const onProduction = (environment === 'production')
-
-                const config = require( './configs/rollup.conf' )( format, onProduction, options.sourceMap )
-
-                configs.push( config )
-            }
-        }
-
-        return configs
-
-    }
-
-    function nextBuild () {
-        'use strict'
-
-        if ( configs.length === 0 ) {
-            done()
-            return
-        }
-
-        build( configs.pop(), nextBuild )
-
-    }
-
-    function build ( config, done ) {
-
-        log( `Building ${config.outputOptions.file}` )
-
-        rollup.rollup( config.inputOptions )
-              .then( ( bundle ) => {
-
-                  bundle.write( config.outputOptions )
-                        .catch( ( error ) => {
-                            log( red( error ) )
-                            done()
-                        } )
-
-                  done()
-              } )
-              .catch( ( error ) => {
-                  log( red( error ) )
-                  done()
-              } )
-
-    }
-
-} )
-
-/**
- * Add watcher to assets javascript files and run build-js on file change
- */
-gulp.task( 'watch-script', (done) => {
-
-    log( 'Add watcher to javascript files !' )
-
-    gulp.watch( './assets/javascript/**/*.js', [ 'build-script' ] )
+gulp.task( 'bench', ( done ) => {
     done()
-
 } )
 
 /**
- * Build css and javascript files
+ * @method npm run test
+ * @description Will run unit tests and benchmarks using karma
  */
-gulp.task( 'build', done => {
-
-    log( 'Start build css and javascript...' )
-
-    // Allow to build in an automatic way css and javascript files on change
-    if ( util.env.auto ) {
-
-        runSequence(
-            'clean',
-            'lint',
-            'watch-scripts',
-            done
-        )
-
-    } else if ( util.env.production ) {
-
-        runSequence(
-            'clean',
-            'lint',
-            'build-scripts',
-            'doc',
-            done
-        )
-
-    } else {
-
-        runSequence(
-            'clean',
-            'build-scripts',
-            done
-        )
-
-    }
-
-} )
-
+gulp.task( 'test', gulp.parallel( 'unit', 'bench' ) )
 
 /**
  * @method npm run release
  * @description Will perform a complet release of the library.
  */
-gulp.task( 'release', ( done ) => {
+gulp.task( 'test', gulp.parallel( 'lint', 'doc', 'test' ) )
 
-    runSequence(
-        'clean',
-        [
-            'lint',
-            'doc',
-            'test'
-        ],
-        'build',
-        done
-    )
+//---------
 
-} )
-
-//
-// RUN SERVER
-//
-
-/**
- * Launch node deamon to auto-reload server on file change
- */
-gulp.task( 'nodemon', done => {
-
-    log( 'Start node server as daemon...' )
-
-    nodemon( {
-        script:  'run.js',
-        verbose: true,
-        ignore:  [
-            // Folders
-            '.git',
-            '.idea',
-            'assets',
-            'configs',
-            'documentation',
-            'logs',
-            'node_modules',
-            'resources',
-            'services',
-            'tests',
-            'views',
-
-            // Files
-            '.gitignore',
-            'LICENSE.md',
-            'package.json',
-            'package-lock.json',
-            'README.md'
-        ],
-        execMap: {
-            "js": "node --max-old-space-size=16384"
-        },
-        env:     { 'NODE_ENV': (util.env.production) ? 'production' : 'development' }
-    } )
-
-    done()
-
-} )
-
-/**
- * Start sources auto building,
- * and node server refresh on file change
- */
-gulp.task( 'build-n-run', done => {
-
-    log( 'Running auto build and run nodemon...' )
-
-    runSequence(
-        'build',
-        'nodemon',
-        done
-    )
-
-} )
-
-/**
- * Set a livereaload server for dev workflow
- * reload gulp and server on files change
- */
-gulp.task( 'live-reload', [ 'build-n-run' ], done => {
-
-    log( 'Run live-reload gulp with options :' )
-    log( util.env )
-
-    // Create LiveReload server
-    liveReload.listen()
-
-    // Watch this file, and reload gulp on change
-    gulp.watch( [ './gulpfile.js' ] ).on( 'change', liveReload.changed )
-
-    done()
-
-} )
+gulp.task( 'default', gulp.series( 'help' ) )

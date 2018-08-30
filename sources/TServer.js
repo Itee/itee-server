@@ -8,6 +8,8 @@
  *
  */
 
+/*eslint no-console: ["error", { allow: ["time", "timeEnd", "log", "warn", "error"] }] */
+
 const fs   = require( 'fs' )
 const path = require( 'path' )
 
@@ -20,6 +22,13 @@ const morgan       = require( 'morgan' )
 const rfs          = require( 'rotating-file-stream' )
 
 const Databases = require( 'itee-database' )
+const {
+          isNull,
+          isUndefined,
+          isNotString,
+          isEmptyString,
+          isBlankString
+      }         = require( 'itee-validators' )
 
 const http = require( 'http' )
 
@@ -27,7 +36,7 @@ class TServer {
 
     constructor ( parameters ) {
 
-        this.rootPath     = parameters.rootPath
+        this._rootPath    = parameters.rootPath
         this.applications = express()
         this.router       = express.Router
         this.databases    = {}
@@ -36,6 +45,31 @@ class TServer {
         this._initApplications( parameters.applications )
         this._initDatabases( parameters.databases )
         this._initServers( parameters.servers )
+
+    }
+
+    get rootPath () {
+
+        return this._rootPath
+
+    }
+
+    set rootPath ( value ) {
+
+        if ( isNull( value ) ) { throw new TypeError( 'Root path cannot be null ! Expect a non empty string.' ) }
+        if ( isUndefined( value ) ) { throw new TypeError( 'Root path cannot be undefined ! Expect a non empty string.' ) }
+        if ( isNotString( value ) ) { throw new TypeError( `Root path cannot be an instance of ${value.constructor.name} ! Expect a non empty string.` ) }
+        if ( isEmptyString( value ) ) { throw new TypeError( 'Root path cannot be empty ! Expect a non empty string.' ) }
+        if ( isBlankString( value ) ) { throw new TypeError( 'Root path cannot contain only whitespace ! Expect a non empty string.' ) }
+
+        this._rootPath = value
+
+    }
+
+    setRootPath ( value ) {
+
+        this.rootPath = value
+        return this
 
     }
 
@@ -106,7 +140,11 @@ class TServer {
         this.applications.use( errorHandler() )
         this.applications.use( favicon( config.favicon.path ) )
         this.applications.use( compression() )
-
+        this.applications.use( ( requet, response, next ) => {
+            // required for compression
+            response.set( "Content-Type", "application/json" )
+            next()
+        } )
     }
 
     _initRouters ( routers ) {
@@ -142,7 +180,7 @@ class TServer {
             } catch ( error ) {
 
                 console.error( `Unable to create database of type ${dbType}` )
-                
+
             }
 
         }
@@ -168,7 +206,7 @@ class TServer {
                    .post( '/:id', controller.read.bind( controller ) )
                    .patch( '/:id', controller.update.bind( controller ) )
                    .delete( '/:id', controller.delete.bind( controller ) )
-                   .all( '*/*', ( request, response, next ) => {
+                   .all( '*/*', ( request, response ) => {
 
                        response.status( 404 ).send()
 
@@ -176,14 +214,21 @@ class TServer {
 
     }
 
-    databaseOn ( databaseKey, eventName, callback ) {}
+    /**
+     *
+     * @param databaseKey
+     * @param eventName
+     * @param callback
+     */
+    databaseOn ( databaseKey, eventName, callback ) {} // eslint-disable-line no-unused-vars
 
-    serverOn ( serverKey, eventName, callback ) {
+    serverOn ( eventName, callback ) {
 
         //TODO: filter availaible events
         // [ 'request', 'connection', 'close', 'timeout', 'checkContinue', 'connect', 'upgrade', 'clientError' ]
 
         this.server.on( eventName, callback )
+
     }
 
     start () {
