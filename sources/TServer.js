@@ -180,7 +180,7 @@ class TServer {
             } catch ( error ) {
 
                 console.error( `Unable to create database of type ${dbType}` )
-                
+
             }
 
         }
