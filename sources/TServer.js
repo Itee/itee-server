@@ -22,6 +22,13 @@ const morgan       = require( 'morgan' )
 const rfs          = require( 'rotating-file-stream' )
 
 const Databases = require( 'itee-database' )
+const {
+          isNull,
+          isUndefined,
+          isNotString,
+          isEmptyString,
+          isBlankString
+      }         = require( 'itee-validators' )
 
 const http = require( 'http' )
 
@@ -29,7 +36,7 @@ class TServer {
 
     constructor ( parameters ) {
 
-        this.rootPath     = parameters.rootPath
+        this._rootPath    = parameters.rootPath
         this.applications = express()
         this.router       = express.Router
         this.databases    = {}
@@ -38,6 +45,31 @@ class TServer {
         this._initApplications( parameters.applications )
         this._initDatabases( parameters.databases )
         this._initServers( parameters.servers )
+
+    }
+
+    get rootPath () {
+
+        return this._rootPath
+
+    }
+
+    set rootPath ( value ) {
+
+        if ( isNull( value ) ) { throw new TypeError( 'Root path cannot be null ! Expect a non empty string.' ) }
+        if ( isUndefined( value ) ) { throw new TypeError( 'Root path cannot be undefined ! Expect a non empty string.' ) }
+        if ( isNotString( value ) ) { throw new TypeError( `Root path cannot be an instance of ${value.constructor.name} ! Expect a non empty string.` ) }
+        if ( isEmptyString( value ) ) { throw new TypeError( 'Root path cannot be empty ! Expect a non empty string.' ) }
+        if ( isBlankString( value ) ) { throw new TypeError( 'Root path cannot contain only whitespace ! Expect a non empty string.' ) }
+
+        this._rootPath = value
+
+    }
+
+    setRootPath ( value ) {
+
+        this.rootPath = value
+        return this
 
     }
 
