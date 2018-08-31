@@ -42,7 +42,7 @@
     "express-resource": "^1.0.0",
     "express-ws": "^4.0.0",
     "itee-database": "^4.1.1",
-    "itee-utils": "^1.1.5",
+    "itee-utils": "^2.0.0",
     "itee-validators": "^2.1.0",
     "morgan": "^1.9.0",
     "process": "^0.11.10",
