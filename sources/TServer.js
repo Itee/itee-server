@@ -205,7 +205,7 @@ class TServer {
 
         this.server                 = http.createServer( this.applications )
         this.server.maxHeadersCount = config.max_headers_count
-        this.server.timeout         = config.timeout;
+        this.server.timeout         = config.timeout
 
     }
 
