@@ -27,7 +27,8 @@ const {
           isUndefined,
           isNotString,
           isEmptyString,
-          isBlankString
+          isBlankString,
+          isArray
       }         = require( 'itee-validators' )
 
 const http = require( 'http' )
@@ -139,7 +140,7 @@ class TServer {
 
         this.applications.use( errorHandler() )
         this.applications.use( favicon( config.favicon.path ) )
-        this.applications.use( compression() )
+        this.applications.use( compression( config.compression ) )
 
     }
 
@@ -147,14 +148,31 @@ class TServer {
 
         for ( let routerKey in routers ) {
 
-            const router     = routers[ routerKey ]
-            const routerPath = path.join( this.rootPath, 'servers/routes', router )
-            try {
-                let router = require( routerPath )
-                console.log( `Assign router from ${routerPath} to ${routerKey} route` )
-                this.applications.use( routerKey, router )
-            } catch ( error ) {
-                console.error( `Unable to assign router from ${routerPath} to ${routerKey} route` )
+            const routerFilePath = routers[ routerKey ]
+
+            if ( isArray( routerFilePath ) ) {
+
+                const routers = []
+                for ( let routerIndex = 0, numberOfRouters = routerFilePath.length ; routerIndex < numberOfRouters ; routerIndex++ ) {
+                    const subRouterFilePath = routerFilePath[ routerIndex ]
+                    const routerPath        = path.join( this.rootPath, 'servers/routes', subRouterFilePath )
+                    const router            = require( routerPath )
+                    routers.push( router )
+                    console.log( `Assign router from ${subRouterFilePath} to ${routerKey} route` )
+                }
+                this.applications.use( routerKey, routers )
+
+            } else {
+
+                const routerPath = path.join( this.rootPath, 'servers/routes', routerFilePath )
+                try {
+                    let router = require( routerPath )
+                    console.log( `Assign router from ${routerPath} to ${routerKey} route` )
+                    this.applications.use( routerKey, router )
+                } catch ( error ) {
+                    console.error( `Unable to assign router from ${routerPath} to ${routerKey} route` )
+                }
+
             }
 
         }
@@ -187,7 +205,7 @@ class TServer {
 
         this.server                 = http.createServer( this.applications )
         this.server.maxHeadersCount = config.max_headers_count
-        this.server.timeout         = config.timeout;
+        this.server.timeout         = config.timeout
 
     }
 
