@@ -139,7 +139,7 @@ class TServer {
 
         this.applications.use( errorHandler() )
         this.applications.use( favicon( config.favicon.path ) )
-        this.applications.use( compression() )
+        this.applications.use( compression( config.compression ) )
 
     }
 
