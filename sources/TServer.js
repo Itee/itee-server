@@ -27,7 +27,8 @@ const {
           isUndefined,
           isNotString,
           isEmptyString,
-          isBlankString
+          isBlankString,
+          isArray
       }         = require( 'itee-validators' )
 
 const http = require( 'http' )
