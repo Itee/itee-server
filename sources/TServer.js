@@ -45,6 +45,7 @@ class TServer {
 
         this._initApplications( parameters.applications )
         this._initDatabases( parameters.databases )
+        this._initRouters( parameters.routers )
         this._initServers( parameters.servers )
 
     }
@@ -113,7 +114,6 @@ class TServer {
         }
 
         this._initMiddlewares( config.middlewares )
-        this._initRouters( config.routers )
 
     }
 
