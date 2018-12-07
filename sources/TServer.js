@@ -31,7 +31,8 @@ const {
           isArray
       }         = require( 'itee-validators' )
 
-const http = require( 'http' )
+const http  = require( 'http' )
+const https = require( 'https' )
 
 class TServer {
 
@@ -203,7 +204,21 @@ class TServer {
 
     _initServers ( config ) {
 
-        this.server                 = http.createServer( this.applications )
+        if ( config.type === 'https' ) {
+
+            const options = {
+                pfx:        config.pfx,
+                passphrase: config.passphrase
+            }
+
+            this.server = https.createServer( options, this.applications )
+
+        } else {
+
+            this.server = http.createServer( this.applications )
+
+        }
+        
         this.server.maxHeadersCount = config.max_headers_count
         this.server.timeout         = config.timeout
 
