@@ -194,7 +194,9 @@ class TServer {
 
             } catch ( error ) {
 
-                console.error( `Unable to create database of type ${dbType}` )
+                console.error( `Unable to create database of type ${dbType} due to ${error.name}` )
+                console.error( error.message )
+                console.error( error.stack )
 
             }
 
