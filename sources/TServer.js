@@ -186,7 +186,7 @@ class TServer {
 
             const databaseConfig = config[ configIndex ]
             const dbType         = databaseConfig.type
-            const dbName         = `${(databaseConfig.name) ? databaseConfig.name : 'mongo_' + configIndex}`
+            const dbName         = `${(databaseConfig.name) ? databaseConfig.name : 'Database_' + configIndex}`
 
             try {
 
