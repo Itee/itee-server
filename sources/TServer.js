@@ -125,7 +125,7 @@ class TServer {
         // create a rotating write stream
         const accessLogStream = rfs( config.morgan.fileName, {
             interval: config.morgan.interval, // rotate daily
-            path:     (() => {
+            path:     ( () => {
 
                 const logFilePath  = config.morgan.directoryPath
                 const logDirectory = path.dirname( logFilePath )
@@ -135,7 +135,7 @@ class TServer {
 
                 return logDirectory
 
-            })()
+            } )()
         } )
         this.applications.use( morgan( 'combined', { stream: accessLogStream } ) )
 
@@ -186,7 +186,7 @@ class TServer {
 
             const databaseConfig = config[ configIndex ]
             const dbType         = databaseConfig.type
-            const dbName         = `${(databaseConfig.name) ? databaseConfig.name : 'Database_' + configIndex}`
+            const dbName         = `${( databaseConfig.name ) ? databaseConfig.name : 'Database_' + configIndex}`
 
             try {
 
@@ -220,28 +220,9 @@ class TServer {
             this.server = http.createServer( this.applications )
 
         }
-        
+
         this.server.maxHeadersCount = config.max_headers_count
         this.server.timeout         = config.timeout
-
-    }
-
-    _buildRoutesFor ( controller ) {
-
-        return this.router( { mergeParams: true } )
-                   .put( '/', controller.create.bind( controller ) )
-                   .post( '/', controller.read.bind( controller ) )
-                   .patch( '/', controller.update.bind( controller ) )
-                   .delete( '/', controller.delete.bind( controller ) )
-                   .put( '/:id', controller.create.bind( controller ) )
-                   .post( '/:id', controller.read.bind( controller ) )
-                   .patch( '/:id', controller.update.bind( controller ) )
-                   .delete( '/:id', controller.delete.bind( controller ) )
-                   .all( '*/*', ( request, response ) => {
-
-                       response.status( 404 ).send()
-
-                   } )
 
     }
 
