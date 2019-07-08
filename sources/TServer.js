@@ -28,7 +28,8 @@ const {
           isNotString,
           isEmptyString,
           isBlankString,
-          isArray
+          isArray,
+          isNotArray
       }         = require( 'itee-validators' )
 
 const http  = require( 'http' )
@@ -38,7 +39,7 @@ class TServer {
 
     constructor ( parameters ) {
 
-        this._rootPath    = parameters.rootPath
+        this.rootPath     = parameters.rootPath
         this.applications = express()
         this.router       = express.Router
         this.databases    = {}
@@ -125,7 +126,7 @@ class TServer {
         // create a rotating write stream
         const accessLogStream = rfs( config.morgan.fileName, {
             interval: config.morgan.interval, // rotate daily
-            path:     (() => {
+            path:     ( () => {
 
                 const logFilePath  = config.morgan.directoryPath
                 const logDirectory = path.dirname( logFilePath )
@@ -135,7 +136,7 @@ class TServer {
 
                 return logDirectory
 
-            })()
+            } )()
         } )
         this.applications.use( morgan( 'combined', { stream: accessLogStream } ) )
 
@@ -149,32 +150,23 @@ class TServer {
 
         for ( let routerKey in routers ) {
 
-            const routerFilePath = routers[ routerKey ]
+            const routerFilePath = ( isNotArray( routers[ routerKey ] ) ) ? [ routers[ routerKey ] ] : routers[ routerKey ]
+            const routers = []
+            for ( let routerIndex = 0, numberOfRouters = routerFilePath.length ; routerIndex < numberOfRouters ; routerIndex++ ) {
+                const subRouterFilePath = routerFilePath[ routerIndex ]
+                const routerPath        = path.join( this.rootPath, 'servers/routes', subRouterFilePath )
 
-            if ( isArray( routerFilePath ) ) {
+                try {
 
-                const routers = []
-                for ( let routerIndex = 0, numberOfRouters = routerFilePath.length ; routerIndex < numberOfRouters ; routerIndex++ ) {
-                    const subRouterFilePath = routerFilePath[ routerIndex ]
-                    const routerPath        = path.join( this.rootPath, 'servers/routes', subRouterFilePath )
                     const router            = require( routerPath )
                     routers.push( router )
                     console.log( `Assign router from ${subRouterFilePath} to ${routerKey} route` )
+
+                } catch(error) {
+                    console.error( `Unable to assign router from ${routerPath} to ${routerKey} route due to error: ${error}` )
                 }
-                this.applications.use( routerKey, routers )
-
-            } else {
-
-                const routerPath = path.join( this.rootPath, 'servers/routes', routerFilePath )
-                try {
-                    let router = require( routerPath )
-                    console.log( `Assign router from ${routerPath} to ${routerKey} route` )
-                    this.applications.use( routerKey, router )
-                } catch ( error ) {
-                    console.error( `Unable to assign router from ${routerPath} to ${routerKey} route` )
-                }
-
             }
+            this.applications.use( routerKey, routers )
 
         }
 
@@ -186,7 +178,7 @@ class TServer {
 
             const databaseConfig = config[ configIndex ]
             const dbType         = databaseConfig.type
-            const dbName         = `${(databaseConfig.name) ? databaseConfig.name : 'Database_' + configIndex}`
+            const dbName         = `${( databaseConfig.name ) ? databaseConfig.name : 'Database_' + configIndex}`
 
             try {
 
@@ -220,28 +212,9 @@ class TServer {
             this.server = http.createServer( this.applications )
 
         }
-        
+
         this.server.maxHeadersCount = config.max_headers_count
         this.server.timeout         = config.timeout
-
-    }
-
-    _buildRoutesFor ( controller ) {
-
-        return this.router( { mergeParams: true } )
-                   .put( '/', controller.create.bind( controller ) )
-                   .post( '/', controller.read.bind( controller ) )
-                   .patch( '/', controller.update.bind( controller ) )
-                   .delete( '/', controller.delete.bind( controller ) )
-                   .put( '/:id', controller.create.bind( controller ) )
-                   .post( '/:id', controller.read.bind( controller ) )
-                   .patch( '/:id', controller.update.bind( controller ) )
-                   .delete( '/:id', controller.delete.bind( controller ) )
-                   .all( '*/*', ( request, response ) => {
-
-                       response.status( 404 ).send()
-
-                   } )
 
     }
 
