@@ -28,7 +28,8 @@ const {
           isNotString,
           isEmptyString,
           isBlankString,
-          isArray
+          isArray,
+          isNotArray
       }         = require( 'itee-validators' )
 
 const http  = require( 'http' )
@@ -38,7 +39,7 @@ class TServer {
 
     constructor ( parameters ) {
 
-        this._rootPath    = parameters.rootPath
+        this.rootPath     = parameters.rootPath
         this.applications = express()
         this.router       = express.Router
         this.databases    = {}
@@ -149,32 +150,23 @@ class TServer {
 
         for ( let routerKey in routers ) {
 
-            const routerFilePath = routers[ routerKey ]
+            const routerFilePath = ( isNotArray( routers[ routerKey ] ) ) ? [ routers[ routerKey ] ] : routers[ routerKey ]
+            const routers = []
+            for ( let routerIndex = 0, numberOfRouters = routerFilePath.length ; routerIndex < numberOfRouters ; routerIndex++ ) {
+                const subRouterFilePath = routerFilePath[ routerIndex ]
+                const routerPath        = path.join( this.rootPath, 'servers/routes', subRouterFilePath )
 
-            if ( isArray( routerFilePath ) ) {
+                try {
 
-                const routers = []
-                for ( let routerIndex = 0, numberOfRouters = routerFilePath.length ; routerIndex < numberOfRouters ; routerIndex++ ) {
-                    const subRouterFilePath = routerFilePath[ routerIndex ]
-                    const routerPath        = path.join( this.rootPath, 'servers/routes', subRouterFilePath )
                     const router            = require( routerPath )
                     routers.push( router )
                     console.log( `Assign router from ${subRouterFilePath} to ${routerKey} route` )
+
+                } catch(error) {
+                    console.error( `Unable to assign router from ${routerPath} to ${routerKey} route due to error: ${error}` )
                 }
-                this.applications.use( routerKey, routers )
-
-            } else {
-
-                const routerPath = path.join( this.rootPath, 'servers/routes', routerFilePath )
-                try {
-                    let router = require( routerPath )
-                    console.log( `Assign router from ${routerPath} to ${routerKey} route` )
-                    this.applications.use( routerKey, router )
-                } catch ( error ) {
-                    console.error( `Unable to assign router from ${routerPath} to ${routerKey} route` )
-                }
-
             }
+            this.applications.use( routerKey, routers )
 
         }
 
