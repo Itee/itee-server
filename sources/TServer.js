@@ -151,7 +151,7 @@ class TServer {
         for ( let routerKey in routers ) {
 
             const routerFilePath = ( isNotArray( routers[ routerKey ] ) ) ? [ routers[ routerKey ] ] : routers[ routerKey ]
-            const routers = []
+            const _routers = []
             for ( let routerIndex = 0, numberOfRouters = routerFilePath.length ; routerIndex < numberOfRouters ; routerIndex++ ) {
                 const subRouterFilePath = routerFilePath[ routerIndex ]
                 const routerPath        = path.join( this.rootPath, 'servers/routes', subRouterFilePath )
@@ -159,14 +159,14 @@ class TServer {
                 try {
 
                     const router            = require( routerPath )
-                    routers.push( router )
+                    _routers.push( router )
                     console.log( `Assign router from ${subRouterFilePath} to ${routerKey} route` )
 
                 } catch(error) {
                     console.error( `Unable to assign router from ${routerPath} to ${routerKey} route due to error: ${error}` )
                 }
             }
-            this.applications.use( routerKey, routers )
+            this.applications.use( routerKey, _routers )
 
         }
 
