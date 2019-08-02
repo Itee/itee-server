@@ -1,4 +1,4 @@
-.idea*
-/node_modules/
-/documentation/
-/legacy/
+documentation/
+node_modules/
+tests/builds/
+legacy/
