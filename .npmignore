@@ -1,4 +1,6 @@
-.idea*
-/tests/
+.idea/
 /configs/
+/tests/
+/documentation/
+/gulpfile.js
 /legacy/
