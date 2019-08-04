@@ -26,10 +26,7 @@ function CreateKarmaBenchmarkConfiguration ( config ) {
         frameworks: [ 'benchmark' ],
 
         // list of files / patterns to load in the browser
-        files: [
-            `builds/${packageInfos.name}.tests-utils.js`,
-            `builds/${packageInfos.name}.benchs.js`
-        ],
+        files: [ `builds/${packageInfos.name}.benchs.js` ],
 
         // list of files to exclude
         exclude: [],
