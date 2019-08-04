@@ -8,8 +8,6 @@
  *
  */
 
-/*eslint no-console: ["error", { allow: ["time", "timeEnd", "log", "warn", "error"] }] */
-
 import express        from 'express'
 import http           from 'http'
 import https          from 'https'
