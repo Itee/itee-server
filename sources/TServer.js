@@ -30,8 +30,8 @@ class TServer {
         this.rootPath     = parameters.rootPath
         this.applications = express()
         this.router       = express.Router
-        this.databases    = {}
         this.server       = null
+        this.databases    = new Map()
 
         this._initApplications( parameters.applications )
         this._initDatabases( parameters.databases )
@@ -184,7 +184,9 @@ class TServer {
 
             try {
 
-                this.databases[ dbName ] = new Databases[ dbType ]( this.applications, this.router, databaseConfig.plugins, databaseConfig )
+                const database = new Databases[ dbType ]( this.applications, this.router, databaseConfig.plugins, databaseConfig ).connect()
+
+                this.databases.set( dbName, database )
 
             } catch ( error ) {
 
