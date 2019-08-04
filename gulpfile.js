@@ -37,22 +37,22 @@
 /* eslint-env node */
 
 const packageInfos = require( './package.json' )
-const gulp = require( 'gulp' )
-const jsdoc = require( 'gulp-jsdoc3' )
-const eslint = require( 'gulp-eslint' )
-const del = require( 'del' )
-const parseArgs = require( 'minimist' )
-const rollup = require( 'rollup' )
-const path = require( 'path' )
-const karma = require( 'karma' )
-const log = require( 'fancy-log' )
-const colors = require( 'ansi-colors' )
-const red = colors.red
-const green = colors.green
-const blue = colors.blue
-const cyan = colors.cyan
-const yellow = colors.yellow
-const magenta = colors.magenta
+const gulp         = require( 'gulp' )
+const jsdoc        = require( 'gulp-jsdoc3' )
+const eslint       = require( 'gulp-eslint' )
+const del          = require( 'del' )
+const parseArgs    = require( 'minimist' )
+const rollup       = require( 'rollup' )
+const path         = require( 'path' )
+const karma        = require( 'karma' )
+const log          = require( 'fancy-log' )
+const colors       = require( 'ansi-colors' )
+const red          = colors.red
+const green        = colors.green
+const blue         = colors.blue
+const cyan         = colors.cyan
+const yellow       = colors.yellow
+const magenta      = colors.magenta
 
 /**
  * @method npm run help ( default )
@@ -165,7 +165,7 @@ gulp.task( 'lint', () => {
  */
 gulp.task( 'doc', ( done ) => {
 
-    const config = require( './configs/jsdoc.conf' )
+    const config     = require( './configs/jsdoc.conf' )
     const filesToDoc = [
         'README.md',
         'gulpfile.js',
@@ -301,7 +301,7 @@ gulp.task( 'build', ( done ) => {
             s: true,
             t: true
         },
-        alias: {
+        alias:   {
             n: 'name',
             i: 'input',
             o: 'output',
