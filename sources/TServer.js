@@ -67,43 +67,28 @@ class TServer {
 
     _initApplications ( config ) {
 
-        this.applications = express()
-
-        this.applications.set( 'env', config.env )
-        this.applications.set( 'hostName', config.hostname )
-        this.applications.set( 'port', config.port )
-        this.applications.set( 'db uri', config.db_uri )
-        this.applications.set( 'views', config.views )
-        this.applications.set( 'view engine', config.view_engine )
-        this.applications.set( 'jsonp callback name', config.jsonp_callback_name )
-        this.applications.set( 'json replacer', config.jsonp_replacer )
-        this.applications.set( 'json spaces', config.jsonp_spaces )
-
-        if ( config.trust_proxy ) {
-            this.applications.enable( 'trust proxy' )
-        } else {
-            this.applications.disabled( 'trust proxy' )
-        }
-
-        if ( config.case_sensitive_routing ) {
-            this.applications.enable( 'case sensitive routing' )
-        } else {
-            this.applications.disabled( 'case sensitive routing' )
-        }
-
-        if ( config.strict_routing ) {
-            this.applications.enable( 'strict routing' )
-        } else {
-            this.applications.disabled( 'strict routing' )
-        }
-
-        if ( config.view_cache ) {
-            this.applications.enable( 'view cache' )
-        } else {
-            this.applications.disabled( 'view cache' )
-        }
+        if ( config.case_sensitive_routing ) { this.applications.set( 'case sensitive routing', config.case_sensitive_routing ) }
+        if ( config.env ) { this.applications.set( 'env', config.env ) }
+        if ( config.etag ) { this.applications.set( 'etag', config.etag ) }
+        if ( config.jsonp_callback_name ) { this.applications.set( 'jsonp callback name', config.jsonp_callback_name ) }
+        if ( config.jsonp_escape ) { this.applications.set( 'json escape', config.jsonp_escape ) }
+        if ( config.jsonp_replacer ) { this.applications.set( 'json replacer', config.jsonp_replacer ) }
+        if ( config.jsonp_spaces ) { this.applications.set( 'json spaces', config.jsonp_spaces ) }
+        if ( config.query_parser ) { this.applications.set( 'query parser', config.query_parser ) }
+        if ( config.strict_routing ) { this.applications.set( 'strict routing', config.strict_routing ) }
+        if ( config.subdomain_offset ) { this.applications.set( 'subdomain offset', config.subdomain_offset ) }
+        if ( config.trust_proxy ) { this.applications.set( 'trust proxy', config.trust_proxy ) }
+        if ( config.views ) { this.applications.set( 'views', config.views ) }
+        if ( config.view_cache ) { this.applications.set( 'view cache', config.view_cache ) }
+        if ( config.view_engine ) { this.applications.set( 'view engine', config.view_engine ) }
+        if ( config.x_powered_by ) { this.applications.set( 'x-powered-by', config.x_powered_by ) }
 
         this._initMiddlewares( config.middlewares )
+
+    }
+
+
+
 
     }
 
