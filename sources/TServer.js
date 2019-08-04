@@ -87,35 +87,64 @@ class TServer {
 
     }
 
+    _initMiddlewares ( config ) {
 
+        for ( let middlewareName in config ) {
 
+            if ( !Object.prototype.hasOwnProperty.call( config, middlewareName ) ) { continue }
+
+            const middlewareConfig = config[ middlewareName ]
+
+            if ( isNotArray( middlewareConfig ) ) {
+                throw new TypeError( `Invalid middlware configuration, expect an array of argument to spread to middleware module, got ${middlewareConfig.constructor.name}` )
+            }
+
+            try {
+
+                this.applications.use( require( middlewareName )( ...middlewareConfig ) )
+                console.log( `Use ${middlewareName} middleware from node_modules` )
+
+            } catch ( error ) {
+
+                if ( !error.code || error.code !== 'MODULE_NOT_FOUND' ) {
+
+                    console.error( `The middleware "${middlewareName}" seems to encounter internal error.` )
+                    console.error( error )
+                    continue
+
+                }
+
+                this._initLocalMiddleware( middlewareName, middlewareConfig )
+
+            }
+
+        }
 
     }
 
-    _initMiddlewares ( config ) {
+    _initLocalMiddleware ( name, config ) {
 
-        busBoy.extend( this.applications, config.busBoy )
+        try {
 
-        // create a rotating write stream
-        const accessLogStream = rfs( config.morgan.fileName, {
-            interval: config.morgan.interval, // rotate daily
-            path:     ( () => {
+            const localMiddlewaresPath = path.join( this.rootPath, 'middlewares', name )
+            this.applications.use( require( localMiddlewaresPath )( ...config ) )
+            console.log( `Use ${name} middleware from local folder` )
 
-                const logFilePath  = config.morgan.directoryPath
-                const logDirectory = path.dirname( logFilePath )
+        } catch ( error ) {
 
-                // Ensure log directory exists
-                fs.existsSync( logDirectory ) || fs.mkdirSync( logDirectory )
+            if ( error instanceof TypeError && error.message === 'Found non-callable @@iterator' ) {
 
-                return logDirectory
+                console.error( `The configuration middleware "${name}" seems to encounter internal error !` )
+                console.error( error )
 
-            } )()
-        } )
-        this.applications.use( morgan( 'combined', { stream: accessLogStream } ) )
+            } else {
 
-        this.applications.use( errorHandler() )
-        this.applications.use( favicon( config.favicon.path ) )
-        this.applications.use( compression( config.compression ) )
+                console.error( `Unable to register the middleware ${name} the package or local file doesn't seem to exist ! Skip it.` )
+                console.error( error )
+
+            }
+
+        }
 
     }
 
