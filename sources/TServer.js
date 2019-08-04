@@ -30,8 +30,8 @@ class TServer {
         this.rootPath     = parameters.rootPath
         this.applications = express()
         this.router       = express.Router
-        this.server       = null
         this.databases    = new Map()
+        this.servers      = new Map()
 
         this._initApplications( parameters.applications )
         this._initDatabases( parameters.databases )
@@ -202,23 +202,42 @@ class TServer {
 
     _initServers ( config ) {
 
-        if ( config.type === 'https' ) {
+        const _config = ( isArray( config ) ) ? config : [ config ]
 
-            const options = {
-                pfx:        config.pfx,
-                passphrase: config.passphrase
+        for ( let configId = 0, numberOfConfigs = _config.length ; configId < numberOfConfigs ; configId++ ) {
+
+            let configElement = _config[ configId ]
+            let server        = null
+
+            if ( configElement.type === 'https' ) {
+
+                const options = {
+                    pfx:        configElement.pfx,
+                    passphrase: configElement.passphrase
+                }
+
+                server = https.createServer( options, this.applications )
+
+            } else {
+
+                server = http.createServer( this.applications )
+
             }
 
-            this.server = https.createServer( options, this.applications )
+            server.name            = configElement.name || `${( configElement.name ) ? configElement.name : 'Server_' + configId}`
+            server.maxHeadersCount = configElement.max_headers_count
+            server.timeout         = configElement.timeout
+            server.type            = configElement.type
+            server.host            = configElement.host
+            server.port            = configElement.port
+            server.env             = configElement.env
+            server.listen( configElement.port, configElement.host, () => {
+                console.log( `${server.name} start listening on ${server.type}://${server.host}:${server.port} at ${new Date()} under ${server.env} environment.` )
+            } )
 
-        } else {
-
-            this.server = http.createServer( this.applications )
+            this.servers.set( server.name, server )
 
         }
-
-        this.server.maxHeadersCount = config.max_headers_count
-        this.server.timeout         = config.timeout
 
     }
 
