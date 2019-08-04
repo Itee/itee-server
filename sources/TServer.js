@@ -10,30 +10,20 @@
 
 /*eslint no-console: ["error", { allow: ["time", "timeEnd", "log", "warn", "error"] }] */
 
-const fs   = require( 'fs' )
-const path = require( 'path' )
-
-const busBoy       = require( 'express-busboy' )
-const compression  = require( 'compression' )
-const errorHandler = require( 'errorhandler' )
-const express      = require( 'express' )
-const favicon      = require( 'serve-favicon' )
-const morgan       = require( 'morgan' )
-const rfs          = require( 'rotating-file-stream' )
-
-const Databases = require( 'itee-database' )
-const {
-          isNull,
-          isUndefined,
-          isNotString,
-          isEmptyString,
-          isBlankString,
-          isArray,
-          isNotArray
-      }         = require( 'itee-validators' )
-
-const http  = require( 'http' )
-const https = require( 'https' )
+import express        from 'express'
+import http           from 'http'
+import https          from 'https'
+import * as Databases from 'itee-database'
+import {
+    isArray,
+    isBlankString,
+    isEmptyString,
+    isNotArray,
+    isNotString,
+    isNull,
+    isUndefined
+}                     from 'itee-validators'
+import path           from 'path'
 
 class TServer {
 
