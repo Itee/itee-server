@@ -135,7 +135,7 @@ class TServer {
 
             if ( error instanceof TypeError && error.message === 'Found non-callable @@iterator' ) {
 
-                console.error( `The configuration middleware "${name}" seems to encounter internal error !` )
+                console.error( `The middleware "${name}" seems to encounter internal error !` )
                 console.error( error )
 
             } else {
@@ -150,10 +150,6 @@ class TServer {
     }
 
     _initRouters ( routers ) {
-
-        if ( isNotArray( routers ) ) {
-            throw new TypeError( `Invalid routers, expect an array of argument to spread to middleware module, got ${routers.constructor.name}` )
-        }
 
         for ( let routerName in routers ) {
 
