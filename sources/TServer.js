@@ -298,47 +298,60 @@ class TServer {
 
     start () {
 
-        for ( let key in this.databases ) {
-            this.databases[ key ].connect()
-        }
-
-        const currentDate = new Date()
-        const currentEnv  = this.applications.get( 'env' )
-        const port        = this.applications.get( 'port' )
-        const hostName    = this.applications.get( 'hostName' )
-
-        this.server.listen( port, hostName, () => {
-            console.log( `Server start listening on : ${hostName}:${port} at ${currentDate} under ${currentEnv} environment.` )
-            console.timeEnd( 'Server launch time' )
-            console.log( '\n' )
-        } )
-
     }
 
     stop ( callback ) {
 
-        this.server.close( () => {
+        const numberOfServers   = this.servers.size
+        const numberOfDatabases = this.databases.size
+        let shutDownServers     = 0
+        let closedDatabases     = 0
 
-            console.log( 'Closed out remaining connections.' )
+        if ( numberOfServers === 0 && numberOfDatabases === 0 ) {
+            callback()
+            return
+        }
 
-            const numberOfDatabases = this.databases.length
-            let closedDatabases     = 0
+        for ( const [ serverName, server ] of this.servers ) {
 
-            for ( let dbKey in this.databases ) {
-                this.databases[ dbKey ].close( () => {
+            server.close( () => {
 
-                    closedDatabases++
+                shutDownServers++
+                console.log( `Shutdown ${serverName} listening on ${server.type}://${server.host}:${server.port} at ${new Date()}.` )
 
-                    if ( closedDatabases < numberOfDatabases ) {
-                        return
-                    }
+                if ( shutDownServers < numberOfServers ) {
+                    return
+                }
 
+                if ( numberOfDatabases === 0 ) {
                     callback()
+                    return
+                }
 
-                } )
-            }
+                for ( const [ databaseName, database ] in this.databases ) {
 
-        } )
+                    database.close( () => {
+
+                        closedDatabases++
+                        console.log( `Closeconnection to ${databaseName}.` )
+
+                        if ( closedDatabases < numberOfDatabases ) {
+                            return
+                        }
+
+                        callback()
+
+                    } )
+
+                }
+
+            } )
+
+        }
+
+    }
+
+    closeServers () {
 
     }
 
