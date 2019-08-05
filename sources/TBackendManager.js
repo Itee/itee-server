@@ -24,7 +24,7 @@ import {
 }                     from 'itee-validators'
 import path           from 'path'
 
-class TServer {
+class TBackendManager {
 
     constructor ( parameters ) {
 
@@ -357,4 +357,4 @@ class TServer {
 
 }
 
-export { TServer }
+export { TBackendManager }

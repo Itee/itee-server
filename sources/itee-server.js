@@ -8,4 +8,4 @@
  *
  */
 
-export * from './TServer'
+export * from './TBackendManager'
