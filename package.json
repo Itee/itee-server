@@ -56,19 +56,9 @@
     "semantic-release": "semantic-release --dry-run --no-ci"
   },
   "dependencies": {
-    "compression": "^1.7.4",
-    "errorhandler": "^1.5.1",
     "express": "^4.17.1",
-    "express-busboy": "^7.0.1",
-    "express-resource": "^1.0.0",
-    "express-ws": "^4.0.0",
-    "itee-database": "^5.2.6",
-    "itee-utils": "^4.1.0",
-    "itee-validators": "^4.0.0",
-    "morgan": "^1.9.1",
-    "process": "^0.11.10",
-    "rotating-file-stream": "^1.4.3",
-    "serve-favicon": "^2.5.0"
+    "itee-database": "^7.0.1",
+    "itee-validators": "^5.0.1"
   },
   "devDependencies": {
     "@semantic-release/changelog": "^3.0.4",
@@ -87,7 +77,6 @@
     "gulp": "^4.0.2",
     "gulp-eslint": "^6.0.0",
     "gulp-jsdoc3": "^2.0.0",
-    "gulp-replace": "^1.0.0",
     "karma": "^4.2.0",
     "karma-benchmark": "^1.0.4",
     "karma-benchmarkjs-reporter": "^1.0.0",
@@ -102,11 +91,8 @@
     "mocha": "^6.2.0",
     "mochawesome": "^4.0.1",
     "rollup": "^1.18.0",
-    "rollup-plugin-commonjs": "^10.0.1",
-    "rollup-plugin-json": "^4.0.0",
-    "rollup-plugin-node-builtins": "^2.1.2",
+    "rollup-plugin-commonjs": "^10.0.2",
     "rollup-plugin-node-resolve": "^5.2.0",
-    "rollup-plugin-re": "^1.0.7",
     "rollup-plugin-terser": "^5.1.1",
     "semantic-release": "^15.13.19"
   },
