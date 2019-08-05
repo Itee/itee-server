@@ -357,4 +357,4 @@ class TServer {
 
 }
 
-module.exports = TServer
+export { TServer }
