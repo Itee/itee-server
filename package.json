@@ -21,8 +21,8 @@
     "type": "git",
     "url": "https://github.com/Itee/itee-server.git"
   },
-  "main": "sources/TServer.js",
-  "module": "",
+  "main": "builds/itee-server.cjs.js",
+  "module": "builds/itee-server.esm.js",
   "browser": "",
   "homepage": "https://github.com/Itee/itee-server#readme",
   "bugs": {
@@ -53,7 +53,8 @@
     "test": "gulp test",
     "build": "gulp build",
     "release": "gulp release",
-    "semantic-release": "semantic-release --dry-run --no-ci"
+    "semantic-release": "semantic-release --dry-run --no-ci",
+    "postversion": "gulp build"
   },
   "dependencies": {
     "express": "^4.17.1",
