@@ -301,7 +301,7 @@ gulp.task( 'build', ( done ) => {
             s: true,
             t: true
         },
-        alias:   {
+        alias: {
             n: 'name',
             i: 'input',
             o: 'output',

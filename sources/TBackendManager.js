@@ -290,6 +290,7 @@ class TBackendManager {
         //TODO: filter availaible events
         // [ 'request', 'connection', 'close', 'timeout', 'checkContinue', 'connect', 'upgrade', 'clientError' ]
 
+        // eslint-disable-next-line no-unused-vars
         for ( const [ serverName, server ] of this.servers ) {
             server.on( eventName, callback )
         }
