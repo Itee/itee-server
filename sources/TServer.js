@@ -290,7 +290,9 @@ class TServer {
         //TODO: filter availaible events
         // [ 'request', 'connection', 'close', 'timeout', 'checkContinue', 'connect', 'upgrade', 'clientError' ]
 
-        this.server.on( eventName, callback )
+        for ( const [ serverName, server ] of this.servers ) {
+            server.on( eventName, callback )
+        }
 
     }
 
