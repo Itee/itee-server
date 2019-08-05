@@ -16,6 +16,7 @@ import {
     isArray,
     isBlankString,
     isEmptyString,
+    isFunction,
     isNotArray,
     isNotString,
     isNull,
@@ -35,7 +36,6 @@ class TServer {
 
         this._initApplications( parameters.applications )
         this._initDatabases( parameters.databases )
-        this._initRouters( parameters.routers )
         this._initServers( parameters.servers )
 
     }
@@ -84,6 +84,7 @@ class TServer {
         if ( config.x_powered_by ) { this.applications.set( 'x-powered-by', config.x_powered_by ) }
 
         this._initMiddlewares( config.middlewares )
+        this._initRouters( config.routers )
 
     }
 
@@ -150,25 +151,64 @@ class TServer {
 
     _initRouters ( routers ) {
 
-        for ( let routerKey in routers ) {
+        if ( isNotArray( routers ) ) {
+            throw new TypeError( `Invalid routers, expect an array of argument to spread to middleware module, got ${routers.constructor.name}` )
+        }
 
-            const routerFilePath = ( isNotArray( routers[ routerKey ] ) ) ? [ routers[ routerKey ] ] : routers[ routerKey ]
-            const _routers = []
-            for ( let routerIndex = 0, numberOfRouters = routerFilePath.length ; routerIndex < numberOfRouters ; routerIndex++ ) {
-                const subRouterFilePath = routerFilePath[ routerIndex ]
-                const routerPath        = path.join( this.rootPath, 'servers/routes', subRouterFilePath )
+        for ( let routerName in routers ) {
 
-                try {
+            if ( !Object.prototype.hasOwnProperty.call( routers, routerName ) ) { continue }
 
-                    const router            = require( routerPath )
-                    _routers.push( router )
-                    console.log( `Assign router from ${subRouterFilePath} to ${routerKey} route` )
+            const config    = routers[ routerName ]
+            const baseRoute = config.baseRoute
+            const options   = config.options
 
-                } catch(error) {
-                    console.error( `Unable to assign router from ${routerPath} to ${routerKey} route due to error: ${error}` )
+            try {
+
+                const router = require( routerName )
+                this.applications.use( baseRoute, isFunction( router ) ? router( ...options ) : router )
+                console.log( `Use ${routerName} router from node_modules over base route: ${baseRoute}` )
+
+            } catch ( error ) {
+
+                if ( !error.code || error.code !== 'MODULE_NOT_FOUND' ) {
+
+                    console.error( `The router "${routerName}" seems to encounter internal error.` )
+                    console.error( error )
+                    continue
+
                 }
+
+                this._initLocalRouter( routerName, baseRoute, options )
+
             }
-            this.applications.use( routerKey, _routers )
+
+        }
+
+    }
+
+    _initLocalRouter ( name, baseRoute, options ) {
+
+        try {
+
+            const localRoutersPath = path.join( this.rootPath, 'routers', name )
+            const router           = require( localRoutersPath )
+            this.applications.use( baseRoute, isFunction( router ) ? router( ...options ) : router )
+            console.log( `Use ${name} router from local folder over base route: ${baseRoute}` )
+
+        } catch ( error ) {
+
+            if ( error instanceof TypeError && error.message === 'Found non-callable @@iterator' ) {
+
+                console.error( `The router "${name}" seems to encounter internal error !` )
+                console.error( error )
+
+            } else {
+
+                console.error( `Unable to register the router ${name} the package or local file doesn't seem to exist ! Skip it.` )
+                console.error( error )
+
+            }
 
         }
 
