@@ -1,3 +1,17 @@
+# [6.1.0](https://github.com/Itee/itee-server/compare/v6.0.0...v6.1.0) (2019-08-12)
+
+
+### Bug Fixes
+
+* **tbackendmanager:** fix router initialisation ([2fae240](https://github.com/Itee/itee-server/commit/2fae240))
+* **tbackendmanager:** fix stop method crash in case no callback was provide ([cac1489](https://github.com/Itee/itee-server/commit/cac1489))
+
+
+### Features
+
+* **docs:** add documentation to github ([2619908](https://github.com/Itee/itee-server/commit/2619908))
+* **tbackendmanager:** allow to load middlesware from package and/or local folder, like routers ([e813ab4](https://github.com/Itee/itee-server/commit/e813ab4))
+
 # [6.0.0](https://github.com/Itee/itee-server/compare/v5.5.4...v6.0.0) (2019-08-05)
 
 
