@@ -355,7 +355,7 @@ class TBackendManager {
             server.close( () => {
 
                 shutDownServers++
-                console.log( `Shutdown ${serverName} listening on ${server.type}://${server.host}:${server.port} at ${new Date()}.` )
+                console.log( `The ${serverName} listening on ${server.type}://${server.host}:${server.port} is shutted down.` )
 
                 if ( shutDownServers < numberOfServers ) {
                     return
@@ -371,7 +371,7 @@ class TBackendManager {
                     database.close( () => {
 
                         closedDatabases++
-                        console.log( `Closeconnection to ${databaseName}.` )
+                        console.log( `Connection to ${databaseName} is closed.` )
 
                         if ( closedDatabases < numberOfDatabases ) {
                             return
