@@ -1,4 +1,4 @@
-console.log('Itee.Server v6.0.0 - CommonJs')
+console.log('Itee.Server v6.1.0 - CommonJs')
 'use strict';
 
 Object.defineProperty(exports, '__esModule', { value: true });
@@ -86,94 +86,91 @@ class TBackendManager {
 
     }
 
-    _initMiddlewares ( config ) {
+    _initMiddlewares ( middlewaresConfig ) {
 
-        for ( let middlewareName in config ) {
+        for ( let [ name, config ] of Object.entries( middlewaresConfig ) ) {
 
-            if ( !Object.prototype.hasOwnProperty.call( config, middlewareName ) ) { continue }
-
-            const middlewareConfig = config[ middlewareName ];
-
-            if ( iteeValidators.isNotArray( middlewareConfig ) ) {
-                throw new TypeError( `Invalid middlware configuration, expect an array of argument to spread to middleware module, got ${middlewareConfig.constructor.name}` )
+            if ( iteeValidators.isNotArray( config ) ) {
+                throw new TypeError( `Invalid middlware configuration for ${name}, expecting an array of arguments to spread to middleware module, got ${config.constructor.name}` )
             }
 
-            try {
+            if ( this._initPackageMiddleware( name, config ) ) {
 
-                this.applications.use( require( middlewareName )( ...middlewareConfig ) );
-                console.log( `Use ${middlewareName} middleware from node_modules` );
+                console.log( `Use ${name} middleware from node_modules` );
 
-            } catch ( error ) {
+            } else if ( this._initLocalMiddleware( name, config ) ) {
 
-                if ( !error.code || error.code !== 'MODULE_NOT_FOUND' ) {
+                console.log( `Use ${name} middleware from local folder` );
 
-                    console.error( `The middleware "${middlewareName}" seems to encounter internal error.` );
-                    console.error( error );
-                    continue
+            } else {
 
-                }
-
-                this._initLocalMiddleware( middlewareName, middlewareConfig );
+                console.error( `Unable to register the middleware ${name} the package and/or local file doesn't seem to exist ! Skip it.` );
 
             }
 
         }
+
+    }
+
+    _initPackageMiddleware ( name, config ) {
+
+        let success = false;
+
+        try {
+
+            this.applications.use( require( name )( ...config ) );
+            success = true;
+
+        } catch ( error ) {
+
+            if ( !error.code || error.code !== 'MODULE_NOT_FOUND' ) {
+
+                console.error( `The middleware "${name}" seems to encounter internal error.` );
+                console.error( error );
+
+            }
+
+        }
+
+        return success
 
     }
 
     _initLocalMiddleware ( name, config ) {
 
+        let success = false;
+
         try {
 
             const localMiddlewaresPath = path.join( this.rootPath, 'middlewares', name );
             this.applications.use( require( localMiddlewaresPath )( ...config ) );
-            console.log( `Use ${name} middleware from local folder` );
+            success = true;
 
         } catch ( error ) {
 
-            if ( error instanceof TypeError && error.message === 'Found non-callable @@iterator' ) {
-
-                console.error( `The middleware "${name}" seems to encounter internal error !` );
-                console.error( error );
-
-            } else {
-
-                console.error( `Unable to register the middleware ${name} the package or local file doesn't seem to exist ! Skip it.` );
-                console.error( error );
-
-            }
+            console.error( error );
 
         }
+
+        return success
 
     }
 
     _initRouters ( routers ) {
 
-        for ( let routerName in routers ) {
+        for ( let [ baseRoute, routerPath ] of Object.entries( routers ) ) {
 
-            if ( !Object.prototype.hasOwnProperty.call( routers, routerName ) ) { continue }
+            if ( this._initPackageRouter( baseRoute, routerPath ) ) {
 
-            const config    = routers[ routerName ];
-            const baseRoute = config.baseRoute;
-            const options   = config.options;
+                console.log( `Use ${routerPath} router from node_modules over base route: ${baseRoute}` );
 
-            try {
+            } else if ( this._initLocalRouter( baseRoute, routerPath ) ) {
 
-                const router = require( routerName );
-                this.applications.use( baseRoute, iteeValidators.isFunction( router ) ? router( ...options ) : router );
-                console.log( `Use ${routerName} router from node_modules over base route: ${baseRoute}` );
+                console.log( `Use ${routerPath} router from local folder over base route: ${baseRoute}` );
 
-            } catch ( error ) {
+            } else {
 
-                if ( !error.code || error.code !== 'MODULE_NOT_FOUND' ) {
-
-                    console.error( `The router "${routerName}" seems to encounter internal error.` );
-                    console.error( error );
-                    continue
-
-                }
-
-                this._initLocalRouter( routerName, baseRoute, options );
+                console.error( `Unable to register the router ${routerPath} the package and/or local file doesn't seem to exist ! Skip it.` );
 
             }
 
@@ -181,30 +178,53 @@ class TBackendManager {
 
     }
 
-    _initLocalRouter ( name, baseRoute, options ) {
+    _initPackageRouter ( baseRoute, routerPath ) {
+
+        let success = false;
 
         try {
 
-            const localRoutersPath = path.join( this.rootPath, 'routers', name );
-            const router           = require( localRoutersPath );
-            this.applications.use( baseRoute, iteeValidators.isFunction( router ) ? router( ...options ) : router );
-            console.log( `Use ${name} router from local folder over base route: ${baseRoute}` );
+            this.applications.use( baseRoute, require( routerPath ) );
+            success = true;
 
         } catch ( error ) {
 
-            if ( error instanceof TypeError && error.message === 'Found non-callable @@iterator' ) {
+            if ( !error.code || error.code !== 'MODULE_NOT_FOUND' ) {
 
-                console.error( `The router "${name}" seems to encounter internal error !` );
-                console.error( error );
-
-            } else {
-
-                console.error( `Unable to register the router ${name} the package or local file doesn't seem to exist ! Skip it.` );
+                console.error( `The router "${name}" seems to encounter internal error.` );
                 console.error( error );
 
             }
 
         }
+
+        return success
+
+    }
+
+    _initLocalRouter ( baseRoute, routerPath ) {
+
+        let success = false;
+
+        try {
+
+            const localRoutersPath = path.join( this.rootPath, 'routers', routerPath );
+            this.applications.use( baseRoute, require( localRoutersPath ) );
+            success = true;
+
+        } catch ( error ) {
+
+            if ( error instanceof TypeError && error.message === 'Found non-callable @@iterator' ) {
+
+                console.error( `The router "${name}" seems to encounter error ! Are you using an object instead an array for router configuration ?` );
+
+            }
+
+            console.error( error );
+
+        }
+
+        return success
 
     }
 
@@ -218,7 +238,16 @@ class TBackendManager {
 
             try {
 
-                const database = new Databases[ dbType ]( this.applications, this.router, databaseConfig.plugins, databaseConfig ).connect();
+                const database = new Databases[ dbType ]( {
+                    ...{
+                        application: this.applications,
+                        router:      this.router
+                    },
+                    ...databaseConfig
+                } );
+
+                // Todo move in start
+                database.connect();
 
                 this.databases.set( dbName, database );
 
@@ -283,14 +312,18 @@ class TBackendManager {
      */
     databaseOn ( databaseKey, eventName, callback ) {} // eslint-disable-line no-unused-vars
 
-    serverOn ( eventName, callback ) {
+    serverOn ( serverName, eventName, callback ) {
+
+        this.servers[ serverName ].on( eventName, callback );
+
+    }
+
+    serversOn ( serverKey, eventName, callback ) {
 
         //TODO: filter availaible events
         // [ 'request', 'connection', 'close', 'timeout', 'checkContinue', 'connect', 'upgrade', 'clientError' ]
-
-        // eslint-disable-next-line no-unused-vars
-        for ( const [ serverName, server ] of this.servers ) {
-            server.on( eventName, callback );
+        for ( let serverKey in this.servers ) {
+            this.serverOn( serverKey, eventName, callback );
         }
 
     }
@@ -307,7 +340,7 @@ class TBackendManager {
         let closedDatabases     = 0;
 
         if ( numberOfServers === 0 && numberOfDatabases === 0 ) {
-            callback();
+            if ( callback ) { callback(); }
             return
         }
 
@@ -316,29 +349,29 @@ class TBackendManager {
             server.close( () => {
 
                 shutDownServers++;
-                console.log( `Shutdown ${serverName} listening on ${server.type}://${server.host}:${server.port} at ${new Date()}.` );
+                console.log( `The ${serverName} listening on ${server.type}://${server.host}:${server.port} is shutted down.` );
 
                 if ( shutDownServers < numberOfServers ) {
                     return
                 }
 
                 if ( numberOfDatabases === 0 ) {
-                    callback();
+                    if ( callback ) { callback(); }
                     return
                 }
 
-                for ( const [ databaseName, database ] in this.databases ) {
+                for ( const [ databaseName, database ] of this.databases ) {
 
                     database.close( () => {
 
                         closedDatabases++;
-                        console.log( `Closeconnection to ${databaseName}.` );
+                        console.log( `Connection to ${databaseName} is closed.` );
 
                         if ( closedDatabases < numberOfDatabases ) {
                             return
                         }
 
-                        callback();
+                        if ( callback ) { callback(); }
 
                     } );
 
