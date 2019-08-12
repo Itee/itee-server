@@ -16,7 +16,6 @@ import {
     isArray,
     isBlankString,
     isEmptyString,
-    isFunction,
     isNotArray,
     isNotString,
     isNull,
@@ -316,16 +315,16 @@ class TBackendManager {
 
     serverOn ( serverName, eventName, callback ) {
 
-        this.servers[serverName].on( eventName, callback )
+        this.servers[ serverName ].on( eventName, callback )
 
     }
-    
+
     serversOn ( serverKey, eventName, callback ) {
 
         //TODO: filter availaible events
         // [ 'request', 'connection', 'close', 'timeout', 'checkContinue', 'connect', 'upgrade', 'clientError' ]
         for ( let serverKey in this.servers ) {
-            this.serverOn(serverKey, eventName, callback)
+            this.serverOn( serverKey, eventName, callback )
         }
 
     }
