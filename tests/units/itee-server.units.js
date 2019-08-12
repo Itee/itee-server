@@ -12,7 +12,7 @@
  Function( 'return this' )()
  */
 
-describe( 'Itee#Utils', () => {
+describe( 'Itee#Server', () => {
 
     it( 'should be implemented', () => {
 

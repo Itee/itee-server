@@ -45,7 +45,7 @@ function CreateKarmaUnitsConfiguration ( config ) {
 
             // Optional
             pageTitle:       'Unit Tests',
-            subPageTitle:    'Result of unit testing for Itee-Validators library.',
+            subPageTitle:    'Result of unit testing for Itee-Server.',
             groupSuites:     true,
             useCompactStyle: false,
             useLegacyStyle:  false,
