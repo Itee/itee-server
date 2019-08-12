@@ -248,7 +248,16 @@ class TBackendManager {
 
             try {
 
-                const database = new Databases[ dbType ]( this.applications, this.router, databaseConfig.plugins, databaseConfig ).connect()
+                const database = new Databases[ dbType ]( {
+                    ...{
+                        application: this.applications,
+                        router:      this.router
+                    },
+                    ...databaseConfig
+                } )
+
+                // Todo move in start
+                database.connect()
 
                 this.databases.set( dbName, database )
 
