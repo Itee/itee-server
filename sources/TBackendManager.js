@@ -88,34 +88,25 @@ class TBackendManager {
 
     }
 
-    _initMiddlewares ( config ) {
+    _initMiddlewares ( middlewaresConfig ) {
 
-        for ( let middlewareName in config ) {
+        for ( let [ name, config ] of Object.entries( middlewaresConfig ) ) {
 
-            if ( !Object.prototype.hasOwnProperty.call( config, middlewareName ) ) { continue }
-
-            const middlewareConfig = config[ middlewareName ]
-
-            if ( isNotArray( middlewareConfig ) ) {
-                throw new TypeError( `Invalid middlware configuration, expect an array of argument to spread to middleware module, got ${middlewareConfig.constructor.name}` )
+            if ( isNotArray( config ) ) {
+                throw new TypeError( `Invalid middlware configuration for ${name}, expecting an array of arguments to spread to middleware module, got ${config.constructor.name}` )
             }
 
-            try {
+            if ( this._initPackageMiddleware( name, config ) ) {
 
-                this.applications.use( require( middlewareName )( ...middlewareConfig ) )
-                console.log( `Use ${middlewareName} middleware from node_modules` )
+                console.log( `Use ${name} middleware from node_modules` )
 
-            } catch ( error ) {
+            } else if ( this._initLocalMiddleware( name, config ) ) {
 
-                if ( !error.code || error.code !== 'MODULE_NOT_FOUND' ) {
+                console.log( `Use ${name} middleware from local folder` )
 
-                    console.error( `The middleware "${middlewareName}" seems to encounter internal error.` )
-                    console.error( error )
-                    continue
+            } else {
 
-                }
-
-                this._initLocalMiddleware( middlewareName, middlewareConfig )
+                console.error( `Unable to register the middleware ${name} the package and/or local file doesn't seem to exist ! Skip it.` )
 
             }
 
@@ -123,29 +114,47 @@ class TBackendManager {
 
     }
 
-    _initLocalMiddleware ( name, config ) {
+    _initPackageMiddleware ( name, config ) {
+
+        let success = false
 
         try {
 
-            const localMiddlewaresPath = path.join( this.rootPath, 'middlewares', name )
-            this.applications.use( require( localMiddlewaresPath )( ...config ) )
-            console.log( `Use ${name} middleware from local folder` )
+            this.applications.use( require( name )( ...config ) )
+            success = true
 
         } catch ( error ) {
 
-            if ( error instanceof TypeError && error.message === 'Found non-callable @@iterator' ) {
+            if ( !error.code || error.code !== 'MODULE_NOT_FOUND' ) {
 
-                console.error( `The middleware "${name}" seems to encounter internal error !` )
-                console.error( error )
-
-            } else {
-
-                console.error( `Unable to register the middleware ${name} the package or local file doesn't seem to exist ! Skip it.` )
+                console.error( `The middleware "${name}" seems to encounter internal error.` )
                 console.error( error )
 
             }
 
         }
+
+        return success
+
+    }
+
+    _initLocalMiddleware ( name, config ) {
+
+        let success = false
+
+        try {
+
+            const localMiddlewaresPath = path.join( this.rootPath, 'middlewares', name )
+            this.applications.use( require( localMiddlewaresPath )( ...config ) )
+            success = true
+
+        } catch ( error ) {
+
+            console.error( error )
+
+        }
+
+        return success
 
     }
 
@@ -159,23 +168,17 @@ class TBackendManager {
             const baseRoute = config.baseRoute
             const options   = config.options
 
-            try {
+            if ( this._initPackageRouter( routerName, baseRoute, options ) ) {
 
-                const router = require( routerName )
-                this.applications.use( baseRoute, isFunction( router ) ? router( ...options ) : router )
                 console.log( `Use ${routerName} router from node_modules over base route: ${baseRoute}` )
 
-            } catch ( error ) {
+            } else if ( this._initLocalRouter( routerName, baseRoute, options ) ) {
 
-                if ( !error.code || error.code !== 'MODULE_NOT_FOUND' ) {
+                console.log( `Use ${name} router from local folder over base route: ${baseRoute}` )
 
-                    console.error( `The router "${routerName}" seems to encounter internal error.` )
-                    console.error( error )
-                    continue
+            } else {
 
-                }
-
-                this._initLocalRouter( routerName, baseRoute, options )
+                console.error( `Unable to register the router ${name} the package and/or local file doesn't seem to exist ! Skip it.` )
 
             }
 
@@ -183,30 +186,55 @@ class TBackendManager {
 
     }
 
+    _initPackageRouter ( name, baseRoute, options ) {
+
+        let success = false
+
+        try {
+
+            const router = require( name )
+            this.applications.use( baseRoute, isFunction( router ) ? router( ...options ) : router )
+            success = true
+
+        } catch ( error ) {
+
+            if ( !error.code || error.code !== 'MODULE_NOT_FOUND' ) {
+
+                console.error( `The router "${name}" seems to encounter internal error.` )
+                console.error( error )
+
+            }
+
+        }
+
+        return success
+
+    }
+
     _initLocalRouter ( name, baseRoute, options ) {
+
+        let success = false
 
         try {
 
             const localRoutersPath = path.join( this.rootPath, 'routers', name )
             const router           = require( localRoutersPath )
             this.applications.use( baseRoute, isFunction( router ) ? router( ...options ) : router )
-            console.log( `Use ${name} router from local folder over base route: ${baseRoute}` )
+            success = true
 
         } catch ( error ) {
 
             if ( error instanceof TypeError && error.message === 'Found non-callable @@iterator' ) {
 
-                console.error( `The router "${name}" seems to encounter internal error !` )
-                console.error( error )
-
-            } else {
-
-                console.error( `Unable to register the router ${name} the package or local file doesn't seem to exist ! Skip it.` )
-                console.error( error )
+                console.error( `The router "${name}" seems to encounter error ! Are you using an object instead an array for router configuration ?` )
 
             }
 
+            console.error( error )
+
         }
+
+        return success
 
     }
 
