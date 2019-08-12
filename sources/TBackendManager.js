@@ -160,25 +160,19 @@ class TBackendManager {
 
     _initRouters ( routers ) {
 
-        for ( let routerName in routers ) {
+        for ( let [ baseRoute, routerPath ] of Object.entries( routers ) ) {
 
-            if ( !Object.prototype.hasOwnProperty.call( routers, routerName ) ) { continue }
+            if ( this._initPackageRouter( baseRoute, routerPath ) ) {
 
-            const config    = routers[ routerName ]
-            const baseRoute = config.baseRoute
-            const options   = config.options
+                console.log( `Use ${routerPath} router from node_modules over base route: ${baseRoute}` )
 
-            if ( this._initPackageRouter( routerName, baseRoute, options ) ) {
+            } else if ( this._initLocalRouter( baseRoute, routerPath ) ) {
 
-                console.log( `Use ${routerName} router from node_modules over base route: ${baseRoute}` )
-
-            } else if ( this._initLocalRouter( routerName, baseRoute, options ) ) {
-
-                console.log( `Use ${name} router from local folder over base route: ${baseRoute}` )
+                console.log( `Use ${routerPath} router from local folder over base route: ${baseRoute}` )
 
             } else {
 
-                console.error( `Unable to register the router ${name} the package and/or local file doesn't seem to exist ! Skip it.` )
+                console.error( `Unable to register the router ${routerPath} the package and/or local file doesn't seem to exist ! Skip it.` )
 
             }
 
@@ -186,14 +180,13 @@ class TBackendManager {
 
     }
 
-    _initPackageRouter ( name, baseRoute, options ) {
+    _initPackageRouter ( baseRoute, routerPath ) {
 
         let success = false
 
         try {
 
-            const router = require( name )
-            this.applications.use( baseRoute, isFunction( router ) ? router( ...options ) : router )
+            this.applications.use( baseRoute, require( routerPath ) )
             success = true
 
         } catch ( error ) {
@@ -211,15 +204,14 @@ class TBackendManager {
 
     }
 
-    _initLocalRouter ( name, baseRoute, options ) {
+    _initLocalRouter ( baseRoute, routerPath ) {
 
         let success = false
 
         try {
 
-            const localRoutersPath = path.join( this.rootPath, 'routers', name )
-            const router           = require( localRoutersPath )
-            this.applications.use( baseRoute, isFunction( router ) ? router( ...options ) : router )
+            const localRoutersPath = path.join( this.rootPath, 'routers', routerPath )
+            this.applications.use( baseRoute, require( localRoutersPath ) )
             success = true
 
         } catch ( error ) {
