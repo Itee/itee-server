@@ -25,10 +25,10 @@
   "module": "builds/itee-server.esm.js",
   "browser": "",
   "homepage": "https://github.com/Itee/itee-server#readme",
+  "man": "./docs/index.html",
   "bugs": {
     "url": "https://github.com/Itee/itee-server/issues"
   },
-  "man": "./documentation/API/index.html",
   "engines": {
     "node": ">=8.16.0"
   },
