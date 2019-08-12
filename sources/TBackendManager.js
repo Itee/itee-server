@@ -342,7 +342,7 @@ class TBackendManager {
         let closedDatabases     = 0
 
         if ( numberOfServers === 0 && numberOfDatabases === 0 ) {
-            callback()
+            if ( callback ) { callback() }
             return
         }
 
@@ -358,11 +358,11 @@ class TBackendManager {
                 }
 
                 if ( numberOfDatabases === 0 ) {
-                    callback()
+                    if ( callback ) { callback() }
                     return
                 }
 
-                for ( const [ databaseName, database ] in this.databases ) {
+                for ( const [ databaseName, database ] of this.databases ) {
 
                     database.close( () => {
 
@@ -373,7 +373,7 @@ class TBackendManager {
                             return
                         }
 
-                        callback()
+                        if ( callback ) { callback() }
 
                     } )
 
