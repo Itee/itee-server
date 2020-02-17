@@ -1,3 +1,11 @@
+## [6.1.1](https://github.com/Itee/itee-server/compare/v6.1.0...v6.1.1) (2020-02-17)
+
+
+### Bug Fixes
+
+* **package:** update package lock ([178957d](https://github.com/Itee/itee-server/commit/178957da1d12a130b68501252426e1bfc1273cb5)), closes [#2](https://github.com/Itee/itee-server/issues/2)
+* **package:** update package lock ([246bec6](https://github.com/Itee/itee-server/commit/246bec6b9d70fe526f4d86fb4460e5c93f20d43d)), closes [#7](https://github.com/Itee/itee-server/issues/7)
+
 # [6.1.0](https://github.com/Itee/itee-server/compare/v6.0.0...v6.1.0) (2019-08-12)
 
 
