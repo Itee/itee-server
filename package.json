@@ -58,7 +58,7 @@
   },
   "dependencies": {
     "express": "^4.17.1",
-    "itee-database": "^8.0.0",
+    "itee-database": "^8.0.2",
     "itee-validators": "^5.1.2"
   },
   "devDependencies": {
@@ -95,7 +95,7 @@
     "rollup-plugin-commonjs": "^10.1.0",
     "rollup-plugin-node-resolve": "^5.2.0",
     "rollup-plugin-terser": "^5.2.0",
-    "semantic-release": "^17.0.3"
+    "semantic-release": "^17.0.4"
   },
   "optionalDependencies": {
     "express-favicon": "^2.0.1",
