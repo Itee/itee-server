@@ -1,9 +1,8 @@
-console.log('Itee.Server v6.1.1 - EsModule')
+console.log('Itee.Server v6.2.0 - EsModule')
 import express from 'express';
 import http from 'http';
 import https from 'https';
-import * as Databases from 'itee-database';
-import { isNull, isUndefined, isNotString, isEmptyString, isBlankString, isNotArray, isArray } from 'itee-validators';
+import { isNull, isUndefined, isNotString, isEmptyString, isBlankString, isNotArray, isDefined, isArray } from 'itee-validators';
 import path from 'path';
 
 /**
@@ -228,17 +227,36 @@ class TBackendManager {
 
             const databaseConfig = config[ configIndex ];
             const dbType         = databaseConfig.type;
-            const dbName         = `${( databaseConfig.name ) ? databaseConfig.name : 'Database_' + configIndex}`;
+            const dbFrom         = databaseConfig.from;
+            const dbName         = `${( databaseConfig.name ) ? databaseConfig.name : `${dbType}_${configIndex}`}`;
 
             try {
 
-                const database = new Databases[ dbType ]( {
-                    ...{
-                        application: this.applications,
-                        router:      this.router
-                    },
-                    ...databaseConfig
-                } );
+                let database = null;
+
+                if ( isDefined(dbFrom)) {
+
+                    // In case user specify a package where take the database of type...
+                    database = new require(dbFrom)[ dbType ]( {
+                        ...{
+                            application: this.applications,
+                            router:      this.router
+                        },
+                        ...databaseConfig
+                    } );
+
+                } else {
+
+//                    // Else try to use auto registered database
+//                    database = new Databases[ dbType ]( {
+//                        ...{
+//                            application: this.applications,
+//                            router:      this.router
+//                        },
+//                        ...databaseConfig
+//                    } )
+
+                }
 
                 // Todo move in start
                 database.connect();

@@ -1,3 +1,17 @@
+# [6.2.0](https://github.com/Itee/itee-server/compare/v6.1.1...v6.2.0) (2020-02-18)
+
+
+### Bug Fixes
+
+* **package:** move itee packages as peer dependencies ([c88f92d](https://github.com/Itee/itee-server/commit/c88f92db53e514cf26af5a178502061eb67f4818))
+* **tbackendmanager:** add missing import isDefined ([986b96a](https://github.com/Itee/itee-server/commit/986b96a0509d8c1f21f0849487aee9088f082640))
+* **tbackendmanager:** comment itee-database mapping waiting new release ([7ddbfb6](https://github.com/Itee/itee-server/commit/7ddbfb6681beae909c4977e7bfc7231132b2b323))
+
+
+### Features
+
+* **tbackendmanager:** allow user to specify the database package to use ([0c3de43](https://github.com/Itee/itee-server/commit/0c3de437da84ab10928014adb6d7e400c73bf6c6))
+
 ## [6.1.1](https://github.com/Itee/itee-server/compare/v6.1.0...v6.1.1) (2020-02-17)
 
 
