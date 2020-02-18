@@ -246,7 +246,8 @@ class TBackendManager {
                 if ( isDefined(dbFrom)) {
 
                     // In case user specify a package where take the database of type...
-                    database = new require(dbFrom)[ dbType ]( {
+                    const databasePackage = require(dbFrom)
+                    database = new databasePackage[ dbType ]( {
                         ...{
                             application: this.applications,
                             router:      this.router
