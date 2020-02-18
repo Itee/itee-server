@@ -11,8 +11,9 @@
 import express        from 'express'
 import http           from 'http'
 import https          from 'https'
-import * as Databases from 'itee-database'
+//todo: import Databases from 'itee-database'
 import {
+    isDefined,
     isArray,
     isBlankString,
     isEmptyString,
