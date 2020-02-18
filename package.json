@@ -57,7 +57,9 @@
     "postversion": "gulp build"
   },
   "dependencies": {
-    "express": "^4.17.1",
+    "express": "^4.17.1"
+  },
+  "peerDependencies": {
     "itee-database": "^8.0.2",
     "itee-validators": "^5.1.2"
   },
