@@ -1,3 +1,10 @@
+## [6.2.1](https://github.com/Itee/itee-server/compare/v6.2.0...v6.2.1) (2020-02-18)
+
+
+### Bug Fixes
+
+* **tbackendmanager:** fix database package assignment ([cf4c973](https://github.com/Itee/itee-server/commit/cf4c9738e0df59fb17dab6bad8692493bb39d5dc))
+
 # [6.2.0](https://github.com/Itee/itee-server/compare/v6.1.1...v6.2.0) (2020-02-18)
 
 

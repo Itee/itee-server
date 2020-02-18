@@ -1,4 +1,4 @@
-console.log('Itee.Server v6.2.0 - EsModule')
+console.log('Itee.Server v6.2.1 - EsModule')
 import express from 'express';
 import http from 'http';
 import https from 'https';
@@ -237,7 +237,8 @@ class TBackendManager {
                 if ( isDefined(dbFrom)) {
 
                     // In case user specify a package where take the database of type...
-                    database = new require(dbFrom)[ dbType ]( {
+                    const databasePackage = require(dbFrom);
+                    database = new databasePackage[ dbType ]( {
                         ...{
                             application: this.applications,
                             router:      this.router

@@ -1,4 +1,4 @@
-console.log('Itee.Server v6.2.0 - CommonJs')
+console.log('Itee.Server v6.2.1 - CommonJs')
 'use strict';
 
 Object.defineProperty(exports, '__esModule', { value: true });
@@ -243,7 +243,8 @@ class TBackendManager {
                 if ( iteeValidators.isDefined(dbFrom)) {
 
                     // In case user specify a package where take the database of type...
-                    database = new require(dbFrom)[ dbType ]( {
+                    const databasePackage = require(dbFrom);
+                    database = new databasePackage[ dbType ]( {
                         ...{
                             application: this.applications,
                             router:      this.router
