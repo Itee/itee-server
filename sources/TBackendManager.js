@@ -256,14 +256,14 @@ class TBackendManager {
 
                 } else {
 
-                    // Else try to use auto registered database
-                    database = new Databases[ dbType ]( {
-                        ...{
-                            application: this.applications,
-                            router:      this.router
-                        },
-                        ...databaseConfig
-                    } )
+//                    // Else try to use auto registered database
+//                    database = new Databases[ dbType ]( {
+//                        ...{
+//                            application: this.applications,
+//                            router:      this.router
+//                        },
+//                        ...databaseConfig
+//                    } )
 
                 }
 
