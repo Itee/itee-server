@@ -8,23 +8,99 @@
  *
  */
 
-import express        from 'express'
-import http           from 'http'
-import https          from 'https'
+import express from 'express'
+import http    from 'http'
+import https   from 'https'
 //todo: import Databases from 'itee-database'
 import {
-    isDefined,
     isArray,
     isBlankString,
+    isDefined,
     isEmptyString,
     isNotArray,
     isNotString,
     isNull,
     isUndefined
-}                     from 'itee-validators'
-import path           from 'path'
+}              from 'itee-validators'
+import path    from 'path'
 
 class TBackendManager {
+
+    get applications () {
+        return this._applications
+    }
+
+    set applications ( value ) {
+        this._applications = value
+    }
+
+    setApplications ( value ) {
+
+        this.applications = value
+        return this
+
+    }
+
+    addMiddleware ( middleware ) {
+
+        this.applications.use( middleware )
+        return this
+
+    }
+
+    // Todo remove middleware
+
+    get router () {
+        return this._router
+    }
+
+    set router ( value ) {
+        this._router = value
+    }
+
+    setRouter ( value ) {
+
+        this.router = value
+        return this
+
+    }
+
+    get databases () {
+        return this._databases
+    }
+
+    set databases ( value ) {
+        this._databases = value
+    }
+
+    setDatabases ( value ) {
+
+        this.databases = value
+        return this
+
+    }
+
+    addDatabase ( databaseName, database ) {
+
+        this._databases.set( databaseName, database )
+        return this
+
+    }
+
+    get servers () {
+        return this._servers
+    }
+
+    set servers ( value ) {
+        this._servers = value
+    }
+
+    setServers ( value ) {
+
+        this.servers = value
+        return this
+
+    }
 
     constructor ( parameters ) {
 
@@ -33,6 +109,7 @@ class TBackendManager {
         this.router       = express.Router
         this.databases    = new Map()
         this.servers      = new Map()
+        this.connections  = []
 
         this._initApplications( parameters.applications )
         this._initDatabases( parameters.databases )
@@ -243,28 +320,28 @@ class TBackendManager {
 
                 let database = null
 
-                if ( isDefined(dbFrom)) {
+                if ( isDefined( dbFrom ) ) {
 
                     // In case user specify a package where take the database of type...
-                    const databasePackage = require(dbFrom)
-                    database = new databasePackage[ dbType ]( {
+                    const databasePackage = require( dbFrom )
+                    database              = new databasePackage[ dbType ]( {
                         ...{
                             application: this.applications,
                             router:      this.router
                         },
                         ...databaseConfig
-                    } );
+                    } )
 
                 } else {
 
-//                    // Else try to use auto registered database
-//                    database = new Databases[ dbType ]( {
-//                        ...{
-//                            application: this.applications,
-//                            router:      this.router
-//                        },
-//                        ...databaseConfig
-//                    } )
+                    //                    // Else try to use auto registered database
+                    //                    database = new Databases[ dbType ]( {
+                    //                        ...{
+                    //                            application: this.applications,
+                    //                            router:      this.router
+                    //                        },
+                    //                        ...databaseConfig
+                    //                    } )
 
                 }
 
@@ -309,7 +386,7 @@ class TBackendManager {
 
             }
 
-            server.name            = configElement.name || `${( configElement.name ) ? configElement.name : 'Server_' + configId}`
+            server.name            = configElement.name || `${( configElement.name ) ? configElement.name : `Server_${configId}`}`
             server.maxHeadersCount = configElement.max_headers_count
             server.timeout         = configElement.timeout
             server.type            = configElement.type
@@ -318,6 +395,12 @@ class TBackendManager {
             server.env             = configElement.env
             server.listen( configElement.port, configElement.host, () => {
                 console.log( `${server.name} start listening on ${server.type}://${server.host}:${server.port} at ${new Date()} under ${server.env} environment.` )
+            } )
+            server.on( 'connection', connection => {
+                this.connections.push( connection )
+                connection.on( 'close', () => {
+                    this.connections = this.connections.filter( curr => curr !== connection )
+                } )
             } )
 
             this.servers.set( server.name, server )
@@ -361,9 +444,23 @@ class TBackendManager {
         let shutDownServers     = 0
         let closedDatabases     = 0
 
-        if ( numberOfServers === 0 && numberOfDatabases === 0 ) {
-            if ( callback ) { callback() }
-            return
+        if ( allClosed() ) { return }
+
+        for ( const [ databaseName, database ] of this.databases ) {
+
+            database.close( () => {
+
+                closedDatabases++
+                console.log( `Connection to ${databaseName} is closed.` )
+
+                allClosed()
+
+            } )
+
+        }
+
+        for ( let connection of this.connections ) {
+            connection.end()
         }
 
         for ( const [ serverName, server ] of this.servers ) {
@@ -373,33 +470,23 @@ class TBackendManager {
                 shutDownServers++
                 console.log( `The ${serverName} listening on ${server.type}://${server.host}:${server.port} is shutted down.` )
 
-                if ( shutDownServers < numberOfServers ) {
-                    return
-                }
-
-                if ( numberOfDatabases === 0 ) {
-                    if ( callback ) { callback() }
-                    return
-                }
-
-                for ( const [ databaseName, database ] of this.databases ) {
-
-                    database.close( () => {
-
-                        closedDatabases++
-                        console.log( `Connection to ${databaseName} is closed.` )
-
-                        if ( closedDatabases < numberOfDatabases ) {
-                            return
-                        }
-
-                        if ( callback ) { callback() }
-
-                    } )
-
-                }
+                allClosed()
 
             } )
+
+        }
+
+        function allClosed () {
+
+            if ( shutDownServers < numberOfServers ) {
+                return false
+            }
+
+            if ( closedDatabases < numberOfDatabases ) {
+                return false
+            }
+
+            if ( callback ) { callback() }
 
         }
 
