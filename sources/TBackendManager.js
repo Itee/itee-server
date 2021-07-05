@@ -8,9 +8,6 @@
  *
  */
 
-import express from 'express'
-import http    from 'http'
-import https   from 'https'
 //todo: import Databases from 'itee-database'
 import {
     isArray,
@@ -22,9 +19,13 @@ import {
     isNull,
     isUndefined
 }              from 'itee-validators'
+import { TAbstractObject } from 'itee-core'
+import express from 'express'
+import http    from 'http'
+import https   from 'https'
 import path    from 'path'
 
-class TBackendManager {
+class TBackendManager extends TAbstractObject {
 
     get applications () {
         return this._applications
@@ -102,7 +103,14 @@ class TBackendManager {
 
     }
 
-    constructor ( parameters ) {
+    constructor ( parameters = {} ) {
+
+        const _parameters = {
+            ...{},
+            ...parameters
+        }
+
+        super(_parameters)
 
         this.rootPath     = parameters.rootPath
         this.applications = express()
@@ -175,15 +183,15 @@ class TBackendManager {
 
             if ( this._initPackageMiddleware( name, config ) ) {
 
-                console.log( `Use ${name} middleware from node_modules` )
+                this.logger.log( `Use ${name} middleware from node_modules` )
 
             } else if ( this._initLocalMiddleware( name, config ) ) {
 
-                console.log( `Use ${name} middleware from local folder` )
+                this.logger.log( `Use ${name} middleware from local folder` )
 
             } else {
 
-                console.error( `Unable to register the middleware ${name} the package and/or local file doesn't seem to exist ! Skip it.` )
+                this.logger.error( `Unable to register the middleware ${name} the package and/or local file doesn't seem to exist ! Skip it.` )
 
             }
 
@@ -204,8 +212,8 @@ class TBackendManager {
 
             if ( !error.code || error.code !== 'MODULE_NOT_FOUND' ) {
 
-                console.error( `The middleware "${name}" seems to encounter internal error.` )
-                console.error( error )
+                this.logger.error( `The middleware "${name}" seems to encounter internal error.` )
+                this.logger.error( error )
 
             }
 
@@ -227,7 +235,7 @@ class TBackendManager {
 
         } catch ( error ) {
 
-            console.error( error )
+            this.logger.error( error )
 
         }
 
@@ -241,15 +249,15 @@ class TBackendManager {
 
             if ( this._initPackageRouter( baseRoute, routerPath ) ) {
 
-                console.log( `Use ${routerPath} router from node_modules over base route: ${baseRoute}` )
+                this.logger.log( `Use ${routerPath} router from node_modules over base route: ${baseRoute}` )
 
             } else if ( this._initLocalRouter( baseRoute, routerPath ) ) {
 
-                console.log( `Use ${routerPath} router from local folder over base route: ${baseRoute}` )
+                this.logger.log( `Use ${routerPath} router from local folder over base route: ${baseRoute}` )
 
             } else {
 
-                console.error( `Unable to register the router ${routerPath} the package and/or local file doesn't seem to exist ! Skip it.` )
+                this.logger.error( `Unable to register the router ${routerPath} the package and/or local file doesn't seem to exist ! Skip it.` )
 
             }
 
@@ -270,8 +278,8 @@ class TBackendManager {
 
             if ( !error.code || error.code !== 'MODULE_NOT_FOUND' ) {
 
-                console.error( `The router "${name}" seems to encounter internal error.` )
-                console.error( error )
+                this.logger.error( `The router "${name}" seems to encounter internal error.` )
+                this.logger.error( error )
 
             }
 
@@ -295,11 +303,11 @@ class TBackendManager {
 
             if ( error instanceof TypeError && error.message === 'Found non-callable @@iterator' ) {
 
-                console.error( `The router "${name}" seems to encounter error ! Are you using an object instead an array for router configuration ?` )
+                this.logger.error( `The router "${name}" seems to encounter error ! Are you using an object instead an array for router configuration ?` )
 
             }
 
-            console.error( error )
+            this.logger.error( error )
 
         }
 
@@ -352,9 +360,9 @@ class TBackendManager {
 
             } catch ( error ) {
 
-                console.error( `Unable to create database of type ${dbType} due to ${error.name}` )
-                console.error( error.message )
-                console.error( error.stack )
+                this.logger.error( `Unable to create database of type ${dbType} due to ${error.name}` )
+                this.logger.error( error.message )
+                this.logger.error( error.stack )
 
             }
 
@@ -394,7 +402,7 @@ class TBackendManager {
             server.port            = configElement.port
             server.env             = configElement.env
             server.listen( configElement.port, configElement.host, () => {
-                console.log( `${server.name} start listening on ${server.type}://${server.host}:${server.port} at ${new Date()} under ${server.env} environment.` )
+                this.logger.log( `${server.name} start listening on ${server.type}://${server.host}:${server.port} at ${new Date()} under ${server.env} environment.` )
             } )
             server.on( 'connection', connection => {
                 this.connections.push( connection )
@@ -451,7 +459,7 @@ class TBackendManager {
             database.close( () => {
 
                 closedDatabases++
-                console.log( `Connection to ${databaseName} is closed.` )
+                this.logger.log( `Connection to ${databaseName} is closed.` )
 
                 allClosed()
 
@@ -468,7 +476,7 @@ class TBackendManager {
             server.close( () => {
 
                 shutDownServers++
-                console.log( `The ${serverName} listening on ${server.type}://${server.host}:${server.port} is shutted down.` )
+                this.logger.log( `The ${serverName} listening on ${server.type}://${server.host}:${server.port} is shutted down.` )
 
                 allClosed()
 

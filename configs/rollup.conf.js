@@ -88,6 +88,7 @@ function CreateRollupConfigs ( options ) {
                     'https',
                     'path',
                     'itee-validators',
+                    'itee-core',
                     'itee-database'
                 ],
                 plugins: [
