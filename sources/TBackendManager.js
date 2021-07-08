@@ -18,12 +18,12 @@ import {
     isNotString,
     isNull,
     isUndefined
-}              from 'itee-validators'
-import { TAbstractObject } from 'itee-core'
-import express from 'express'
-import http    from 'http'
-import https   from 'https'
-import path    from 'path'
+}                          from 'itee-validators'
+import { TAbstractObject, DefaultLogger } from 'itee-core'
+import express             from 'express'
+import http                from 'http'
+import https               from 'https'
+import path                from 'path'
 
 class TBackendManager extends TAbstractObject {
 
@@ -106,12 +106,15 @@ class TBackendManager extends TAbstractObject {
     constructor ( parameters = {} ) {
 
         const _parameters = {
-            ...{},
+            ...{
+                logger: DefaultLogger
+            },
             ...parameters
         }
 
-        super(_parameters)
+        super( _parameters )
 
+        this.logger       = parameters.logger
         this.rootPath     = parameters.rootPath
         this.applications = express()
         this.router       = express.Router
@@ -135,7 +138,7 @@ class TBackendManager extends TAbstractObject {
 
         if ( isNull( value ) ) { throw new TypeError( 'Root path cannot be null ! Expect a non empty string.' ) }
         if ( isUndefined( value ) ) { throw new TypeError( 'Root path cannot be undefined ! Expect a non empty string.' ) }
-        if ( isNotString( value ) ) { throw new TypeError( `Root path cannot be an instance of ${value.constructor.name} ! Expect a non empty string.` ) }
+        if ( isNotString( value ) ) { throw new TypeError( `Root path cannot be an instance of ${ value.constructor.name } ! Expect a non empty string.` ) }
         if ( isEmptyString( value ) ) { throw new TypeError( 'Root path cannot be empty ! Expect a non empty string.' ) }
         if ( isBlankString( value ) ) { throw new TypeError( 'Root path cannot contain only whitespace ! Expect a non empty string.' ) }
 
@@ -178,20 +181,20 @@ class TBackendManager extends TAbstractObject {
         for ( let [ name, config ] of Object.entries( middlewaresConfig ) ) {
 
             if ( isNotArray( config ) ) {
-                throw new TypeError( `Invalid middlware configuration for ${name}, expecting an array of arguments to spread to middleware module, got ${config.constructor.name}` )
+                throw new TypeError( `Invalid middlware configuration for ${ name }, expecting an array of arguments to spread to middleware module, got ${ config.constructor.name }` )
             }
 
             if ( this._initPackageMiddleware( name, config ) ) {
 
-                this.logger.log( `Use ${name} middleware from node_modules` )
+                this.logger.log( `Use ${ name } middleware from node_modules` )
 
             } else if ( this._initLocalMiddleware( name, config ) ) {
 
-                this.logger.log( `Use ${name} middleware from local folder` )
+                this.logger.log( `Use ${ name } middleware from local folder` )
 
             } else {
 
-                this.logger.error( `Unable to register the middleware ${name} the package and/or local file doesn't seem to exist ! Skip it.` )
+                this.logger.error( `Unable to register the middleware ${ name } the package and/or local file doesn't seem to exist ! Skip it.` )
 
             }
 
@@ -212,7 +215,7 @@ class TBackendManager extends TAbstractObject {
 
             if ( !error.code || error.code !== 'MODULE_NOT_FOUND' ) {
 
-                this.logger.error( `The middleware "${name}" seems to encounter internal error.` )
+                this.logger.error( `The middleware "${ name }" seems to encounter internal error.` )
                 this.logger.error( error )
 
             }
@@ -249,15 +252,15 @@ class TBackendManager extends TAbstractObject {
 
             if ( this._initPackageRouter( baseRoute, routerPath ) ) {
 
-                this.logger.log( `Use ${routerPath} router from node_modules over base route: ${baseRoute}` )
+                this.logger.log( `Use ${ routerPath } router from node_modules over base route: ${ baseRoute }` )
 
             } else if ( this._initLocalRouter( baseRoute, routerPath ) ) {
 
-                this.logger.log( `Use ${routerPath} router from local folder over base route: ${baseRoute}` )
+                this.logger.log( `Use ${ routerPath } router from local folder over base route: ${ baseRoute }` )
 
             } else {
 
-                this.logger.error( `Unable to register the router ${routerPath} the package and/or local file doesn't seem to exist ! Skip it.` )
+                this.logger.error( `Unable to register the router ${ routerPath } the package and/or local file doesn't seem to exist ! Skip it.` )
 
             }
 
@@ -278,7 +281,7 @@ class TBackendManager extends TAbstractObject {
 
             if ( !error.code || error.code !== 'MODULE_NOT_FOUND' ) {
 
-                this.logger.error( `The router "${name}" seems to encounter internal error.` )
+                this.logger.error( `The router "${ name }" seems to encounter internal error.` )
                 this.logger.error( error )
 
             }
@@ -303,7 +306,7 @@ class TBackendManager extends TAbstractObject {
 
             if ( error instanceof TypeError && error.message === 'Found non-callable @@iterator' ) {
 
-                this.logger.error( `The router "${name}" seems to encounter error ! Are you using an object instead an array for router configuration ?` )
+                this.logger.error( `The router "${ name }" seems to encounter error ! Are you using an object instead an array for router configuration ?` )
 
             }
 
@@ -322,7 +325,7 @@ class TBackendManager extends TAbstractObject {
             const databaseConfig = config[ configIndex ]
             const dbType         = databaseConfig.type
             const dbFrom         = databaseConfig.from
-            const dbName         = `${( databaseConfig.name ) ? databaseConfig.name : `${dbType}_${configIndex}`}`
+            const dbName         = `${ ( databaseConfig.name ) ? databaseConfig.name : `${ dbType }_${ configIndex }` }`
 
             try {
 
@@ -360,7 +363,7 @@ class TBackendManager extends TAbstractObject {
 
             } catch ( error ) {
 
-                this.logger.error( `Unable to create database of type ${dbType} due to ${error.name}` )
+                this.logger.error( `Unable to create database of type ${ dbType } due to ${ error.name }` )
                 this.logger.error( error.message )
                 this.logger.error( error.stack )
 
@@ -394,7 +397,7 @@ class TBackendManager extends TAbstractObject {
 
             }
 
-            server.name            = configElement.name || `${( configElement.name ) ? configElement.name : `Server_${configId}`}`
+            server.name            = configElement.name || `${ ( configElement.name ) ? configElement.name : `Server_${ configId }` }`
             server.maxHeadersCount = configElement.max_headers_count
             server.timeout         = configElement.timeout
             server.type            = configElement.type
@@ -402,7 +405,7 @@ class TBackendManager extends TAbstractObject {
             server.port            = configElement.port
             server.env             = configElement.env
             server.listen( configElement.port, configElement.host, () => {
-                this.logger.log( `${server.name} start listening on ${server.type}://${server.host}:${server.port} at ${new Date()} under ${server.env} environment.` )
+                this.logger.log( `${ server.name } start listening on ${ server.type }://${ server.host }:${ server.port } at ${ new Date() } under ${ server.env } environment.` )
             } )
             server.on( 'connection', connection => {
                 this.connections.push( connection )
@@ -459,7 +462,7 @@ class TBackendManager extends TAbstractObject {
             database.close( () => {
 
                 closedDatabases++
-                this.logger.log( `Connection to ${databaseName} is closed.` )
+                this.logger.log( `Connection to ${ databaseName } is closed.` )
 
                 allClosed()
 
@@ -476,7 +479,7 @@ class TBackendManager extends TAbstractObject {
             server.close( () => {
 
                 shutDownServers++
-                this.logger.log( `The ${serverName} listening on ${server.type}://${server.host}:${server.port} is shutted down.` )
+                this.logger.log( `The ${ serverName } listening on ${ server.type }://${ server.host }:${ server.port } is shutted down.` )
 
                 allClosed()
 
