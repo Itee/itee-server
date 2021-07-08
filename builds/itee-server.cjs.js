@@ -1,4 +1,4 @@
-console.log('Itee.Server v6.2.2 - CommonJs')
+console.log('Itee.Server v6.2.4 - CommonJs')
 'use strict';
 
 Object.defineProperty(exports, '__esModule', { value: true });
@@ -108,22 +108,29 @@ class TBackendManager extends iteeCore.TAbstractObject {
     constructor ( parameters = {} ) {
 
         const _parameters = {
-            ...{},
+            ...{
+                logger:       iteeCore.DefaultLogger,
+                rootPath:     __dirname,
+                applications: [],
+                databases:    [],
+                servers:      []
+            },
             ...parameters
         };
 
-        super(_parameters);
+        super( _parameters );
 
-        this.rootPath     = parameters.rootPath;
+        this.logger       = _parameters.logger;
+        this.rootPath     = _parameters.rootPath;
         this.applications = express__default['default']();
         this.router       = express__default['default'].Router;
         this.databases    = new Map();
         this.servers      = new Map();
         this.connections  = [];
 
-        this._initApplications( parameters.applications );
-        this._initDatabases( parameters.databases );
-        this._initServers( parameters.servers );
+        this._initApplications( _parameters.applications );
+        this._initDatabases( _parameters.databases );
+        this._initServers( _parameters.servers );
 
     }
 
@@ -137,7 +144,7 @@ class TBackendManager extends iteeCore.TAbstractObject {
 
         if ( iteeValidators.isNull( value ) ) { throw new TypeError( 'Root path cannot be null ! Expect a non empty string.' ) }
         if ( iteeValidators.isUndefined( value ) ) { throw new TypeError( 'Root path cannot be undefined ! Expect a non empty string.' ) }
-        if ( iteeValidators.isNotString( value ) ) { throw new TypeError( `Root path cannot be an instance of ${value.constructor.name} ! Expect a non empty string.` ) }
+        if ( iteeValidators.isNotString( value ) ) { throw new TypeError( `Root path cannot be an instance of ${ value.constructor.name } ! Expect a non empty string.` ) }
         if ( iteeValidators.isEmptyString( value ) ) { throw new TypeError( 'Root path cannot be empty ! Expect a non empty string.' ) }
         if ( iteeValidators.isBlankString( value ) ) { throw new TypeError( 'Root path cannot contain only whitespace ! Expect a non empty string.' ) }
 
@@ -180,20 +187,20 @@ class TBackendManager extends iteeCore.TAbstractObject {
         for ( let [ name, config ] of Object.entries( middlewaresConfig ) ) {
 
             if ( iteeValidators.isNotArray( config ) ) {
-                throw new TypeError( `Invalid middlware configuration for ${name}, expecting an array of arguments to spread to middleware module, got ${config.constructor.name}` )
+                throw new TypeError( `Invalid middlware configuration for ${ name }, expecting an array of arguments to spread to middleware module, got ${ config.constructor.name }` )
             }
 
             if ( this._initPackageMiddleware( name, config ) ) {
 
-                this.logger.log( `Use ${name} middleware from node_modules` );
+                this.logger.log( `Use ${ name } middleware from node_modules` );
 
             } else if ( this._initLocalMiddleware( name, config ) ) {
 
-                this.logger.log( `Use ${name} middleware from local folder` );
+                this.logger.log( `Use ${ name } middleware from local folder` );
 
             } else {
 
-                this.logger.error( `Unable to register the middleware ${name} the package and/or local file doesn't seem to exist ! Skip it.` );
+                this.logger.error( `Unable to register the middleware ${ name } the package and/or local file doesn't seem to exist ! Skip it.` );
 
             }
 
@@ -214,7 +221,7 @@ class TBackendManager extends iteeCore.TAbstractObject {
 
             if ( !error.code || error.code !== 'MODULE_NOT_FOUND' ) {
 
-                this.logger.error( `The middleware "${name}" seems to encounter internal error.` );
+                this.logger.error( `The middleware "${ name }" seems to encounter internal error.` );
                 this.logger.error( error );
 
             }
@@ -251,15 +258,15 @@ class TBackendManager extends iteeCore.TAbstractObject {
 
             if ( this._initPackageRouter( baseRoute, routerPath ) ) {
 
-                this.logger.log( `Use ${routerPath} router from node_modules over base route: ${baseRoute}` );
+                this.logger.log( `Use ${ routerPath } router from node_modules over base route: ${ baseRoute }` );
 
             } else if ( this._initLocalRouter( baseRoute, routerPath ) ) {
 
-                this.logger.log( `Use ${routerPath} router from local folder over base route: ${baseRoute}` );
+                this.logger.log( `Use ${ routerPath } router from local folder over base route: ${ baseRoute }` );
 
             } else {
 
-                this.logger.error( `Unable to register the router ${routerPath} the package and/or local file doesn't seem to exist ! Skip it.` );
+                this.logger.error( `Unable to register the router ${ routerPath } the package and/or local file doesn't seem to exist ! Skip it.` );
 
             }
 
@@ -280,7 +287,7 @@ class TBackendManager extends iteeCore.TAbstractObject {
 
             if ( !error.code || error.code !== 'MODULE_NOT_FOUND' ) {
 
-                this.logger.error( `The router "${name}" seems to encounter internal error.` );
+                this.logger.error( `The router "${ name }" seems to encounter internal error.` );
                 this.logger.error( error );
 
             }
@@ -305,7 +312,7 @@ class TBackendManager extends iteeCore.TAbstractObject {
 
             if ( error instanceof TypeError && error.message === 'Found non-callable @@iterator' ) {
 
-                this.logger.error( `The router "${name}" seems to encounter error ! Are you using an object instead an array for router configuration ?` );
+                this.logger.error( `The router "${ name }" seems to encounter error ! Are you using an object instead an array for router configuration ?` );
 
             }
 
@@ -324,7 +331,7 @@ class TBackendManager extends iteeCore.TAbstractObject {
             const databaseConfig = config[ configIndex ];
             const dbType         = databaseConfig.type;
             const dbFrom         = databaseConfig.from;
-            const dbName         = `${( databaseConfig.name ) ? databaseConfig.name : `${dbType}_${configIndex}`}`;
+            const dbName         = `${ ( databaseConfig.name ) ? databaseConfig.name : `${ dbType }_${ configIndex }` }`;
 
             try {
 
@@ -362,7 +369,7 @@ class TBackendManager extends iteeCore.TAbstractObject {
 
             } catch ( error ) {
 
-                this.logger.error( `Unable to create database of type ${dbType} due to ${error.name}` );
+                this.logger.error( `Unable to create database of type ${ dbType } due to ${ error.name }` );
                 this.logger.error( error.message );
                 this.logger.error( error.stack );
 
@@ -396,7 +403,7 @@ class TBackendManager extends iteeCore.TAbstractObject {
 
             }
 
-            server.name            = configElement.name || `${( configElement.name ) ? configElement.name : `Server_${configId}`}`;
+            server.name            = configElement.name || `${ ( configElement.name ) ? configElement.name : `Server_${ configId }` }`;
             server.maxHeadersCount = configElement.max_headers_count;
             server.timeout         = configElement.timeout;
             server.type            = configElement.type;
@@ -404,7 +411,7 @@ class TBackendManager extends iteeCore.TAbstractObject {
             server.port            = configElement.port;
             server.env             = configElement.env;
             server.listen( configElement.port, configElement.host, () => {
-                this.logger.log( `${server.name} start listening on ${server.type}://${server.host}:${server.port} at ${new Date()} under ${server.env} environment.` );
+                this.logger.log( `${ server.name } start listening on ${ server.type }://${ server.host }:${ server.port } at ${ new Date() } under ${ server.env } environment.` );
             } );
             server.on( 'connection', connection => {
                 this.connections.push( connection );
@@ -461,7 +468,7 @@ class TBackendManager extends iteeCore.TAbstractObject {
             database.close( () => {
 
                 closedDatabases++;
-                this.logger.log( `Connection to ${databaseName} is closed.` );
+                this.logger.log( `Connection to ${ databaseName } is closed.` );
 
                 allClosed();
 
@@ -478,7 +485,7 @@ class TBackendManager extends iteeCore.TAbstractObject {
             server.close( () => {
 
                 shutDownServers++;
-                this.logger.log( `The ${serverName} listening on ${server.type}://${server.host}:${server.port} is shutted down.` );
+                this.logger.log( `The ${ serverName } listening on ${ server.type }://${ server.host }:${ server.port } is shutted down.` );
 
                 allClosed();
 

@@ -1,3 +1,17 @@
+## [6.2.4](https://github.com/Itee/itee-server/compare/v6.2.3...v6.2.4) (2021-07-08)
+
+
+### Bug Fixes
+
+* **tbackendmanager:** fix parameter assignment in ctor ([de61172](https://github.com/Itee/itee-server/commit/de61172b2d87dacaecf887fa29c5856aa848e759))
+
+## [6.2.3](https://github.com/Itee/itee-server/compare/v6.2.2...v6.2.3) (2021-07-08)
+
+
+### Bug Fixes
+
+* **tbackendmanager:** fix logger usage ([d9aacb3](https://github.com/Itee/itee-server/commit/d9aacb3df6cb3951c257c3674550bbc4725c9eab))
+
 ## [6.2.2](https://github.com/Itee/itee-server/compare/v6.2.1...v6.2.2) (2021-07-08)
 
 
