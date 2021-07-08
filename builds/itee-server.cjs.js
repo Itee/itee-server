@@ -1,4 +1,4 @@
-console.log('Itee.Server v6.2.3 - CommonJs')
+console.log('Itee.Server v6.2.4 - CommonJs')
 'use strict';
 
 Object.defineProperty(exports, '__esModule', { value: true });
@@ -109,24 +109,28 @@ class TBackendManager extends iteeCore.TAbstractObject {
 
         const _parameters = {
             ...{
-                logger: iteeCore.DefaultLogger
+                logger:       iteeCore.DefaultLogger,
+                rootPath:     __dirname,
+                applications: [],
+                databases:    [],
+                servers:      []
             },
             ...parameters
         };
 
         super( _parameters );
 
-        this.logger       = parameters.logger;
-        this.rootPath     = parameters.rootPath;
+        this.logger       = _parameters.logger;
+        this.rootPath     = _parameters.rootPath;
         this.applications = express__default['default']();
         this.router       = express__default['default'].Router;
         this.databases    = new Map();
         this.servers      = new Map();
         this.connections  = [];
 
-        this._initApplications( parameters.applications );
-        this._initDatabases( parameters.databases );
-        this._initServers( parameters.servers );
+        this._initApplications( _parameters.applications );
+        this._initDatabases( _parameters.databases );
+        this._initServers( _parameters.servers );
 
     }
 

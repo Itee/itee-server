@@ -1,4 +1,4 @@
-console.log('Itee.Server v6.2.3 - EsModule')
+console.log('Itee.Server v6.2.4 - EsModule')
 import { isNull, isUndefined, isNotString, isEmptyString, isBlankString, isNotArray, isDefined, isArray } from 'itee-validators';
 import { TAbstractObject, DefaultLogger } from 'itee-core';
 import express from 'express';
@@ -98,24 +98,28 @@ class TBackendManager extends TAbstractObject {
 
         const _parameters = {
             ...{
-                logger: DefaultLogger
+                logger:       DefaultLogger,
+                rootPath:     __dirname,
+                applications: [],
+                databases:    [],
+                servers:      []
             },
             ...parameters
         };
 
         super( _parameters );
 
-        this.logger       = parameters.logger;
-        this.rootPath     = parameters.rootPath;
+        this.logger       = _parameters.logger;
+        this.rootPath     = _parameters.rootPath;
         this.applications = express();
         this.router       = express.Router;
         this.databases    = new Map();
         this.servers      = new Map();
         this.connections  = [];
 
-        this._initApplications( parameters.applications );
-        this._initDatabases( parameters.databases );
-        this._initServers( parameters.servers );
+        this._initApplications( _parameters.applications );
+        this._initDatabases( _parameters.databases );
+        this._initServers( _parameters.servers );
 
     }
 
