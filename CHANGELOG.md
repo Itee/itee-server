@@ -1,3 +1,16 @@
+## [6.2.2](https://github.com/Itee/itee-server/compare/v6.2.1...v6.2.2) (2021-07-08)
+
+
+### Bug Fixes
+
+* **eslint:** remove console statement in favor of this.logger from itee core package ([3593054](https://github.com/Itee/itee-server/commit/3593054254b3b00ea98d17b9c8a76dacac5a68f3))
+* **package:** apply dependencies fix ([03c7064](https://github.com/Itee/itee-server/commit/03c7064e266917f4d119a398c6f56d3169d4eeaf))
+* **package:** apply fix from dependencies ([992e868](https://github.com/Itee/itee-server/commit/992e8684028521d256dd30d92af730c7ce0e95d8))
+* **package:** apply npm audit fix ([2b28842](https://github.com/Itee/itee-server/commit/2b28842a88d05ac334b0737735a654c24382c90b))
+* **package:** update all dependencies to their latest version ([49162e4](https://github.com/Itee/itee-server/commit/49162e4c4e1b6bc895946cf3dfc05eeb2edf71eb))
+* **releaserc:** fix missing dev maps ([26fbe2d](https://github.com/Itee/itee-server/commit/26fbe2d7bb22a2da13a49019c61783939ce7c17c))
+* **tbackendmanager:** fix bad server shutdown when connection are open, and add setter/getter ([20c8f1d](https://github.com/Itee/itee-server/commit/20c8f1dd694f5106cfca1926de85b88f44c5de73))
+
 ## [6.2.1](https://github.com/Itee/itee-server/compare/v6.2.0...v6.2.1) (2020-02-18)
 
 

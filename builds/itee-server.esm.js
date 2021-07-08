@@ -1,8 +1,9 @@
-console.log('Itee.Server v6.2.1 - EsModule')
+console.log('Itee.Server v6.2.2 - EsModule')
+import { isNull, isUndefined, isNotString, isEmptyString, isBlankString, isNotArray, isDefined, isArray } from 'itee-validators';
+import { TAbstractObject } from 'itee-core';
 import express from 'express';
 import http from 'http';
 import https from 'https';
-import { isNull, isUndefined, isNotString, isEmptyString, isBlankString, isNotArray, isDefined, isArray } from 'itee-validators';
 import path from 'path';
 
 /**
@@ -15,15 +16,99 @@ import path from 'path';
  *
  */
 
-class TBackendManager {
+class TBackendManager extends TAbstractObject {
 
-    constructor ( parameters ) {
+    get applications () {
+        return this._applications
+    }
+
+    set applications ( value ) {
+        this._applications = value;
+    }
+
+    setApplications ( value ) {
+
+        this.applications = value;
+        return this
+
+    }
+
+    addMiddleware ( middleware ) {
+
+        this.applications.use( middleware );
+        return this
+
+    }
+
+    // Todo remove middleware
+
+    get router () {
+        return this._router
+    }
+
+    set router ( value ) {
+        this._router = value;
+    }
+
+    setRouter ( value ) {
+
+        this.router = value;
+        return this
+
+    }
+
+    get databases () {
+        return this._databases
+    }
+
+    set databases ( value ) {
+        this._databases = value;
+    }
+
+    setDatabases ( value ) {
+
+        this.databases = value;
+        return this
+
+    }
+
+    addDatabase ( databaseName, database ) {
+
+        this._databases.set( databaseName, database );
+        return this
+
+    }
+
+    get servers () {
+        return this._servers
+    }
+
+    set servers ( value ) {
+        this._servers = value;
+    }
+
+    setServers ( value ) {
+
+        this.servers = value;
+        return this
+
+    }
+
+    constructor ( parameters = {} ) {
+
+        const _parameters = {
+            ...{},
+            ...parameters
+        };
+
+        super(_parameters);
 
         this.rootPath     = parameters.rootPath;
         this.applications = express();
         this.router       = express.Router;
         this.databases    = new Map();
         this.servers      = new Map();
+        this.connections  = [];
 
         this._initApplications( parameters.applications );
         this._initDatabases( parameters.databases );
@@ -89,15 +174,15 @@ class TBackendManager {
 
             if ( this._initPackageMiddleware( name, config ) ) {
 
-                console.log( `Use ${name} middleware from node_modules` );
+                this.logger.log( `Use ${name} middleware from node_modules` );
 
             } else if ( this._initLocalMiddleware( name, config ) ) {
 
-                console.log( `Use ${name} middleware from local folder` );
+                this.logger.log( `Use ${name} middleware from local folder` );
 
             } else {
 
-                console.error( `Unable to register the middleware ${name} the package and/or local file doesn't seem to exist ! Skip it.` );
+                this.logger.error( `Unable to register the middleware ${name} the package and/or local file doesn't seem to exist ! Skip it.` );
 
             }
 
@@ -118,8 +203,8 @@ class TBackendManager {
 
             if ( !error.code || error.code !== 'MODULE_NOT_FOUND' ) {
 
-                console.error( `The middleware "${name}" seems to encounter internal error.` );
-                console.error( error );
+                this.logger.error( `The middleware "${name}" seems to encounter internal error.` );
+                this.logger.error( error );
 
             }
 
@@ -141,7 +226,7 @@ class TBackendManager {
 
         } catch ( error ) {
 
-            console.error( error );
+            this.logger.error( error );
 
         }
 
@@ -155,15 +240,15 @@ class TBackendManager {
 
             if ( this._initPackageRouter( baseRoute, routerPath ) ) {
 
-                console.log( `Use ${routerPath} router from node_modules over base route: ${baseRoute}` );
+                this.logger.log( `Use ${routerPath} router from node_modules over base route: ${baseRoute}` );
 
             } else if ( this._initLocalRouter( baseRoute, routerPath ) ) {
 
-                console.log( `Use ${routerPath} router from local folder over base route: ${baseRoute}` );
+                this.logger.log( `Use ${routerPath} router from local folder over base route: ${baseRoute}` );
 
             } else {
 
-                console.error( `Unable to register the router ${routerPath} the package and/or local file doesn't seem to exist ! Skip it.` );
+                this.logger.error( `Unable to register the router ${routerPath} the package and/or local file doesn't seem to exist ! Skip it.` );
 
             }
 
@@ -184,8 +269,8 @@ class TBackendManager {
 
             if ( !error.code || error.code !== 'MODULE_NOT_FOUND' ) {
 
-                console.error( `The router "${name}" seems to encounter internal error.` );
-                console.error( error );
+                this.logger.error( `The router "${name}" seems to encounter internal error.` );
+                this.logger.error( error );
 
             }
 
@@ -209,11 +294,11 @@ class TBackendManager {
 
             if ( error instanceof TypeError && error.message === 'Found non-callable @@iterator' ) {
 
-                console.error( `The router "${name}" seems to encounter error ! Are you using an object instead an array for router configuration ?` );
+                this.logger.error( `The router "${name}" seems to encounter error ! Are you using an object instead an array for router configuration ?` );
 
             }
 
-            console.error( error );
+            this.logger.error( error );
 
         }
 
@@ -234,11 +319,11 @@ class TBackendManager {
 
                 let database = null;
 
-                if ( isDefined(dbFrom)) {
+                if ( isDefined( dbFrom ) ) {
 
                     // In case user specify a package where take the database of type...
-                    const databasePackage = require(dbFrom);
-                    database = new databasePackage[ dbType ]( {
+                    const databasePackage = require( dbFrom );
+                    database              = new databasePackage[ dbType ]( {
                         ...{
                             application: this.applications,
                             router:      this.router
@@ -248,14 +333,14 @@ class TBackendManager {
 
                 } else {
 
-//                    // Else try to use auto registered database
-//                    database = new Databases[ dbType ]( {
-//                        ...{
-//                            application: this.applications,
-//                            router:      this.router
-//                        },
-//                        ...databaseConfig
-//                    } )
+                    //                    // Else try to use auto registered database
+                    //                    database = new Databases[ dbType ]( {
+                    //                        ...{
+                    //                            application: this.applications,
+                    //                            router:      this.router
+                    //                        },
+                    //                        ...databaseConfig
+                    //                    } )
 
                 }
 
@@ -266,9 +351,9 @@ class TBackendManager {
 
             } catch ( error ) {
 
-                console.error( `Unable to create database of type ${dbType} due to ${error.name}` );
-                console.error( error.message );
-                console.error( error.stack );
+                this.logger.error( `Unable to create database of type ${dbType} due to ${error.name}` );
+                this.logger.error( error.message );
+                this.logger.error( error.stack );
 
             }
 
@@ -300,7 +385,7 @@ class TBackendManager {
 
             }
 
-            server.name            = configElement.name || `${( configElement.name ) ? configElement.name : 'Server_' + configId}`;
+            server.name            = configElement.name || `${( configElement.name ) ? configElement.name : `Server_${configId}`}`;
             server.maxHeadersCount = configElement.max_headers_count;
             server.timeout         = configElement.timeout;
             server.type            = configElement.type;
@@ -308,7 +393,13 @@ class TBackendManager {
             server.port            = configElement.port;
             server.env             = configElement.env;
             server.listen( configElement.port, configElement.host, () => {
-                console.log( `${server.name} start listening on ${server.type}://${server.host}:${server.port} at ${new Date()} under ${server.env} environment.` );
+                this.logger.log( `${server.name} start listening on ${server.type}://${server.host}:${server.port} at ${new Date()} under ${server.env} environment.` );
+            } );
+            server.on( 'connection', connection => {
+                this.connections.push( connection );
+                connection.on( 'close', () => {
+                    this.connections = this.connections.filter( curr => curr !== connection );
+                } );
             } );
 
             this.servers.set( server.name, server );
@@ -352,9 +443,23 @@ class TBackendManager {
         let shutDownServers     = 0;
         let closedDatabases     = 0;
 
-        if ( numberOfServers === 0 && numberOfDatabases === 0 ) {
-            if ( callback ) { callback(); }
-            return
+        if ( allClosed() ) { return }
+
+        for ( const [ databaseName, database ] of this.databases ) {
+
+            database.close( () => {
+
+                closedDatabases++;
+                this.logger.log( `Connection to ${databaseName} is closed.` );
+
+                allClosed();
+
+            } );
+
+        }
+
+        for ( let connection of this.connections ) {
+            connection.end();
         }
 
         for ( const [ serverName, server ] of this.servers ) {
@@ -362,35 +467,25 @@ class TBackendManager {
             server.close( () => {
 
                 shutDownServers++;
-                console.log( `The ${serverName} listening on ${server.type}://${server.host}:${server.port} is shutted down.` );
+                this.logger.log( `The ${serverName} listening on ${server.type}://${server.host}:${server.port} is shutted down.` );
 
-                if ( shutDownServers < numberOfServers ) {
-                    return
-                }
-
-                if ( numberOfDatabases === 0 ) {
-                    if ( callback ) { callback(); }
-                    return
-                }
-
-                for ( const [ databaseName, database ] of this.databases ) {
-
-                    database.close( () => {
-
-                        closedDatabases++;
-                        console.log( `Connection to ${databaseName} is closed.` );
-
-                        if ( closedDatabases < numberOfDatabases ) {
-                            return
-                        }
-
-                        if ( callback ) { callback(); }
-
-                    } );
-
-                }
+                allClosed();
 
             } );
+
+        }
+
+        function allClosed () {
+
+            if ( shutDownServers < numberOfServers ) {
+                return false
+            }
+
+            if ( closedDatabases < numberOfDatabases ) {
+                return false
+            }
+
+            if ( callback ) { callback(); }
 
         }
 
