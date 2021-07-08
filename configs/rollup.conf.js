@@ -12,11 +12,11 @@
  * @requires {@link module: [rollup-plugin-terser]{@link https://github.com/TrySound/rollup-plugin-terser}}
  */
 
-const packageInfos = require( '../package' )
-const commonjs     = require( 'rollup-plugin-commonjs' )
-const path         = require( 'path' )
-const resolve      = require( 'rollup-plugin-node-resolve' )
-const terser       = require( 'rollup-plugin-terser' ).terser
+const packageInfos    = require( '../package' )
+const path            = require( 'path' )
+const commonjs        = require( '@rollup/plugin-commonjs' )
+const { nodeResolve } = require( '@rollup/plugin-node-resolve' )
+const terser          = require( 'rollup-plugin-terser' ).terser
 
 function _computeBanner ( name, format ) {
 
@@ -65,7 +65,6 @@ function CreateRollupConfigs ( options ) {
     const output    = options.output
     const formats   = options.format.split( ',' )
     const envs      = options.env.split( ',' )
-    const sourcemap = options.sourcemap
     const treeshake = options.treeshake
     const fileName  = path.basename( input, '.js' )
 
@@ -89,13 +88,14 @@ function CreateRollupConfigs ( options ) {
                     'https',
                     'path',
                     'itee-validators',
+                    'itee-core',
                     'itee-database'
                 ],
                 plugins: [
                     commonjs( {
                         include: 'node_modules/**'
                     } ),
-                    resolve( {
+                    nodeResolve( {
                         preferBuiltins: true
                     } ),
                     isProd && terser()
@@ -127,7 +127,7 @@ function CreateRollupConfigs ( options ) {
                     footer:    '',
                     intro:     '',
                     outro:     '',
-                    sourcemap: sourcemap,
+                    sourcemap: !isProd,
                     interop:   true,
 
                     // danger zone
