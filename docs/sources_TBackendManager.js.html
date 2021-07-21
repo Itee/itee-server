@@ -1,0 +1,733 @@
+<!DOCTYPE html>
+
+<html lang="en">
+<head>
+	<meta charset="utf-8">
+	<meta name="viewport" content="width=device-width">
+	<title>Itee-Server Source: sources/TBackendManager.js</title>
+
+	<!--[if lt IE 9]>
+	<script src="//html5shiv.googlecode.com/svn/trunk/html5.js"></script>
+	<![endif]-->
+	<link type="text/css" rel="stylesheet" href="styles/sunlight.dark.css">
+
+	<link type="text/css" rel="stylesheet" href="styles/site.cyborg.css">
+
+</head>
+
+<body>
+
+<div class="navbar navbar-default navbar-fixed-top ">
+<div class="container">
+	<div class="navbar-header">
+		<a class="navbar-brand" href="index.html">Itee-Server</a>
+		<button class="navbar-toggle" type="button" data-toggle="collapse" data-target="#topNavigation">
+			<span class="icon-bar"></span>
+			<span class="icon-bar"></span>
+			<span class="icon-bar"></span>
+        </button>
+	</div>
+	<div class="navbar-collapse collapse" id="topNavigation">
+		<ul class="nav navbar-nav">
+			
+			<li class="dropdown">
+				<a href="modules.list.html" class="dropdown-toggle" data-toggle="dropdown">Modules<b class="caret"></b></a>
+				<ul class="dropdown-menu inline">
+					<li><a href="module-Building.html">Building</a></li><li><a href="module-Config-EsLint.html">Config-EsLint</a></li><li><a href="module-Config-JsDoc.html">Config-JsDoc</a></li><li><a href="module-Config-Karma-Benchs.html">Config-Karma-Benchs</a></li><li><a href="module-Config-Karma-Units.html">Config-Karma-Units</a></li><li><a href="module-Config-Rollup.html">Config-Rollup</a></li><li><a href="module-Config-Rollup-Test.html">Config-Rollup-Test</a></li>
+				</ul>
+			</li>
+			
+			<li class="dropdown">
+				<a href="global.html" class="dropdown-toggle" data-toggle="dropdown">Global<b class="caret"></b></a>
+				<ul class="dropdown-menu inline">
+					<li><a href="global.html#npmrunbench">npm run bench</a></li><li><a href="global.html#npmrunbuild">npm run build</a></li><li><a href="global.html#npmrunbuild-test">npm run build-test</a></li><li><a href="global.html#npmrunclean">npm run clean</a></li><li><a href="global.html#npmrundoc">npm run doc</a></li><li><a href="global.html#npmrunhelpdefault">npm run help ( default )</a></li><li><a href="global.html#npmrunlint">npm run lint</a></li><li><a href="global.html#npmrunpatch">npm run patch</a></li><li><a href="global.html#npmrunrelease">npm run release</a></li><li><a href="global.html#npmruntest">npm run test</a></li><li><a href="global.html#npmrununit">npm run unit</a></li>
+				</ul>
+			</li>
+			
+		</ul>
+        
+            <div class="col-sm-3 col-md-3">
+                <form class="navbar-form" role="search">
+                    <div class="input-group">
+                        <input type="text" class="form-control" placeholder="Search" name="q" id="search-input">
+                        <div class="input-group-btn">
+                            <button class="btn btn-default" id="search-submit"><i class="glyphicon glyphicon-search"></i></button>
+                        </div>
+                    </div>
+                </form>
+            </div>
+        
+	</div>
+
+</div>
+</div>
+
+
+<div class="container" id="toc-content">
+<div class="row">
+
+	
+	<div class="col-md-12">
+	
+		<div id="main">
+			
+
+		<h1 class="page-title">Source: sources/TBackendManager.js</h1>
+    
+<section>
+    <article>
+        <pre
+            class="sunlight-highlight-javascript linenums">/**
+ * @author [Tristan Valcke]{@link https://github.com/Itee}
+ * @license [BSD-3-Clause]{@link https://opensource.org/licenses/BSD-3-Clause}
+ *
+ * @file Todo
+ *
+ * @example Todo
+ *
+ */
+
+//todo: import Databases from 'itee-database'
+import {
+    isArray,
+    isBlankString,
+    isDefined,
+    isEmptyString,
+    isNotArray,
+    isNotString,
+    isNull,
+    isUndefined
+}              from 'itee-validators'
+import {
+    TAbstractObject,
+    DefaultLogger
+}              from 'itee-core'
+import express from 'express'
+import http    from 'http'
+import https   from 'https'
+import path    from 'path'
+
+class TBackendManager extends TAbstractObject {
+
+    get applications () {
+        return this._applications
+    }
+
+    set applications ( value ) {
+        this._applications = value
+    }
+
+    setApplications ( value ) {
+
+        this.applications = value
+        return this
+
+    }
+
+    addMiddleware ( middleware ) {
+
+        this.applications.use( middleware )
+        return this
+
+    }
+
+    // Todo remove middleware
+
+    get router () {
+        return this._router
+    }
+
+    set router ( value ) {
+        this._router = value
+    }
+
+    setRouter ( value ) {
+
+        this.router = value
+        return this
+
+    }
+
+    get databases () {
+        return this._databases
+    }
+
+    set databases ( value ) {
+        this._databases = value
+    }
+
+    setDatabases ( value ) {
+
+        this.databases = value
+        return this
+
+    }
+
+    addDatabase ( databaseName, database ) {
+
+        this._databases.set( databaseName, database )
+        return this
+
+    }
+
+    get servers () {
+        return this._servers
+    }
+
+    set servers ( value ) {
+        this._servers = value
+    }
+
+    setServers ( value ) {
+
+        this.servers = value
+        return this
+
+    }
+
+    constructor ( parameters = {} ) {
+
+        const _parameters = {
+            ...{
+                logger:       DefaultLogger,
+                rootPath:     __dirname,
+                applications: [],
+                databases:    [],
+                servers:      []
+            },
+            ...parameters
+        }
+
+        super( _parameters )
+
+        this.logger       = _parameters.logger
+        this.rootPath     = _parameters.rootPath
+        this.applications = express()
+        this.router       = express.Router
+        this.databases    = new Map()
+        this.servers      = new Map()
+        this.connections  = []
+
+        this._initApplications( _parameters.applications )
+        this._initDatabases( _parameters.databases )
+        this._initServers( _parameters.servers )
+
+    }
+
+    get rootPath () {
+
+        return this._rootPath
+
+    }
+
+    set rootPath ( value ) {
+
+        if ( isNull( value ) ) { throw new TypeError( 'Root path cannot be null ! Expect a non empty string.' ) }
+        if ( isUndefined( value ) ) { throw new TypeError( 'Root path cannot be undefined ! Expect a non empty string.' ) }
+        if ( isNotString( value ) ) { throw new TypeError( `Root path cannot be an instance of ${ value.constructor.name } ! Expect a non empty string.` ) }
+        if ( isEmptyString( value ) ) { throw new TypeError( 'Root path cannot be empty ! Expect a non empty string.' ) }
+        if ( isBlankString( value ) ) { throw new TypeError( 'Root path cannot contain only whitespace ! Expect a non empty string.' ) }
+
+        this._rootPath = value
+
+    }
+
+    setRootPath ( value ) {
+
+        this.rootPath = value
+        return this
+
+    }
+
+    _initApplications ( config ) {
+
+        if ( config.case_sensitive_routing ) { this.applications.set( 'case sensitive routing', config.case_sensitive_routing ) }
+        if ( config.env ) { this.applications.set( 'env', config.env ) }
+        if ( config.etag ) { this.applications.set( 'etag', config.etag ) }
+        if ( config.jsonp_callback_name ) { this.applications.set( 'jsonp callback name', config.jsonp_callback_name ) }
+        if ( config.jsonp_escape ) { this.applications.set( 'json escape', config.jsonp_escape ) }
+        if ( config.jsonp_replacer ) { this.applications.set( 'json replacer', config.jsonp_replacer ) }
+        if ( config.jsonp_spaces ) { this.applications.set( 'json spaces', config.jsonp_spaces ) }
+        if ( config.query_parser ) { this.applications.set( 'query parser', config.query_parser ) }
+        if ( config.strict_routing ) { this.applications.set( 'strict routing', config.strict_routing ) }
+        if ( config.subdomain_offset ) { this.applications.set( 'subdomain offset', config.subdomain_offset ) }
+        if ( config.trust_proxy ) { this.applications.set( 'trust proxy', config.trust_proxy ) }
+        if ( config.views ) { this.applications.set( 'views', config.views ) }
+        if ( config.view_cache ) { this.applications.set( 'view cache', config.view_cache ) }
+        if ( config.view_engine ) { this.applications.set( 'view engine', config.view_engine ) }
+        if ( config.x_powered_by ) { this.applications.set( 'x-powered-by', config.x_powered_by ) }
+
+        this._initMiddlewares( config.middlewares )
+        this._initRouters( config.routers )
+
+    }
+
+    _initMiddlewares ( middlewaresConfig ) {
+
+        for ( let [ name, config ] of Object.entries( middlewaresConfig ) ) {
+
+            if ( isNotArray( config ) ) {
+                throw new TypeError( `Invalid middlware configuration for ${ name }, expecting an array of arguments to spread to middleware module, got ${ config.constructor.name }` )
+            }
+
+            if ( this._initPackageMiddleware( name, config ) ) {
+
+                this.logger.log( `Use ${ name } middleware from node_modules` )
+
+            } else if ( this._initLocalMiddleware( name, config ) ) {
+
+                this.logger.log( `Use ${ name } middleware from local folder` )
+
+            } else {
+
+                this.logger.error( `Unable to register the middleware ${ name } the package and/or local file doesn't seem to exist ! Skip it.` )
+
+            }
+
+        }
+
+    }
+
+    _initPackageMiddleware ( name, config ) {
+
+        let success = false
+
+        try {
+
+            this.applications.use( require( name )( ...config ) )
+            success = true
+
+        } catch ( error ) {
+
+            if ( !error.code || error.code !== 'MODULE_NOT_FOUND' ) {
+
+                this.logger.error( `The middleware "${ name }" seems to encounter internal error.` )
+                this.logger.error( error )
+
+            }
+
+        }
+
+        return success
+
+    }
+
+    _initLocalMiddleware ( name, config ) {
+
+        let success = false
+
+        try {
+
+            const localMiddlewaresPath = path.join( this.rootPath, 'middlewares', name )
+            this.applications.use( require( localMiddlewaresPath )( ...config ) )
+            success = true
+
+        } catch ( error ) {
+
+            this.logger.error( error )
+
+        }
+
+        return success
+
+    }
+
+    _initRouters ( routers ) {
+
+        for ( let [ baseRoute, routerPath ] of Object.entries( routers ) ) {
+
+            if ( this._initPackageRouter( baseRoute, routerPath ) ) {
+
+                this.logger.log( `Use ${ routerPath } router from node_modules over base route: ${ baseRoute }` )
+
+            } else if ( this._initLocalRouter( baseRoute, routerPath ) ) {
+
+                this.logger.log( `Use ${ routerPath } router from local folder over base route: ${ baseRoute }` )
+
+            } else {
+
+                this.logger.error( `Unable to register the router ${ routerPath } the package and/or local file doesn't seem to exist ! Skip it.` )
+
+            }
+
+        }
+
+    }
+
+    _initPackageRouter ( baseRoute, routerPath ) {
+
+        let success = false
+
+        try {
+
+            this.applications.use( baseRoute, require( routerPath ) )
+            success = true
+
+        } catch ( error ) {
+
+            if ( !error.code || error.code !== 'MODULE_NOT_FOUND' ) {
+
+                this.logger.error( `The router "${ name }" seems to encounter internal error.` )
+                this.logger.error( error )
+
+            }
+
+        }
+
+        return success
+
+    }
+
+    _initLocalRouter ( baseRoute, routerPath ) {
+
+        let success = false
+
+        try {
+
+            const localRoutersPath = path.join( this.rootPath, 'routers', routerPath )
+            this.applications.use( baseRoute, require( localRoutersPath ) )
+            success = true
+
+        } catch ( error ) {
+
+            if ( error instanceof TypeError &amp;&amp; error.message === 'Found non-callable @@iterator' ) {
+
+                this.logger.error( `The router "${ name }" seems to encounter error ! Are you using an object instead an array for router configuration ?` )
+
+            }
+
+            this.logger.error( error )
+
+        }
+
+        return success
+
+    }
+
+    _initDatabases ( config ) {
+
+        for ( let configIndex = 0, numberOfDatabasesConfigs = config.length ; configIndex &lt; numberOfDatabasesConfigs ; configIndex++ ) {
+
+            const databaseConfig = config[ configIndex ]
+            const dbType         = databaseConfig.type
+            const dbFrom         = databaseConfig.from
+            const dbName         = `${ ( databaseConfig.name ) ? databaseConfig.name : `${ dbType }_${ configIndex }` }`
+
+            try {
+
+                let database = null
+
+                if ( isDefined( dbFrom ) ) {
+
+                    // In case user specify a package where take the database of type...
+                    const databasePackage = require( dbFrom )
+                    database              = new databasePackage[ dbType ]( {
+                        ...{
+                            application: this.applications,
+                            router:      this.router
+                        },
+                        ...databaseConfig
+                    } )
+
+                } else {
+
+                    //                    // Else try to use auto registered database
+                    //                    database = new Databases[ dbType ]( {
+                    //                        ...{
+                    //                            application: this.applications,
+                    //                            router:      this.router
+                    //                        },
+                    //                        ...databaseConfig
+                    //                    } )
+
+                }
+
+                // Todo move in start
+                database.connect()
+
+                this.databases.set( dbName, database )
+
+            } catch ( error ) {
+
+                this.logger.error( `Unable to create database of type ${ dbType } due to ${ error.name }` )
+                this.logger.error( error.message )
+                this.logger.error( error.stack )
+
+            }
+
+        }
+
+    }
+
+    _initServers ( config ) {
+
+        const _config = ( isArray( config ) ) ? config : [ config ]
+
+        for ( let configId = 0, numberOfConfigs = _config.length ; configId &lt; numberOfConfigs ; configId++ ) {
+
+            let configElement = _config[ configId ]
+            let server        = null
+
+            if ( configElement.type === 'https' ) {
+
+                const options = {
+                    pfx:        configElement.pfx,
+                    passphrase: configElement.passphrase
+                }
+
+                server = https.createServer( options, this.applications )
+
+            } else {
+
+                server = http.createServer( this.applications )
+
+            }
+
+            server.name            = configElement.name || `${ ( configElement.name ) ? configElement.name : `Server_${ configId }` }`
+            server.maxHeadersCount = configElement.max_headers_count
+            server.timeout         = configElement.timeout
+            server.type            = configElement.type
+            server.host            = configElement.host
+            server.port            = configElement.port
+            server.env             = configElement.env
+            server.listen( configElement.port, configElement.host, () => {
+                this.logger.log( `${ server.name } start listening on ${ server.type }://${ server.host }:${ server.port } at ${ new Date() } under ${ server.env } environment.` )
+            } )
+            server.on( 'connection', connection => {
+                this.connections.push( connection )
+                connection.on( 'close', () => {
+                    this.connections = this.connections.filter( curr => curr !== connection )
+                } )
+            } )
+
+            this.servers.set( server.name, server )
+
+        }
+
+    }
+
+    /**
+     *
+     * @param databaseKey
+     * @param eventName
+     * @param callback
+     */
+    databaseOn ( databaseKey, eventName, callback ) {} // eslint-disable-line no-unused-vars
+
+    serverOn ( serverName, eventName, callback ) {
+
+        this.servers[ serverName ].on( eventName, callback )
+
+    }
+
+    serversOn ( serverKey, eventName, callback ) {
+
+        //TODO: filter availaible events
+        // [ 'request', 'connection', 'close', 'timeout', 'checkContinue', 'connect', 'upgrade', 'clientError' ]
+        for ( let serverKey in this.servers ) {
+            this.serverOn( serverKey, eventName, callback )
+        }
+
+    }
+
+    start () {
+
+    }
+
+    stop ( callback ) {
+
+        const numberOfServers   = this.servers.size
+        const numberOfDatabases = this.databases.size
+        let shutDownServers     = 0
+        let closedDatabases     = 0
+
+        if ( allClosed() ) { return }
+
+        for ( const [ databaseName, database ] of this.databases ) {
+
+            database.close( () => {
+
+                closedDatabases++
+                this.logger.log( `Connection to ${ databaseName } is closed.` )
+
+                allClosed()
+
+            } )
+
+        }
+
+        for ( let connection of this.connections ) {
+            connection.end()
+        }
+
+        for ( const [ serverName, server ] of this.servers ) {
+
+            server.close( () => {
+
+                shutDownServers++
+                this.logger.log( `The ${ serverName } listening on ${ server.type }://${ server.host }:${ server.port } is shutted down.` )
+
+                allClosed()
+
+            } )
+
+        }
+
+        function allClosed () {
+
+            if ( shutDownServers &lt; numberOfServers ) {
+                return false
+            }
+
+            if ( closedDatabases &lt; numberOfDatabases ) {
+                return false
+            }
+
+            if ( callback ) { callback() }
+
+        }
+
+    }
+
+    closeServers () {
+
+    }
+
+}
+
+export { TBackendManager }
+</pre>
+    </article>
+</section>
+
+
+
+
+
+		</div>
+	</div>
+
+	<div class="clearfix"></div>
+
+	
+
+</div>
+</div>
+
+
+    <div class="modal fade" id="searchResults">
+      <div class="modal-dialog">
+        <div class="modal-content">
+          <div class="modal-header">
+            <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+            <h4 class="modal-title">Search results</h4>
+          </div>
+          <div class="modal-body"></div>
+          <div class="modal-footer">
+            <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+          </div>
+        </div><!-- /.modal-content -->
+      </div><!-- /.modal-dialog -->
+    </div>
+
+
+<footer>
+
+
+	<span class="copyright">
+	Copyright 2015-Present <a href="https://github.com/Itee">Itee</a> (Tristan Valcke)
+	</span>
+
+<span class="jsdoc-message">
+	Documentation generated by <a href="https://github.com/jsdoc3/jsdoc">JSDoc 3.6.7</a>
+	
+	using the <a href="https://github.com/docstrap/docstrap">DocStrap template</a>.
+</span>
+</footer>
+
+<script src="scripts/docstrap.lib.js"></script>
+<script src="scripts/toc.js"></script>
+
+    <script type="text/javascript" src="scripts/fulltext-search-ui.js"></script>
+
+
+<script>
+$( function () {
+	$( "[id*='$']" ).each( function () {
+		var $this = $( this );
+
+		$this.attr( "id", $this.attr( "id" ).replace( "$", "__" ) );
+	} );
+
+	$( ".tutorial-section pre, .readme-section pre, pre.prettyprint.source" ).each( function () {
+		var $this = $( this );
+
+		var example = $this.find( "code" );
+		exampleText = example.html();
+		var lang = /{@lang (.*?)}/.exec( exampleText );
+		if ( lang && lang[1] ) {
+			exampleText = exampleText.replace( lang[0], "" );
+			example.html( exampleText );
+			lang = lang[1];
+		} else {
+			var langClassMatch = example.parent()[0].className.match(/lang\-(\S+)/);
+			lang = langClassMatch ? langClassMatch[1] : "javascript";
+		}
+
+		if ( lang ) {
+
+			$this
+			.addClass( "sunlight-highlight-" + lang )
+			.addClass( "linenums" )
+			.html( example.html() );
+
+		}
+	} );
+
+	Sunlight.highlightAll( {
+		lineNumbers : true,
+		showMenu : true,
+		enableDoclinks : true
+	} );
+
+	$.catchAnchorLinks( {
+        navbarOffset: 10
+	} );
+	$( "#toc" ).toc( {
+		anchorName  : function ( i, heading, prefix ) {
+			return $( heading ).attr( "id" ) || ( prefix + i );
+		},
+		selectors   : "#toc-content h1,#toc-content h2,#toc-content h3,#toc-content h4",
+		showAndHide : false,
+		smoothScrolling: true
+	} );
+
+	$( "#main span[id^='toc']" ).addClass( "toc-shim" );
+	$( '.dropdown-toggle' ).dropdown();
+
+    $( "table" ).each( function () {
+      var $this = $( this );
+      $this.addClass('table');
+    } );
+
+} );
+</script>
+
+
+
+<!--Navigation and Symbol Display-->
+
+
+<!--Google Analytics-->
+
+
+
+    <script type="text/javascript">
+        $(document).ready(function() {
+            SearcherDisplay.init();
+        });
+    </script>
+
+
+</body>
+</html>

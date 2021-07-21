@@ -1,4 +1,4 @@
-console.log('Itee.Server v6.2.4 - EsModule')
+console.log('Itee.Server v6.2.5 - EsModule')
 import { isNull, isUndefined, isNotString, isEmptyString, isBlankString, isNotArray, isDefined, isArray } from 'itee-validators';
 import { TAbstractObject, DefaultLogger } from 'itee-core';
 import express from 'express';
