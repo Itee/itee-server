@@ -1,3 +1,10 @@
+## [6.2.5](https://github.com/Itee/itee-server/compare/v6.2.4...v6.2.5) (2021-07-21)
+
+
+### Bug Fixes
+
+* **readme:** fix readme tags ([fa69535](https://github.com/Itee/itee-server/commit/fa695352d48d0a3243d7ac6cd5fcdf92435c0687))
+
 ## [6.2.4](https://github.com/Itee/itee-server/compare/v6.2.3...v6.2.4) (2021-07-08)
 
 
