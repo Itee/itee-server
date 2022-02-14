@@ -57,12 +57,10 @@
     "postversion": "gulp build"
   },
   "dependencies": {
-    "express": "^4.17.2"
-  },
-  "peerDependencies": {
-    "itee-validators": "^5.3.3",
-    "itee-core": "^1.1.0",
-    "itee-database": "^8.1.3"
+    "express": "^4.17.2",
+    "itee-validators": "^5.3.5",
+    "itee-core": "^1.2.2",
+    "itee-database": "^8.1.5"
   },
   "devDependencies": {
     "@rollup/plugin-commonjs": "^21.0.1",
