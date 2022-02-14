@@ -1,3 +1,11 @@
+## [6.2.6](https://github.com/Itee/itee-server/compare/v6.2.5...v6.2.6) (2022-02-14)
+
+
+### Bug Fixes
+
+* **package:** update deps to latest version ([6c42c05](https://github.com/Itee/itee-server/commit/6c42c05edf10096147d1024e8b441c8475158feb))
+* **package:** update packagelock ([0953cbe](https://github.com/Itee/itee-server/commit/0953cbef0eaaabd8bbe78638dbd9187e727d687c))
+
 ## [6.2.5](https://github.com/Itee/itee-server/compare/v6.2.4...v6.2.5) (2021-07-21)
 
 
