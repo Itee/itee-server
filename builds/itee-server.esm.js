@@ -1,9 +1,9 @@
-console.log('Itee.Server v6.2.5 - EsModule')
-import { isNull, isUndefined, isNotString, isEmptyString, isBlankString, isNotArray, isDefined, isArray } from 'itee-validators';
-import { TAbstractObject, DefaultLogger } from 'itee-core';
+console.log('Itee.Server v6.2.6 - EsModule')
 import express from 'express';
 import http from 'http';
 import https from 'https';
+import { TAbstractObject, DefaultLogger } from 'itee-core';
+import { isNull, isUndefined, isNotString, isEmptyString, isBlankString, isNotArray, isDefined, isArray } from 'itee-validators';
 import path from 'path';
 
 /**
@@ -17,82 +17,6 @@ import path from 'path';
  */
 
 class TBackendManager extends TAbstractObject {
-
-    get applications () {
-        return this._applications
-    }
-
-    set applications ( value ) {
-        this._applications = value;
-    }
-
-    setApplications ( value ) {
-
-        this.applications = value;
-        return this
-
-    }
-
-    addMiddleware ( middleware ) {
-
-        this.applications.use( middleware );
-        return this
-
-    }
-
-    // Todo remove middleware
-
-    get router () {
-        return this._router
-    }
-
-    set router ( value ) {
-        this._router = value;
-    }
-
-    setRouter ( value ) {
-
-        this.router = value;
-        return this
-
-    }
-
-    get databases () {
-        return this._databases
-    }
-
-    set databases ( value ) {
-        this._databases = value;
-    }
-
-    setDatabases ( value ) {
-
-        this.databases = value;
-        return this
-
-    }
-
-    addDatabase ( databaseName, database ) {
-
-        this._databases.set( databaseName, database );
-        return this
-
-    }
-
-    get servers () {
-        return this._servers
-    }
-
-    set servers ( value ) {
-        this._servers = value;
-    }
-
-    setServers ( value ) {
-
-        this.servers = value;
-        return this
-
-    }
 
     constructor ( parameters = {} ) {
 
@@ -122,13 +46,37 @@ class TBackendManager extends TAbstractObject {
         this._initServers( _parameters.servers );
 
     }
+    get applications () {
+        return this._applications
+    }
+    set applications ( value ) {
+        this._applications = value;
+    }
+    get router () {
+        return this._router
+    }
 
+    // Todo remove middleware
+    set router ( value ) {
+        this._router = value;
+    }
+    get databases () {
+        return this._databases
+    }
+    set databases ( value ) {
+        this._databases = value;
+    }
+    get servers () {
+        return this._servers
+    }
+    set servers ( value ) {
+        this._servers = value;
+    }
     get rootPath () {
 
         return this._rootPath
 
     }
-
     set rootPath ( value ) {
 
         if ( isNull( value ) ) { throw new TypeError( 'Root path cannot be null ! Expect a non empty string.' ) }
@@ -140,7 +88,42 @@ class TBackendManager extends TAbstractObject {
         this._rootPath = value;
 
     }
+    setApplications ( value ) {
 
+        this.applications = value;
+        return this
+
+    }
+    addMiddleware ( middleware ) {
+
+        this.applications.use( middleware );
+        return this
+
+    }
+    setRouter ( value ) {
+
+        this.router = value;
+        return this
+
+    }
+    setDatabases ( value ) {
+
+        this.databases = value;
+        return this
+
+    }
+    addDatabase ( databaseName, database ) {
+
+        this._databases.set( databaseName, database );
+        return this
+
+    }
+    setServers ( value ) {
+
+        this.servers = value;
+        return this
+
+    }
     setRootPath ( value ) {
 
         this.rootPath = value;
