@@ -47,9 +47,9 @@
     "clean": "gulp clean",
     "lint": "gulp lint",
     "doc": "gulp doc",
-    "build-test": "gulp build-test",
-    "bench": "gulp bench",
-    "unit": "gulp unit",
+    "build-test": "gulp build-tests",
+    "bench": "gulp run-benchmarks",
+    "unit": "gulp run-unit-tests",
     "test": "gulp test",
     "build": "gulp build",
     "release": "gulp release",
@@ -60,7 +60,7 @@
     "express": "^4.17.2",
     "itee-core": "^1.2.2",
     "itee-database": "^8.1.5",
-    "itee-validators": "^5.3.5"
+    "itee-validators": "^5.3.8"
   },
   "devDependencies": {
     "@rollup/plugin-commonjs": "^21.0.1",
@@ -82,6 +82,7 @@
     "gulp": "^4.0.2",
     "gulp-eslint": "^6.0.0",
     "gulp-jsdoc3": "^3.0.0",
+    "itee-utils": "^5.4.3",
     "karma": "^4.4.1",
     "karma-benchmark": "^1.0.4",
     "karma-benchmarkjs-reporter": "^1.0.0",
