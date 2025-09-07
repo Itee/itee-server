@@ -36,23 +36,32 @@
 
 /* eslint-env node */
 
-const packageInfos = require( './package.json' )
-const gulp         = require( 'gulp' )
-const jsdoc        = require( 'gulp-jsdoc3' )
-const eslint       = require( 'gulp-eslint' )
-const del          = require( 'del' )
-const parseArgs    = require( 'minimist' )
-const rollup       = require( 'rollup' )
-const path         = require( 'path' )
-const karma        = require( 'karma' )
-const log          = require( 'fancy-log' )
-const colors       = require( 'ansi-colors' )
-const red          = colors.red
-const green        = colors.green
-const blue         = colors.blue
-const cyan         = colors.cyan
-const yellow       = colors.yellow
-const magenta      = colors.magenta
+import fs                          from 'fs'
+import gulp                        from 'gulp'
+import jsdoc                       from 'gulp-jsdoc3'
+import eslint                      from 'gulp-eslint'
+import { deleteAsync }             from 'del'
+import parseArgs                   from 'minimist'
+import { rollup }                  from 'rollup'
+import path                        from 'path'
+import karma                       from 'karma'
+import log                         from 'fancy-log'
+import colors                      from 'ansi-colors'
+import { fileURLToPath }           from 'url'
+
+const red     = colors.red
+const green   = colors.green
+const blue    = colors.blue
+const cyan    = colors.cyan
+const yellow  = colors.yellow
+const magenta = colors.magenta
+
+// eslint-disable-next-line
+const __dirname = path.dirname( fileURLToPath( import.meta.url ) )
+
+const packageInfos = JSON.parse( fs.readFileSync(
+    new URL( './package.json', import.meta.url )
+) )
 
 /**
  * @method npm run help ( default )
@@ -120,7 +129,7 @@ gulp.task( 'clean', () => {
         './docs'
     ]
 
-    return del( filesToClean )
+    return deleteAsync( filesToClean )
 
 } )
 
@@ -132,7 +141,7 @@ gulp.task( 'clean', () => {
 gulp.task( 'lint', () => {
 
     const filesToLint = [
-        'gulpfile.js',
+        'gulpfile.mjs',
         'configs/**/*.js',
         'sources/**/*.js',
         'tests/**/*.js',
@@ -168,7 +177,7 @@ gulp.task( 'doc', ( done ) => {
     const config     = require( './configs/jsdoc.conf' )
     const filesToDoc = [
         'README.md',
-        'gulpfile.js',
+        'gulpfile.mjs',
         './configs/*.js',
         './sources/**/*.js',
         './tests/**/*.js'
@@ -271,7 +280,7 @@ gulp.task( 'build-test', ( done ) => {
             const config = configs.pop()
             log( `Building ${config.output.file}` )
 
-            rollup.rollup( config )
+            rollup( config )
                   .then( ( bundle ) => { return bundle.write( config.output ) } )
                   .then( () => { nextBuild() } )
                   .catch( nextBuild )
@@ -332,7 +341,7 @@ gulp.task( 'build', ( done ) => {
             const config = configs.pop()
             log( `Building ${config.output.file}` )
 
-            rollup.rollup( config )
+            rollup( config )
                   .then( ( bundle ) => { return bundle.write( config.output ) } )
                   .then( () => { nextBuild() } )
                   .catch( nextBuild )
