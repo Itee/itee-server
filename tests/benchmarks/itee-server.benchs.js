@@ -1,22 +1,23 @@
-/**
- * @author [Tristan Valcke]{@link https://github.com/Itee}
- * @license [BSD-3-Clause]{@link https://opensource.org/licenses/BSD-3-Clause}
- *
- */
+import {setApplicationsSuite, addMiddlewareSuite, setRouterSuite, setDatabasesSuite, addDatabaseSuite, setServersSuite, setRootPathSuite, Suite, databaseOnSuite, serverOnSuite, serversOnSuite, startSuite, stopSuite, allClosedSuite, closeServersSuite} from './TBackendManager.bench.js'
 
-/* global suite, benchmark */
+const suites = [
+	setApplicationsSuite,
+	addMiddlewareSuite,
+	setRouterSuite,
+	setDatabasesSuite,
+	addDatabaseSuite,
+	setServersSuite,
+	setRootPathSuite,
+	Suite,
+	databaseOnSuite,
+	serverOnSuite,
+	serversOnSuite,
+	startSuite,
+	stopSuite,
+	allClosedSuite,
+	closeServersSuite
+]
 
-const IteeServerSuite = suite( 'Itee#Server', () => {
-
-    benchmark(
-        'isBenching()',
-        function () {
-
-            return true
-
-        },
-        {} )
-
-} )
-
-export { IteeServerSuite }
+for ( const suite of suites ) {
+	suite.run()
+}
