@@ -58,9 +58,9 @@
   },
   "dependencies": {
     "express": "^4.17.2",
-    "itee-validators": "^5.3.5",
     "itee-core": "^1.2.2",
-    "itee-database": "^8.1.5"
+    "itee-database": "^8.1.5",
+    "itee-validators": "^5.3.5"
   },
   "devDependencies": {
     "@rollup/plugin-commonjs": "^21.0.1",
@@ -81,7 +81,7 @@
     "gulp": "^4.0.2",
     "gulp-eslint": "^6.0.0",
     "gulp-jsdoc3": "^3.0.0",
-    "karma": "^6.3.16",
+    "karma": "^4.4.1",
     "karma-benchmark": "^1.0.4",
     "karma-benchmarkjs-reporter": "^1.0.0",
     "karma-chai": "^0.1.0",
