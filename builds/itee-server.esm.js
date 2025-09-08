@@ -1,4 +1,4 @@
-console.log('Itee.Core v6.2.7 - EsModule')
+console.log('Itee.Core v6.2.8 - EsModule')
 import express from 'express';
 import http from 'http';
 import https from 'https';

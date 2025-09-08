@@ -1,3 +1,11 @@
+## [6.2.8](https://github.com/Itee/itee-server/compare/v6.2.7...v6.2.8) (2025-09-08)
+
+
+### Bug Fixes
+
+* **gulpfile:** apply some gulpfile standard fixes ([94c464c](https://github.com/Itee/itee-server/commit/94c464ca586c221c16c6ff9dbae109dabbe4a98d))
+* **package:** downgrade karma to v4 to fix npm install ([747be5c](https://github.com/Itee/itee-server/commit/747be5c655678ee6410a9ee90b176d9eeca3f04b))
+
 ## [6.2.7](https://github.com/Itee/itee-server/compare/v6.2.6...v6.2.7) (2022-02-14)
 
 
