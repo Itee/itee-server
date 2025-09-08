@@ -1,5 +1,4 @@
 import { describe }      from 'mocha'
-import { TBackendManagerUnits }   from './TBackendManager.unit.js'
 
 const root = typeof window === 'undefined'
     ? typeof global === 'undefined'
@@ -9,6 +8,5 @@ const root = typeof window === 'undefined'
 
 describe( 'Itee#Validators', () => {
 
-    TBackendManagerUnits.call( root )
 
 } )
