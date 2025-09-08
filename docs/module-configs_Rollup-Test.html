@@ -4,7 +4,7 @@
 <head>
 	<meta charset="utf-8">
 	<meta name="viewport" content="width=device-width">
-	<title>Itee-Server Global</title>
+	<title>Itee-Server Module: configs/Rollup-Test</title>
 
 	<!--[if lt IE 9]>
 	<script src="//html5shiv.googlecode.com/svn/trunk/html5.js"></script>
@@ -33,14 +33,7 @@
 			<li class="dropdown">
 				<a href="modules.list.html" class="dropdown-toggle" data-toggle="dropdown">Modules<b class="caret"></b></a>
 				<ul class="dropdown-menu inline">
-					<li><a href="module-Building.html">Building</a></li><li><a href="module-Config-EsLint.html">Config-EsLint</a></li><li><a href="module-Config-JsDoc.html">Config-JsDoc</a></li><li><a href="module-Config-Karma-Benchs.html">Config-Karma-Benchs</a></li><li><a href="module-Config-Karma-Units.html">Config-Karma-Units</a></li><li><a href="module-Config-Rollup.html">Config-Rollup</a></li><li><a href="module-Config-Rollup-Test.html">Config-Rollup-Test</a></li>
-				</ul>
-			</li>
-			
-			<li class="dropdown">
-				<a href="global.html" class="dropdown-toggle" data-toggle="dropdown">Global<b class="caret"></b></a>
-				<ul class="dropdown-menu inline">
-					<li><a href="global.html#npmrunbench">npm run bench</a></li><li><a href="global.html#npmrunbuild">npm run build</a></li><li><a href="global.html#npmrunbuild-test">npm run build-test</a></li><li><a href="global.html#npmrunclean">npm run clean</a></li><li><a href="global.html#npmrundoc">npm run doc</a></li><li><a href="global.html#npmrunhelpdefault">npm run help ( default )</a></li><li><a href="global.html#npmrunlint">npm run lint</a></li><li><a href="global.html#npmrunpatch">npm run patch</a></li><li><a href="global.html#npmrunrelease">npm run release</a></li><li><a href="global.html#npmruntest">npm run test</a></li><li><a href="global.html#npmrununit">npm run unit</a></li>
+					<li><a href="module-Config-EsLint.html">Config-EsLint</a></li><li><a href="module-Config-JsDoc.html">Config-JsDoc</a></li><li><a href="module-Config-Karma-Benchs.html">Config-Karma-Benchs</a></li><li><a href="module-Config-Karma-Units.html">Config-Karma-Units</a></li><li><a href="module-Config-Rollup.html">Config-Rollup</a></li><li><a href="module-configs_Rollup-Test.html">configs/Rollup-Test</a></li>
 				</ul>
 			</li>
 			
@@ -72,15 +65,10 @@
 		<div id="main">
 			
 
-	<h1 class="page-title">Global</h1>
+	<h1 class="page-title">Module: configs/Rollup-Test</h1>
 <section>
 
 <header>
-    
-        <h2>
-        
-        </h2>
-        
     
 </header>
 
@@ -88,6 +76,8 @@
 <article>
     <div class="container-overview">
     
+        
+            <div class="description">The file manage the rollup configuration for build tests</div>
         
 
         
@@ -111,15 +101,39 @@
 	
 
 	
-
+	<dt class="tag-author method-doc-label method-doc-details-label">Author:</dt>
+	<dd class="tag-author">
+		<ul>
+			<li><a href="https://github.com/Itee">Tristan Valcke</a></li>
+			</ul>
+	</dd>
 	
 
 	
 
 	
+	<dt class="tag-license method-doc-label method-doc-details-label">License:</dt>
+	<dd class="tag-license">
+		<ul class="dummy">
+			<li><a href="https://opensource.org/licenses/BSD-3-Clause">BSD-3-Clause</a></li>
+		</ul>
+	</dd>
+	
+
+	
 
 
 
+	
+	<dt class="tag-source method-doc-label method-doc-details-label">Source:</dt>
+	<dd class="tag-source">
+		<ul class="dummy">
+			<li>
+				<a href="configs_rollup.benchs.conf.js.html">configs/rollup.benchs.conf.js</a>,
+				 <a href="configs_rollup.benchs.conf.js.html#sunlight-1-line-1">line 1</a>
+			</li>
+		</ul>
+	</dd>
 	
 
 	
@@ -153,7 +167,7 @@
             
 <hr>
 <dt>
-    <h4 class="name" id="npmrunbench"><span class="type-signature"></span>npm run bench()</h4>
+    <h4 class="name" id="~CreateBenchmarksRollupConfigs"><span class="type-signature">&lt;generator, inner> </span>CreateBenchmarksRollupConfigs()</h4>
     
     
 </dt>
@@ -161,7 +175,7 @@
 
     
     <div class="description">
-        Will run benchmarks using karma
+        Will create an appropriate configuration object for rollup, related to the given arguments.
     </div>
     
 
@@ -207,8 +221,8 @@
 	<dd class="tag-source">
 		<ul class="dummy">
 			<li>
-				<a href="gulpfile.js.html">gulpfile.js</a>,
-				 <a href="gulpfile.js.html#sunlight-1-line-211">line 211</a>
+				<a href="configs_rollup.benchs.conf.js.html">configs/rollup.benchs.conf.js</a>,
+				 <a href="configs_rollup.benchs.conf.js.html#sunlight-1-line-18">line 18</a>
 			</li>
 		</ul>
 	</dd>
@@ -233,6 +247,30 @@
     
 
     
+    <h5>Returns:</h5>
+    
+            
+<div class="param-desc">
+    An array of rollup configuration
+</div>
+
+
+
+<dl>
+    <dt>
+        Type
+    </dt>
+    <dd>
+        
+<span class="param-type">Array.&lt;json></span>
+
+
+
+    </dd>
+</dl>
+
+
+        
 
     
 </dd>
@@ -241,7 +279,7 @@
             
 <hr>
 <dt>
-    <h4 class="name" id="npmrunbuild"><span class="type-signature"></span>npm run build()</h4>
+    <h4 class="name" id="~CreateUnitsRollupConfigs"><span class="type-signature">&lt;generator, inner> </span>CreateUnitsRollupConfigs()</h4>
     
     
 </dt>
@@ -249,7 +287,7 @@
 
     
     <div class="description">
-        Will build itee client module using optional arguments. See help to further informations.
+        Will create an appropriate configuration object for rollup, related to the given arguments.
     </div>
     
 
@@ -295,8 +333,8 @@
 	<dd class="tag-source">
 		<ul class="dummy">
 			<li>
-				<a href="gulpfile.js.html">gulpfile.js</a>,
-				 <a href="gulpfile.js.html#sunlight-1-line-285">line 285</a>
+				<a href="configs_rollup.units.conf.js.html">configs/rollup.units.conf.js</a>,
+				 <a href="configs_rollup.units.conf.js.html#sunlight-1-line-18">line 18</a>
 			</li>
 		</ul>
 	</dd>
@@ -321,6 +359,253 @@
     
 
     
+    <h5>Returns:</h5>
+    
+            
+<div class="param-desc">
+    An array of rollup configuration
+</div>
+
+
+
+<dl>
+    <dt>
+        Type
+    </dt>
+    <dd>
+        
+<span class="param-type">Array.&lt;json></span>
+
+
+
+    </dd>
+</dl>
+
+
+        
+
+    
+</dd>
+
+        </dl>
+    
+
+    
+
+    
+</article>
+
+</section>
+
+
+
+
+	<h1 class="page-title">Module: configs/Rollup-Test</h1>
+<section>
+
+<header>
+    
+</header>
+
+
+<article>
+    <div class="container-overview">
+    
+        
+            <div class="description">The file manage the rollup configuration for build tests</div>
+        
+
+        
+<dl class="details">
+    
+
+	
+
+	
+
+	
+
+    
+
+    
+
+    
+
+    
+
+	
+
+	
+	<dt class="tag-author method-doc-label method-doc-details-label">Author:</dt>
+	<dd class="tag-author">
+		<ul>
+			<li><a href="https://github.com/Itee">Tristan Valcke</a></li>
+			</ul>
+	</dd>
+	
+
+	
+
+	
+	<dt class="tag-license method-doc-label method-doc-details-label">License:</dt>
+	<dd class="tag-license">
+		<ul class="dummy">
+			<li><a href="https://opensource.org/licenses/BSD-3-Clause">BSD-3-Clause</a></li>
+		</ul>
+	</dd>
+	
+
+	
+
+
+
+	
+	<dt class="tag-source method-doc-label method-doc-details-label">Source:</dt>
+	<dd class="tag-source">
+		<ul class="dummy">
+			<li>
+				<a href="configs_rollup.units.conf.js.html">configs/rollup.units.conf.js</a>,
+				 <a href="configs_rollup.units.conf.js.html#sunlight-1-line-1">line 1</a>
+			</li>
+		</ul>
+	</dd>
+	
+
+	
+
+	
+
+	
+</dl>
+
+
+        
+    
+    </div>
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+        <h3 class="subsection-title">Methods</h3>
+
+        <dl>
+            
+<hr>
+<dt>
+    <h4 class="name" id="~CreateBenchmarksRollupConfigs"><span class="type-signature">&lt;generator, inner> </span>CreateBenchmarksRollupConfigs()</h4>
+    
+    
+</dt>
+<dd>
+
+    
+    <div class="description">
+        Will create an appropriate configuration object for rollup, related to the given arguments.
+    </div>
+    
+
+    
+
+    
+
+    
+    
+
+    
+<dl class="details">
+    
+
+	
+
+	
+
+	
+
+    
+
+    
+
+    
+
+    
+
+	
+
+	
+
+	
+
+	
+
+	
+
+
+
+	
+	<dt class="tag-source method-doc-label method-doc-details-label">Source:</dt>
+	<dd class="tag-source">
+		<ul class="dummy">
+			<li>
+				<a href="configs_rollup.benchs.conf.js.html">configs/rollup.benchs.conf.js</a>,
+				 <a href="configs_rollup.benchs.conf.js.html#sunlight-1-line-18">line 18</a>
+			</li>
+		</ul>
+	</dd>
+	
+
+	
+
+	
+
+	
+</dl>
+
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+    <h5>Returns:</h5>
+    
+            
+<div class="param-desc">
+    An array of rollup configuration
+</div>
+
+
+
+<dl>
+    <dt>
+        Type
+    </dt>
+    <dd>
+        
+<span class="param-type">Array.&lt;json></span>
+
+
+
+    </dd>
+</dl>
+
+
+        
 
     
 </dd>
@@ -329,7 +614,7 @@
             
 <hr>
 <dt>
-    <h4 class="name" id="npmrunbuild-test"><span class="type-signature"></span>npm run build-test()</h4>
+    <h4 class="name" id="~CreateUnitsRollupConfigs"><span class="type-signature">&lt;generator, inner> </span>CreateUnitsRollupConfigs()</h4>
     
     
 </dt>
@@ -337,7 +622,7 @@
 
     
     <div class="description">
-        Will build itee client tests.
+        Will create an appropriate configuration object for rollup, related to the given arguments.
     </div>
     
 
@@ -383,8 +668,8 @@
 	<dd class="tag-source">
 		<ul class="dummy">
 			<li>
-				<a href="gulpfile.js.html">gulpfile.js</a>,
-				 <a href="gulpfile.js.html#sunlight-1-line-247">line 247</a>
+				<a href="configs_rollup.units.conf.js.html">configs/rollup.units.conf.js</a>,
+				 <a href="configs_rollup.units.conf.js.html#sunlight-1-line-18">line 18</a>
 			</li>
 		</ul>
 	</dd>
@@ -409,710 +694,30 @@
     
 
     
-
+    <h5>Returns:</h5>
     
-</dd>
+            
+<div class="param-desc">
+    An array of rollup configuration
+</div>
+
+
+
+<dl>
+    <dt>
+        Type
+    </dt>
+    <dd>
+        
+<span class="param-type">Array.&lt;json></span>
+
+
+
+    </dd>
+</dl>
+
 
         
-            
-<hr>
-<dt>
-    <h4 class="name" id="npmrunclean"><span class="type-signature"></span>npm run clean()</h4>
-    
-    
-</dt>
-<dd>
-
-    
-    <div class="description">
-        Will delete builds and temporary folders
-    </div>
-    
-
-    
-
-    
-
-    
-    
-
-    
-<dl class="details">
-    
-
-	
-
-	
-
-	
-
-    
-
-    
-
-    
-
-    
-
-	
-
-	
-
-	
-
-	
-
-	
-
-
-
-	
-	<dt class="tag-source method-doc-label method-doc-details-label">Source:</dt>
-	<dd class="tag-source">
-		<ul class="dummy">
-			<li>
-				<a href="gulpfile.js.html">gulpfile.js</a>,
-				 <a href="gulpfile.js.html#sunlight-1-line-110">line 110</a>
-			</li>
-		</ul>
-	</dd>
-	
-
-	
-
-	
-
-	
-</dl>
-
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-</dd>
-
-        
-            
-<hr>
-<dt>
-    <h4 class="name" id="npmrundoc"><span class="type-signature"></span>npm run doc()</h4>
-    
-    
-</dt>
-<dd>
-
-    
-    <div class="description">
-        Will generate this documentation
-    </div>
-    
-
-    
-
-    
-
-    
-    
-
-    
-<dl class="details">
-    
-
-	
-
-	
-
-	
-
-    
-
-    
-
-    
-
-    
-
-	
-
-	
-
-	
-
-	
-
-	
-
-
-
-	
-	<dt class="tag-source method-doc-label method-doc-details-label">Source:</dt>
-	<dd class="tag-source">
-		<ul class="dummy">
-			<li>
-				<a href="gulpfile.js.html">gulpfile.js</a>,
-				 <a href="gulpfile.js.html#sunlight-1-line-161">line 161</a>
-			</li>
-		</ul>
-	</dd>
-	
-
-	
-
-	
-
-	
-</dl>
-
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-</dd>
-
-        
-            
-<hr>
-<dt>
-    <h4 class="name" id="npmrunhelpdefault"><span class="type-signature"></span>npm run help ()</h4>
-    
-    
-</dt>
-<dd>
-
-    
-    <div class="description">
-        Will display the help in console
-    </div>
-    
-
-    
-
-    
-
-    
-    
-
-    
-<dl class="details">
-    
-
-	
-
-	
-
-	
-
-    
-
-    
-
-    
-
-    
-
-	
-
-	
-
-	
-
-	
-
-	
-
-
-
-	
-	<dt class="tag-source method-doc-label method-doc-details-label">Source:</dt>
-	<dd class="tag-source">
-		<ul class="dummy">
-			<li>
-				<a href="gulpfile.js.html">gulpfile.js</a>,
-				 <a href="gulpfile.js.html#sunlight-1-line-57">line 57</a>
-			</li>
-		</ul>
-	</dd>
-	
-
-	
-
-	
-
-	
-</dl>
-
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-</dd>
-
-        
-            
-<hr>
-<dt>
-    <h4 class="name" id="npmrunlint"><span class="type-signature"></span>npm run lint()</h4>
-    
-    
-</dt>
-<dd>
-
-    
-    <div class="description">
-        Will lint the sources files and try to fix the style when possible
-    </div>
-    
-
-    
-
-    
-
-    
-    
-
-    
-<dl class="details">
-    
-
-	
-
-	
-
-	
-
-    
-
-    
-
-    
-
-    
-
-	
-
-	
-
-	
-
-	
-
-	
-
-
-
-	
-	<dt class="tag-source method-doc-label method-doc-details-label">Source:</dt>
-	<dd class="tag-source">
-		<ul class="dummy">
-			<li>
-				<a href="gulpfile.js.html">gulpfile.js</a>,
-				 <a href="gulpfile.js.html#sunlight-1-line-127">line 127</a>
-			</li>
-		</ul>
-	</dd>
-	
-
-	
-
-	
-
-	
-</dl>
-
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-</dd>
-
-        
-            
-<hr>
-<dt>
-    <h4 class="name" id="npmrunpatch"><span class="type-signature"></span>npm run patch()</h4>
-    
-    
-</dt>
-<dd>
-
-    
-    <div class="description">
-        Will apply some patch/replacements in dependencies
-    </div>
-    
-
-    
-
-    
-
-    
-    
-
-    
-<dl class="details">
-    
-
-	
-
-	
-
-	
-
-    
-
-    
-
-    
-
-    
-
-	
-
-	
-
-	
-
-	
-
-	
-
-
-
-	
-	<dt class="tag-source method-doc-label method-doc-details-label">Source:</dt>
-	<dd class="tag-source">
-		<ul class="dummy">
-			<li>
-				<a href="gulpfile.js.html">gulpfile.js</a>,
-				 <a href="gulpfile.js.html#sunlight-1-line-99">line 99</a>
-			</li>
-		</ul>
-	</dd>
-	
-
-	
-
-	
-
-	
-</dl>
-
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-</dd>
-
-        
-            
-<hr>
-<dt>
-    <h4 class="name" id="npmrunrelease"><span class="type-signature"></span>npm run release()</h4>
-    
-    
-</dt>
-<dd>
-
-    
-    <div class="description">
-        Will perform a complet release of the library including 'clean', 'lint', 'doc', 'build-test', 'test' and finally 'build'.
-    </div>
-    
-
-    
-
-    
-
-    
-    
-
-    
-<dl class="details">
-    
-
-	
-
-	
-
-	
-
-    
-
-    
-
-    
-
-    
-
-	
-
-	
-
-	
-
-	
-
-	
-
-
-
-	
-	<dt class="tag-source method-doc-label method-doc-details-label">Source:</dt>
-	<dd class="tag-source">
-		<ul class="dummy">
-			<li>
-				<a href="gulpfile.js.html">gulpfile.js</a>,
-				 <a href="gulpfile.js.html#sunlight-1-line-346">line 346</a>
-			</li>
-		</ul>
-	</dd>
-	
-
-	
-
-	
-
-	
-</dl>
-
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-</dd>
-
-        
-            
-<hr>
-<dt>
-    <h4 class="name" id="npmruntest"><span class="type-signature"></span>npm run test()</h4>
-    
-    
-</dt>
-<dd>
-
-    
-    <div class="description">
-        Will run unit tests and benchmarks using karma
-    </div>
-    
-
-    
-
-    
-
-    
-    
-
-    
-<dl class="details">
-    
-
-	
-
-	
-
-	
-
-    
-
-    
-
-    
-
-    
-
-	
-
-	
-
-	
-
-	
-
-	
-
-
-
-	
-	<dt class="tag-source method-doc-label method-doc-details-label">Source:</dt>
-	<dd class="tag-source">
-		<ul class="dummy">
-			<li>
-				<a href="gulpfile.js.html">gulpfile.js</a>,
-				 <a href="gulpfile.js.html#sunlight-1-line-240">line 240</a>
-			</li>
-		</ul>
-	</dd>
-	
-
-	
-
-	
-
-	
-</dl>
-
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-</dd>
-
-        
-            
-<hr>
-<dt>
-    <h4 class="name" id="npmrununit"><span class="type-signature"></span>npm run unit()</h4>
-    
-    
-</dt>
-<dd>
-
-    
-    <div class="description">
-        Will run unit tests using karma
-    </div>
-    
-
-    
-
-    
-
-    
-    
-
-    
-<dl class="details">
-    
-
-	
-
-	
-
-	
-
-    
-
-    
-
-    
-
-    
-
-	
-
-	
-
-	
-
-	
-
-	
-
-
-
-	
-	<dt class="tag-source method-doc-label method-doc-details-label">Source:</dt>
-	<dd class="tag-source">
-		<ul class="dummy">
-			<li>
-				<a href="gulpfile.js.html">gulpfile.js</a>,
-				 <a href="gulpfile.js.html#sunlight-1-line-182">line 182</a>
-			</li>
-		</ul>
-	</dd>
-	
-
-	
-
-	
-
-	
-</dl>
-
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
 
     
 </dd>
