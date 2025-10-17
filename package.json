@@ -105,10 +105,5 @@
     "express-favicon": "^2.0.1",
     "morgan": "^1.10.0",
     "rotating-file-stream": "^3.0.2"
-  },
-  "config": {
-    "commitizen": {
-      "path": "./node_modules/cz-conventional-changelog"
-    }
   }
 }
