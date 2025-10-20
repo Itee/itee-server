@@ -1,14 +1,22 @@
-import { readFileSync } from 'fs'
+import { readFileSync }  from 'fs'
+import {
+    dirname,
+    join
+}                        from 'path'
+import { fileURLToPath } from 'url'
+
 
 const packageInfos = JSON.parse( readFileSync(
     new URL( '../package.json', import.meta.url )
 ) )
+const __filename   = fileURLToPath( import.meta.url )
+const __dirname    = dirname( __filename )
 
 const config = {
     'clean':              [
         './builds',
-        './tests/units',
-        './tests/benchmarks',
+        './tests/units/builds',
+        './tests/benchmarks/builds',
         './tests/bundles',
         './docs'
     ],
@@ -38,7 +46,15 @@ const config = {
         `${ packageInfos.name }.js`,
         'isTestUnitGenerator.js',
         'cores.js'
-    ]
+    ],
+    'builds':             {
+        input:     join( __dirname, '../sources', `${ packageInfos.name }.js` ),
+        output:    join( __dirname, '../builds' ),
+        formats:   [ 'esm', 'cjs' ],
+        envs:      [ 'dev', 'prod' ],
+        sourcemap: true,
+        treeshake: true
+    }
 }
 
 function getGulpConfigForTask( taskName ) {
