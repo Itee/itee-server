@@ -1,7 +1,7 @@
 /**
  * ┳      ┏┓              ┏┓ ┏┓ ┏┓      ┏┓            ┏┳ 
- * ┃╋┏┓┏┓ ┗┓┏┓┏┓┓┏┏┓┏┓  ┓┏┣┓ ┏┛ ┣┫  ━━  ┃ ┏┓┏┳┓┏┳┓┏┓┏┓ ┃┏
- * ┻┗┗ ┗ •┗┛┗ ┛ ┗┛┗ ┛   ┗┛┗┛•┗━•┗┛      ┗┛┗┛┛┗┗┛┗┗┗┛┛┗┗┛┛
+ * ┃╋┏┓┏┓ ┗┓┏┓┏┓┓┏┏┓┏┓  ┓┏┣┓  ┫ ┃┫  ━━  ┃ ┏┓┏┳┓┏┳┓┏┓┏┓ ┃┏
+ * ┻┗┗ ┗ •┗┛┗ ┛ ┗┛┗ ┛   ┗┛┗┛•┗┛•┗┛      ┗┛┗┛┛┗┗┛┗┗┗┛┛┗┗┛┛
  *                                                       
  * @desc    The server side of the Itee solution for 3d web content, this package is design to work with an Itee client.
  * @author  [Tristan Valcke]{@link https://github.com/Itee}
