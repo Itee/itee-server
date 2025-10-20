@@ -1,4 +1,13 @@
-console.log('Itee.Core v6.2.8 - CommonJs')
+/**
+ * ┳      ┏┓              ┏┓ ┏┓ ┏┓      ┏┓            ┏┳ 
+ * ┃╋┏┓┏┓ ┗┓┏┓┏┓┓┏┏┓┏┓  ┓┏┣┓ ┏┛ ┣┫  ━━  ┃ ┏┓┏┳┓┏┳┓┏┓┏┓ ┃┏
+ * ┻┗┗ ┗ •┗┛┗ ┛ ┗┛┗ ┛   ┗┛┗┛•┗━•┗┛      ┗┛┗┛┛┗┗┛┗┗┗┛┛┗┗┛┛
+ *                                                       
+ * @desc    The server side of the Itee solution for 3d web content, this package is design to work with an Itee client.
+ * @author  [Tristan Valcke]{@link https://github.com/Itee}
+ * @license [BSD-3-Clause]{@link https://opensource.org/licenses/BSD-3-Clause}
+ * 
+ */
 'use strict';
 
 Object.defineProperty(exports, '__esModule', { value: true });
