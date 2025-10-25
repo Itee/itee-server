@@ -25,6 +25,7 @@ import path from 'path';
  *
  */
 
+
 class TBackendManager extends TAbstractObject {
 
     constructor( parameters = {} ) {

@@ -10,8 +10,6 @@
  */
 'use strict';
 
-Object.defineProperty(exports, '__esModule', { value: true });
-
 var express = require('express');
 var http = require('http');
 var https = require('https');
@@ -19,12 +17,12 @@ var iteeCore = require('itee-core');
 var iteeValidators = require('itee-validators');
 var path = require('path');
 
-function _interopDefaultLegacy (e) { return e && typeof e === 'object' && 'default' in e ? e : { 'default': e }; }
+function _interopDefault (e) { return e && e.__esModule ? e : { default: e }; }
 
-var express__default = /*#__PURE__*/_interopDefaultLegacy(express);
-var http__default = /*#__PURE__*/_interopDefaultLegacy(http);
-var https__default = /*#__PURE__*/_interopDefaultLegacy(https);
-var path__default = /*#__PURE__*/_interopDefaultLegacy(path);
+var express__default = /*#__PURE__*/_interopDefault(express);
+var http__default = /*#__PURE__*/_interopDefault(http);
+var https__default = /*#__PURE__*/_interopDefault(https);
+var path__default = /*#__PURE__*/_interopDefault(path);
 
 /**
  * @author [Tristan Valcke]{@link https://github.com/Itee}
@@ -35,6 +33,7 @@ var path__default = /*#__PURE__*/_interopDefaultLegacy(path);
  * @example Todo
  *
  */
+
 
 class TBackendManager extends iteeCore.TAbstractObject {
 
@@ -55,8 +54,8 @@ class TBackendManager extends iteeCore.TAbstractObject {
 
         this.logger       = _parameters.logger;
         this.rootPath     = _parameters.rootPath;
-        this.applications = express__default["default"]();
-        this.router       = express__default["default"].Router;
+        this.applications = express__default.default();
+        this.router       = express__default.default.Router;
         this.databases    = new Map();
         this.servers      = new Map();
         this.connections  = [];
@@ -230,7 +229,7 @@ class TBackendManager extends iteeCore.TAbstractObject {
 
         try {
 
-            const localMiddlewaresPath = path__default["default"].join( this.rootPath, 'middlewares', name );
+            const localMiddlewaresPath = path__default.default.join( this.rootPath, 'middlewares', name );
             this.applications.use( require( localMiddlewaresPath )( ...config ) );
             success = true;
 
@@ -296,7 +295,7 @@ class TBackendManager extends iteeCore.TAbstractObject {
 
         try {
 
-            const localRoutersPath = path__default["default"].join( this.rootPath, 'routers', routerPath );
+            const localRoutersPath = path__default.default.join( this.rootPath, 'routers', routerPath );
             this.applications.use( baseRoute, require( localRoutersPath ) );
             success = true;
 
@@ -387,11 +386,11 @@ class TBackendManager extends iteeCore.TAbstractObject {
                     passphrase: configElement.passphrase
                 };
 
-                server = https__default["default"].createServer( options, this.applications );
+                server = https__default.default.createServer( options, this.applications );
 
             } else {
 
-                server = http__default["default"].createServer( this.applications );
+                server = http__default.default.createServer( this.applications );
 
             }
 
