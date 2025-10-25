@@ -271,7 +271,7 @@ class TBackendManager extends TAbstractObject {
 
             if ( !error.code || error.code !== 'MODULE_NOT_FOUND' ) {
 
-                this.logger.error( `The router "${ name }" seems to encounter internal error.` )
+                this.logger.error( `The router "${ baseRoute }" seems to encounter internal error.` )
                 this.logger.error( error )
 
             }
@@ -296,7 +296,7 @@ class TBackendManager extends TAbstractObject {
 
             if ( error instanceof TypeError && error.message === 'Found non-callable @@iterator' ) {
 
-                this.logger.error( `The router "${ name }" seems to encounter error ! Are you using an object instead an array for router configuration ?` )
+                this.logger.error( `The router "${ baseRoute }" seems to encounter error ! Are you using an object instead an array for router configuration ?` )
 
             }
 
