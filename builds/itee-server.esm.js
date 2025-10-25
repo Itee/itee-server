@@ -27,7 +27,7 @@ import path from 'path';
 
 class TBackendManager extends TAbstractObject {
 
-    constructor ( parameters = {} ) {
+    constructor( parameters = {} ) {
 
         const _parameters = {
             ...{
@@ -55,38 +55,38 @@ class TBackendManager extends TAbstractObject {
         this._initServers( _parameters.servers );
 
     }
-    get applications () {
+    get applications() {
         return this._applications
     }
-    set applications ( value ) {
+    set applications( value ) {
         this._applications = value;
     }
-    get router () {
+    get router() {
         return this._router
     }
 
     // Todo remove middleware
-    set router ( value ) {
+    set router( value ) {
         this._router = value;
     }
-    get databases () {
+    get databases() {
         return this._databases
     }
-    set databases ( value ) {
+    set databases( value ) {
         this._databases = value;
     }
-    get servers () {
+    get servers() {
         return this._servers
     }
-    set servers ( value ) {
+    set servers( value ) {
         this._servers = value;
     }
-    get rootPath () {
+    get rootPath() {
 
         return this._rootPath
 
     }
-    set rootPath ( value ) {
+    set rootPath( value ) {
 
         if ( isNull( value ) ) { throw new TypeError( 'Root path cannot be null ! Expect a non empty string.' ) }
         if ( isUndefined( value ) ) { throw new TypeError( 'Root path cannot be undefined ! Expect a non empty string.' ) }
@@ -97,50 +97,50 @@ class TBackendManager extends TAbstractObject {
         this._rootPath = value;
 
     }
-    setApplications ( value ) {
+    setApplications( value ) {
 
         this.applications = value;
         return this
 
     }
-    addMiddleware ( middleware ) {
+    addMiddleware( middleware ) {
 
         this.applications.use( middleware );
         return this
 
     }
-    setRouter ( value ) {
+    setRouter( value ) {
 
         this.router = value;
         return this
 
     }
-    setDatabases ( value ) {
+    setDatabases( value ) {
 
         this.databases = value;
         return this
 
     }
-    addDatabase ( databaseName, database ) {
+    addDatabase( databaseName, database ) {
 
         this._databases.set( databaseName, database );
         return this
 
     }
-    setServers ( value ) {
+    setServers( value ) {
 
         this.servers = value;
         return this
 
     }
-    setRootPath ( value ) {
+    setRootPath( value ) {
 
         this.rootPath = value;
         return this
 
     }
 
-    _initApplications ( config ) {
+    _initApplications( config ) {
 
         if ( config.case_sensitive_routing ) { this.applications.set( 'case sensitive routing', config.case_sensitive_routing ); }
         if ( config.env ) { this.applications.set( 'env', config.env ); }
@@ -163,7 +163,7 @@ class TBackendManager extends TAbstractObject {
 
     }
 
-    _initMiddlewares ( middlewaresConfig ) {
+    _initMiddlewares( middlewaresConfig ) {
 
         for ( let [ name, config ] of Object.entries( middlewaresConfig ) ) {
 
@@ -189,7 +189,7 @@ class TBackendManager extends TAbstractObject {
 
     }
 
-    _initPackageMiddleware ( name, config ) {
+    _initPackageMiddleware( name, config ) {
 
         let success = false;
 
@@ -213,7 +213,7 @@ class TBackendManager extends TAbstractObject {
 
     }
 
-    _initLocalMiddleware ( name, config ) {
+    _initLocalMiddleware( name, config ) {
 
         let success = false;
 
@@ -233,7 +233,7 @@ class TBackendManager extends TAbstractObject {
 
     }
 
-    _initRouters ( routers ) {
+    _initRouters( routers ) {
 
         for ( let [ baseRoute, routerPath ] of Object.entries( routers ) ) {
 
@@ -255,7 +255,7 @@ class TBackendManager extends TAbstractObject {
 
     }
 
-    _initPackageRouter ( baseRoute, routerPath ) {
+    _initPackageRouter( baseRoute, routerPath ) {
 
         let success = false;
 
@@ -268,7 +268,7 @@ class TBackendManager extends TAbstractObject {
 
             if ( !error.code || error.code !== 'MODULE_NOT_FOUND' ) {
 
-                this.logger.error( `The router "${ name }" seems to encounter internal error.` );
+                this.logger.error( `The router "${ baseRoute }" seems to encounter internal error.` );
                 this.logger.error( error );
 
             }
@@ -279,7 +279,7 @@ class TBackendManager extends TAbstractObject {
 
     }
 
-    _initLocalRouter ( baseRoute, routerPath ) {
+    _initLocalRouter( baseRoute, routerPath ) {
 
         let success = false;
 
@@ -293,7 +293,7 @@ class TBackendManager extends TAbstractObject {
 
             if ( error instanceof TypeError && error.message === 'Found non-callable @@iterator' ) {
 
-                this.logger.error( `The router "${ name }" seems to encounter error ! Are you using an object instead an array for router configuration ?` );
+                this.logger.error( `The router "${ baseRoute }" seems to encounter error ! Are you using an object instead an array for router configuration ?` );
 
             }
 
@@ -305,7 +305,7 @@ class TBackendManager extends TAbstractObject {
 
     }
 
-    _initDatabases ( config ) {
+    _initDatabases( config ) {
 
         for ( let configIndex = 0, numberOfDatabasesConfigs = config.length ; configIndex < numberOfDatabasesConfigs ; configIndex++ ) {
 
@@ -360,7 +360,7 @@ class TBackendManager extends TAbstractObject {
 
     }
 
-    _initServers ( config ) {
+    _initServers( config ) {
 
         const _config = ( isArray( config ) ) ? config : [ config ];
 
@@ -413,15 +413,15 @@ class TBackendManager extends TAbstractObject {
      * @param eventName
      * @param callback
      */
-    databaseOn ( databaseKey, eventName, callback ) {} // eslint-disable-line no-unused-vars
+    databaseOn( databaseKey, eventName, callback ) {} // eslint-disable-line no-unused-vars
 
-    serverOn ( serverName, eventName, callback ) {
+    serverOn( serverName, eventName, callback ) {
 
         this.servers[ serverName ].on( eventName, callback );
 
     }
 
-    serversOn ( serverKey, eventName, callback ) {
+    serversOn( serverKey, eventName, callback ) {
 
         //TODO: filter availaible events
         // [ 'request', 'connection', 'close', 'timeout', 'checkContinue', 'connect', 'upgrade', 'clientError' ]
@@ -431,11 +431,11 @@ class TBackendManager extends TAbstractObject {
 
     }
 
-    start () {
+    start() {
 
     }
 
-    stop ( callback ) {
+    stop( callback ) {
 
         const numberOfServers   = this.servers.size;
         const numberOfDatabases = this.databases.size;
@@ -474,7 +474,7 @@ class TBackendManager extends TAbstractObject {
 
         }
 
-        function allClosed () {
+        function allClosed() {
 
             if ( shutDownServers < numberOfServers ) {
                 return false
@@ -490,7 +490,7 @@ class TBackendManager extends TAbstractObject {
 
     }
 
-    closeServers () {
+    closeServers() {
 
     }
 
