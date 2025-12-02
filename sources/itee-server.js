@@ -8,4 +8,4 @@
  *
  */
 
-export * from './TBackendManager'
+export * from './TBackendManager.js'

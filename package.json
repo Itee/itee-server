@@ -21,6 +21,7 @@
     "type": "git",
     "url":  "https://github.com/Itee/itee-server.git"
   },
+  "type":                 "module",
   "main":                 "builds/itee-server.cjs.js",
   "module":               "builds/itee-server.esm.js",
   "browser":              "",
