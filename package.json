@@ -19,16 +19,16 @@
   "private":              false,
   "repository":           {
     "type": "git",
-    "url":  "https://github.com/Itee/itee-server.git"
+    "url":  "https://github.com/Itee/server.git"
   },
   "type":                 "module",
-  "main":                 "builds/itee-server.cjs.js",
-  "module":               "builds/itee-server.esm.js",
+  "main":                 "builds/server.cjs.js",
+  "module":               "builds/server.esm.js",
   "browser":              "",
-  "homepage":             "https://github.com/Itee/itee-server#readme",
+  "homepage":             "https://github.com/Itee/server#readme",
   "man":                  "./docs/index.html",
   "bugs":                 {
-    "url": "https://github.com/Itee/itee-server/issues"
+    "url": "https://github.com/Itee/server/issues"
   },
   "engines":              {
     "node": ">=20"
