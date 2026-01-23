@@ -1,3 +1,20 @@
+# [v7.0.0](https://github.com/Itee/server/compare/v6.3.0...v7.0.0) (2026-01-23)
+
+## ✨ New Features
+- [`7f8898b`](https://github.com/Itee/server/commit/7f8898b)  (tasks) upgrade tasks to latest itee and gulp standards 
+- [`5120f07`](https://github.com/Itee/server/commit/5120f07)  (tasks) update default tasks to latest itee standards 
+- [`703927f`](https://github.com/Itee/server/commit/703927f)  (tests) remove the need to build backend file to run unit and benches tests 
+
+## 🐛 Bug Fixes
+- [`ef38958`](https://github.com/Itee/server/commit/ef38958)  (gulpfile) fix broken import links 
+- [`aa33bd0`](https://github.com/Itee/server/commit/aa33bd0)  (gulpfile-refresh) use external script that do not require gulp to be loaded for refreshing it 
+- [`c646853`](https://github.com/Itee/server/commit/c646853)  (compute-unit-tests-task) fix default template for empty units 
+- [`ab62b9a`](https://github.com/Itee/server/commit/ab62b9a)  (tasks) fix frontend task run on empty test generation 
+- [`199138a`](https://github.com/Itee/server/commit/199138a)  (release) fix release task and update others to latest standards 
+
+## 💥 Breaking Changes
+- [`6d4b6c5`](https://github.com/Itee/server/commit/6d4b6c5)  (node) drop nodejs v18 support and introduce nodejs v24
+
 # [v6.3.0](https://github.com/Itee/itee-server/compare/v6.2.8...v6.3.0) (2025-10-20)
 
 ## ✨ New Features
