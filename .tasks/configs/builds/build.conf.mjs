@@ -9,9 +9,9 @@ export default createRollupConfigs( {
             'node:https',
             'node:path',
             'express',
-            'itee-validators',
-            'itee-core',
-            'itee-database'
+            '@itee/validators',
+            '@itee/core',
+            '@itee/database'
         ],
         'cjs': [
             'node:fs',
@@ -19,9 +19,9 @@ export default createRollupConfigs( {
             'node:https',
             'node:path',
             'express',
-            'itee-validators',
-            'itee-core',
-            'itee-database'
+            '@itee/validators',
+            '@itee/core',
+            '@itee/database'
         ],
     }
 } )
