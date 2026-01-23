@@ -10,8 +10,6 @@
  */
 'use strict';
 
-Object.defineProperty(exports, '__esModule', { value: true });
-
 var express = require('express');
 var http = require('http');
 var https = require('https');
@@ -19,12 +17,12 @@ var iteeCore = require('itee-core');
 var iteeValidators = require('itee-validators');
 var path = require('path');
 
-function _interopDefaultLegacy (e) { return e && typeof e === 'object' && 'default' in e ? e : { 'default': e }; }
+function _interopDefault (e) { return e && e.__esModule ? e : { default: e }; }
 
-var express__default = /*#__PURE__*/_interopDefaultLegacy(express);
-var http__default = /*#__PURE__*/_interopDefaultLegacy(http);
-var https__default = /*#__PURE__*/_interopDefaultLegacy(https);
-var path__default = /*#__PURE__*/_interopDefaultLegacy(path);
+var express__default = /*#__PURE__*/_interopDefault(express);
+var http__default = /*#__PURE__*/_interopDefault(http);
+var https__default = /*#__PURE__*/_interopDefault(https);
+var path__default = /*#__PURE__*/_interopDefault(path);
 
 /**
  * @author [Tristan Valcke]{@link https://github.com/Itee}
@@ -36,9 +34,10 @@ var path__default = /*#__PURE__*/_interopDefaultLegacy(path);
  *
  */
 
+
 class TBackendManager extends iteeCore.TAbstractObject {
 
-    constructor ( parameters = {} ) {
+    constructor( parameters = {} ) {
 
         const _parameters = {
             ...{
@@ -55,8 +54,8 @@ class TBackendManager extends iteeCore.TAbstractObject {
 
         this.logger       = _parameters.logger;
         this.rootPath     = _parameters.rootPath;
-        this.applications = express__default["default"]();
-        this.router       = express__default["default"].Router;
+        this.applications = express__default.default();
+        this.router       = express__default.default.Router;
         this.databases    = new Map();
         this.servers      = new Map();
         this.connections  = [];
@@ -66,38 +65,38 @@ class TBackendManager extends iteeCore.TAbstractObject {
         this._initServers( _parameters.servers );
 
     }
-    get applications () {
+    get applications() {
         return this._applications
     }
-    set applications ( value ) {
+    set applications( value ) {
         this._applications = value;
     }
-    get router () {
+    get router() {
         return this._router
     }
 
     // Todo remove middleware
-    set router ( value ) {
+    set router( value ) {
         this._router = value;
     }
-    get databases () {
+    get databases() {
         return this._databases
     }
-    set databases ( value ) {
+    set databases( value ) {
         this._databases = value;
     }
-    get servers () {
+    get servers() {
         return this._servers
     }
-    set servers ( value ) {
+    set servers( value ) {
         this._servers = value;
     }
-    get rootPath () {
+    get rootPath() {
 
         return this._rootPath
 
     }
-    set rootPath ( value ) {
+    set rootPath( value ) {
 
         if ( iteeValidators.isNull( value ) ) { throw new TypeError( 'Root path cannot be null ! Expect a non empty string.' ) }
         if ( iteeValidators.isUndefined( value ) ) { throw new TypeError( 'Root path cannot be undefined ! Expect a non empty string.' ) }
@@ -108,50 +107,50 @@ class TBackendManager extends iteeCore.TAbstractObject {
         this._rootPath = value;
 
     }
-    setApplications ( value ) {
+    setApplications( value ) {
 
         this.applications = value;
         return this
 
     }
-    addMiddleware ( middleware ) {
+    addMiddleware( middleware ) {
 
         this.applications.use( middleware );
         return this
 
     }
-    setRouter ( value ) {
+    setRouter( value ) {
 
         this.router = value;
         return this
 
     }
-    setDatabases ( value ) {
+    setDatabases( value ) {
 
         this.databases = value;
         return this
 
     }
-    addDatabase ( databaseName, database ) {
+    addDatabase( databaseName, database ) {
 
         this._databases.set( databaseName, database );
         return this
 
     }
-    setServers ( value ) {
+    setServers( value ) {
 
         this.servers = value;
         return this
 
     }
-    setRootPath ( value ) {
+    setRootPath( value ) {
 
         this.rootPath = value;
         return this
 
     }
 
-    _initApplications ( config ) {
+    _initApplications( config ) {
 
         if ( config.case_sensitive_routing ) { this.applications.set( 'case sensitive routing', config.case_sensitive_routing ); }
         if ( config.env ) { this.applications.set( 'env', config.env ); }
@@ -174,7 +173,7 @@ class TBackendManager extends iteeCore.TAbstractObject {
 
     }
 
-    _initMiddlewares ( middlewaresConfig ) {
+    _initMiddlewares( middlewaresConfig ) {
 
         for ( let [ name, config ] of Object.entries( middlewaresConfig ) ) {
 
@@ -200,7 +199,7 @@ class TBackendManager extends iteeCore.TAbstractObject {
 
     }
 
-    _initPackageMiddleware ( name, config ) {
+    _initPackageMiddleware( name, config ) {
 
         let success = false;
 
@@ -224,13 +223,13 @@ class TBackendManager extends iteeCore.TAbstractObject {
 
     }
 
-    _initLocalMiddleware ( name, config ) {
+    _initLocalMiddleware( name, config ) {
 
         let success = false;
 
         try {
 
-            const localMiddlewaresPath = path__default["default"].join( this.rootPath, 'middlewares', name );
+            const localMiddlewaresPath = path__default.default.join( this.rootPath, 'middlewares', name );
             this.applications.use( require( localMiddlewaresPath )( ...config ) );
             success = true;
 
@@ -244,7 +243,7 @@ class TBackendManager extends iteeCore.TAbstractObject {
 
     }
 
-    _initRouters ( routers ) {
+    _initRouters( routers ) {
 
         for ( let [ baseRoute, routerPath ] of Object.entries( routers ) ) {
 
@@ -266,7 +265,7 @@ class TBackendManager extends iteeCore.TAbstractObject {
 
     }
 
-    _initPackageRouter ( baseRoute, routerPath ) {
+    _initPackageRouter( baseRoute, routerPath ) {
 
         let success = false;
 
@@ -279,7 +278,7 @@ class TBackendManager extends iteeCore.TAbstractObject {
 
             if ( !error.code || error.code !== 'MODULE_NOT_FOUND' ) {
 
-                this.logger.error( `The router "${ name }" seems to encounter internal error.` );
+                this.logger.error( `The router "${ baseRoute }" seems to encounter internal error.` );
                 this.logger.error( error );
 
             }
@@ -290,13 +289,13 @@ class TBackendManager extends iteeCore.TAbstractObject {
 
     }
 
-    _initLocalRouter ( baseRoute, routerPath ) {
+    _initLocalRouter( baseRoute, routerPath ) {
 
         let success = false;
 
         try {
 
-            const localRoutersPath = path__default["default"].join( this.rootPath, 'routers', routerPath );
+            const localRoutersPath = path__default.default.join( this.rootPath, 'routers', routerPath );
             this.applications.use( baseRoute, require( localRoutersPath ) );
             success = true;
 
@@ -304,7 +303,7 @@ class TBackendManager extends iteeCore.TAbstractObject {
 
             if ( error instanceof TypeError && error.message === 'Found non-callable @@iterator' ) {
 
-                this.logger.error( `The router "${ name }" seems to encounter error ! Are you using an object instead an array for router configuration ?` );
+                this.logger.error( `The router "${ baseRoute }" seems to encounter error ! Are you using an object instead an array for router configuration ?` );
 
             }
 
@@ -316,7 +315,7 @@ class TBackendManager extends iteeCore.TAbstractObject {
 
     }
 
-    _initDatabases ( config ) {
+    _initDatabases( config ) {
 
         for ( let configIndex = 0, numberOfDatabasesConfigs = config.length ; configIndex < numberOfDatabasesConfigs ; configIndex++ ) {
 
@@ -371,7 +370,7 @@ class TBackendManager extends iteeCore.TAbstractObject {
 
     }
 
-    _initServers ( config ) {
+    _initServers( config ) {
 
         const _config = ( iteeValidators.isArray( config ) ) ? config : [ config ];
 
@@ -387,11 +386,11 @@ class TBackendManager extends iteeCore.TAbstractObject {
                     passphrase: configElement.passphrase
                 };
 
-                server = https__default["default"].createServer( options, this.applications );
+                server = https__default.default.createServer( options, this.applications );
 
             } else {
 
-                server = http__default["default"].createServer( this.applications );
+                server = http__default.default.createServer( this.applications );
 
             }
 
@@ -424,15 +423,15 @@ class TBackendManager extends iteeCore.TAbstractObject {
      * @param eventName
      * @param callback
      */
-    databaseOn ( databaseKey, eventName, callback ) {} // eslint-disable-line no-unused-vars
+    databaseOn( databaseKey, eventName, callback ) {} // eslint-disable-line no-unused-vars
 
-    serverOn ( serverName, eventName, callback ) {
+    serverOn( serverName, eventName, callback ) {
 
         this.servers[ serverName ].on( eventName, callback );
 
     }
 
-    serversOn ( serverKey, eventName, callback ) {
+    serversOn( serverKey, eventName, callback ) {
 
         //TODO: filter availaible events
         // [ 'request', 'connection', 'close', 'timeout', 'checkContinue', 'connect', 'upgrade', 'clientError' ]
@@ -442,11 +441,11 @@ class TBackendManager extends iteeCore.TAbstractObject {
 
     }
 
-    start () {
+    start() {
 
     }
 
-    stop ( callback ) {
+    stop( callback ) {
 
         const numberOfServers   = this.servers.size;
         const numberOfDatabases = this.databases.size;
@@ -485,7 +484,7 @@ class TBackendManager extends iteeCore.TAbstractObject {
 
         }
 
-        function allClosed () {
+        function allClosed() {
 
             if ( shutDownServers < numberOfServers ) {
                 return false
@@ -501,7 +500,7 @@ class TBackendManager extends iteeCore.TAbstractObject {
 
     }
 
-    closeServers () {
+    closeServers() {
 
     }
 
