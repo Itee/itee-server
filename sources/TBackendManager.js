@@ -9,8 +9,8 @@
  */
 
 import express from 'express'
-import http    from 'http'
-import https   from 'https'
+import http    from 'node:http'
+import https   from 'node:https'
 import {
     DefaultLogger,
     TAbstractObject
@@ -26,7 +26,7 @@ import {
     isNull,
     isUndefined
 }              from 'itee-validators'
-import path    from 'path'
+import path    from 'node:path'
 
 class TBackendManager extends TAbstractObject {
 

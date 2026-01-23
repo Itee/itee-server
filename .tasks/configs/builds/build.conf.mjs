@@ -4,21 +4,21 @@ export default createRollupConfigs( {
     formats:     [ 'esm', 'cjs' ],
     externalMap: {
         'esm': [
-            'fs',
+            'node:fs',
+            'node:http',
+            'node:https',
+            'node:path',
             'express',
-            'http',
-            'https',
-            'path',
             'itee-validators',
             'itee-core',
             'itee-database'
         ],
         'cjs': [
-            'fs',
+            'node:fs',
+            'node:http',
+            'node:https',
+            'node:path',
             'express',
-            'http',
-            'https',
-            'path',
             'itee-validators',
             'itee-core',
             'itee-database'
