@@ -14,8 +14,8 @@ import https   from 'node:https'
 import {
     DefaultLogger,
     TAbstractObject
-}              from 'itee-core'
-//todo: import Databases from 'itee-database'
+}              from '@itee/core'
+//todo: import Databases from '@itee/database'
 import {
     isArray,
     isBlankString,
@@ -25,7 +25,7 @@ import {
     isNotString,
     isNull,
     isUndefined
-}              from 'itee-validators'
+}              from '@itee/validators'
 import path    from 'node:path'
 
 class TBackendManager extends TAbstractObject {
