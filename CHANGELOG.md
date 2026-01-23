@@ -1,3 +1,5 @@
+# [v8.0.1](https://github.com/Itee/server/compare/v8.0.0...v8.0.1) (2026-01-23)
+
 # [v8.0.0](https://github.com/Itee/server/compare/v7.0.0...v8.0.0) (2026-01-23)
 
 ## 🐛 Bug Fixes
