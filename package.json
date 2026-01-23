@@ -1,5 +1,5 @@
 {
-  "name": "itee-server",
+  "name": "@itee/server",
   "version": "7.0.0",
   "description": "The server side of the Itee solution for 3d web content, this package is design to work with an Itee client.",
   "keywords": [
