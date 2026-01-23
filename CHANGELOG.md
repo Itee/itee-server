@@ -1,3 +1,11 @@
+# [v8.0.0](https://github.com/Itee/server/compare/v7.0.0...v8.0.0) (2026-01-23)
+
+## 🐛 Bug Fixes
+- [`dcf4172`](https://github.com/Itee/server/commit/dcf4172)  (package) apply package override to fix trust publishing 
+
+## 💥 Breaking Changes
+- [`73df887`](https://github.com/Itee/server/commit/73df887)  (package) change package name itee-server to scoped version @itee/server
+
 # [v7.0.0](https://github.com/Itee/server/compare/v6.3.0...v7.0.0) (2026-01-23)
 
 ## ✨ New Features
